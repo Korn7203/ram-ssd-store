@@ -13,12 +13,12 @@
     import ReactDOM from "https://esm.sh/react-dom@18.2.0/client";
 
     const PRODUCTS = [
-      { id: 1, name: "Kingston FURY Beast", type: "RAM", spec: "DDR4 8GB 3200MHz", price: 1150, stock: 12, img: "https://notebookspec.com/storage/pc-ram/ram_1242_20211004-174841_5.png", desc: "แรมประสิทธิภาพสูงสำหรับการเล่นเกมและการทำงานทั่วไป ระบายความร้อนได้ดีด้วยฮีตซิงก์อลูมิเนียม" },
-      { id: 2, name: "Corsair Vengeance", type: "RAM", spec: "DDR5 32GB 6000MHz", price: 4590, stock: 5, img: "https://www.jib.co.th/img_master/product/original/2025120416530182272_1.jpg", desc: "แรม DDR5 ความเร็วสูงพิเศษ เหมาะสำหรับการสตรีมเมอร์และนักแต่งวิดีโอระดับมืออาชีพ" },
-      { id: 3, name: "Kingston FURY Renegade", type: "RAM", spec: "DDR5 64GB 6400MHz", price: 8900, stock: 3, img: "https://media.kingston.com/kingston/product/FURY_Renegade_Silver_Black_CUDIMM_DDR5_1-zm-lg.jpg", desc: "ความจุจัดเต็ม 64GB พร้อมความเร็วบัส 6400MHz ตอบโจทย์สายโอเวอร์คล็อกและการประมวลผลหนัก" },
-      { id: 4, name: "Samsung 990 PRO", type: "SSD", spec: "2TB Read 7450MB/s", price: 6990, stock: 8, img: "https://www.jib.co.th/img_master/product/original/2023082416295161614_1.jpg", desc: "SSD NVMe Gen4 ที่เร็วที่สุดจาก Samsung โหลดเกมและไฟล์ขนาดใหญ่ได้ในเสี้ยววินาที" },
-      { id: 5, name: "WD Black SN850X", type: "SSD", spec: "4TB Read 7300MB/s", price: 14500, stock: 2, img: "https://www.jib.co.th/img_master/product/original/2023120415101463977_1.jpg", desc: "ความจุระดับพรีเมียม 4TB มาพร้อมGame Mode 2.0 ช่วยเพิ่มประสิทธิภาพในการเล่นเกม" },
-      { id: 6, name: "Crucial P3 Plus", type: "SSD", spec: "1TB Read 5000MB/s", price: 2690, stock: 15, img: "https://www.jib.co.th/img_master/product/original/2023082211134861550_1.jpg", desc: "SSD NVMe Gen4 ราคาสบายกระเป๋า คุ้มค่าที่สุดสำหรับการอัปเกรดคอมพิวเตอร์ให้เร็วขึ้น" }
+      { id: 1, name: "Kingston FURY Beast", type: "RAM", spec: "DDR4 8GB 3200MHz", price: 1150, stock: 999, img: "https://notebookspec.com/storage/pc-ram/ram_1242_20211004-174841_5.png", desc: "แรมประสิทธิภาพสูงสำหรับการเล่นเกมและการทำงานทั่วไป ระบายความร้อนได้ดีด้วยฮีตซิงก์อลูมิเนียม" }
+      { id: 2, name: "Corsair Vengeance", type: "RAM", spec: "DDR5 32GB 6000MHz", price: 4590, stock: 999, img: "https://www.jib.co.th/img_master/product/original/2025120416530182272_1.jpg", desc: "แรม DDR5 ความเร็วสูงพิเศษ เหมาะสำหรับการสตรีมเมอร์และนักแต่งวิดีโอระดับมืออาชีพ" },
+      { id: 3, name: "Kingston FURY Renegade", type: "RAM", spec: "DDR5 64GB 6400MHz", price: 8900, stock: 999, img: "https://media.kingston.com/kingston/product/FURY_Renegade_Silver_Black_CUDIMM_DDR5_1-zm-lg.jpg", desc: "ความจุจัดเต็ม 64GB พร้อมความเร็วบัส 6400MHz ตอบโจทย์สายโอเวอร์คล็อกและการประมวลผลหนัก" },
+      { id: 4, name: "Samsung 990 PRO", type: "SSD", spec: "2TB Read 7450MB/s", price: 6990, stock: 999, img: "https://www.jib.co.th/img_master/product/original/2023082416295161614_1.jpg", desc: "SSD NVMe Gen4 ที่เร็วที่สุดจาก Samsung โหลดเกมและไฟล์ขนาดใหญ่ได้ในเสี้ยววินาที" },
+      { id: 5, name: "WD Black SN850X", type: "SSD", spec: "4TB Read 7300MB/s", price: 14500, stock: 999, img: "https://www.jib.co.th/img_master/product/original/2023120415101463977_1.jpg", desc: "ความจุระดับพรีเมียม 4TB มาพร้อมGame Mode 2.0 ช่วยเพิ่มประสิทธิภาพในการเล่นเกม" },
+      { id: 6, name: "Crucial P3 Plus", type: "SSD", spec: "1TB Read 5000MB/s", price: 2690, stock: 999, img: "https://www.jib.co.th/img_master/product/original/2023082211134861550_1.jpg", desc: "SSD NVMe Gen4 ราคาสบายกระเป๋า คุ้มค่าที่สุดสำหรับการอัปเกรดคอมพิวเตอร์ให้เร็วขึ้น" }
     ];
 
     function App() {
