@@ -13,18 +13,19 @@
     import ReactDOM from "https://esm.sh/react-dom@18.2.0/client";
 
     const PRODUCTS = [
-      { id: 1, name: "Kingston FURY Beast", type: "RAM", spec: "DDR4 8GB 3200MHz", price: 2150 },
-      { id: 2, name: "Corsair Vengeance", type: "RAM", spec: "DDR5 32GB 6000MHz", price: 14590 },
-      { id: 3, name: "Kingston FURY Renegade", type: "RAM", spec: "DDR5 64GB 6400MHz", price: 38900 },
-      { id: 4, name: "Samsung 990 PRO", type: "SSD", spec: "2TB Read 7450MB/s", price: 6990 },
-      { id: 5, name: "WD Black SN850X", type: "SSD", spec: "4TB Read 7300MB/s", price: 42000 },
-      { id: 6, name: "Crucial P3 Plus", type: "SSD", spec: "1TB Read 5000MB/s", price: 2690 }
+      { id: 1, name: "Kingston FURY Beast", type: "RAM", spec: "DDR4 8GB 3200MHz", price: 1150, stock: 12, img: "https://images.unsplash.com/photo-1562976540-1502c2145186?auto=format&fit=crop&w=500&q=80", desc: "แรมประสิทธิภาพสูงสำหรับการเล่นเกมและการทำงานทั่วไป ระบายความร้อนได้ดีด้วยฮีตซิงก์อลูมิเนียม" },
+      { id: 2, name: "Corsair Vengeance", type: "RAM", spec: "DDR5 32GB 6000MHz", price: 4590, stock: 5, img: "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?auto=format&fit=crop&w=500&q=80", desc: "แรม DDR5 ความเร็วสูงพิเศษ เหมาะสำหรับการสตรีมเมอร์และนักแต่งวิดีโอระดับมืออาชีพ" },
+      { id: 3, name: "Kingston FURY Renegade", type: "RAM", spec: "DDR5 64GB 6400MHz", price: 8900, stock: 3, img: "https://images.unsplash.com/photo-1562976540-1502c2145186?auto=format&fit=crop&w=500&q=80", desc: "ความจุจัดเต็ม 64GB พร้อมความเร็วบัส 6400MHz ตอบโจทย์สายโอเวอร์คล็อกและการประมวลผลหนัก" },
+      { id: 4, name: "Samsung 990 PRO", type: "SSD", spec: "2TB Read 7450MB/s", price: 6990, stock: 8, img: "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?auto=format&fit=crop&w=500&q=80", desc: "SSD NVMe Gen4 ที่เร็วที่สุดจาก Samsung โหลดเกมและไฟล์ขนาดใหญ่ได้ในเสี้ยววินาที" },
+      { id: 5, name: "WD Black SN850X", type: "SSD", spec: "4TB Read 7300MB/s", price: 14500, stock: 2, img: "https://images.unsplash.com/photo-1544652478-6653e09f18a2?auto=format&fit=crop&w=500&q=80", desc: "ความจุระดับพรีเมียม 4TB มาพร้อมGame Mode 2.0 ช่วยเพิ่มประสิทธิภาพในการเล่นเกม" },
+      { id: 6, name: "Crucial P3 Plus", type: "SSD", spec: "1TB Read 5000MB/s", price: 2690, stock: 15, img: "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?auto=format&fit=crop&w=500&q=80", desc: "SSD NVMe Gen4 ราคาสบายกระเป๋า คุ้มค่าที่สุดสำหรับการอัปเกรดคอมพิวเตอร์ให้เร็วขึ้น" }
     ];
 
     function App() {
       const [theme, setTheme] = useState("light");
       const [cart, setCart] = useState([]);
       const [filter, setFilter] = useState("ALL");
+      const [selectedProduct, setSelectedProduct] = useState(null);
 
       const toggleTheme = () => {
         if (theme === "light") setTheme("dark");
@@ -42,14 +43,17 @@
       };
 
       return React.createElement("div", { className: getThemeClass() },
-        React.createElement("header", { className: "flex justify-between items-center pb-6 border-b border-gray-300 dark:border-gray-700 max-w-4xl mx-auto" },
+        // Header
+        React.createElement("header", { className: "flex justify-between items-center pb-6 border-b border-gray-300 dark:border-gray-700 max-w-5xl mx-auto" },
           React.createElement("h1", { className: "text-xl font-bold tracking-wider" }, "SILICON VAULT"),
           React.createElement("div", { className: "flex gap-4 items-center" },
             React.createElement("button", { onClick: toggleTheme, className: "px-3 py-1 border rounded text-xs" }, `โหมด: ${theme.toUpperCase()}`),
             React.createElement("span", { className: "font-semibold text-sm" }, `🛒 ตระกร้า (${cart.length})`)
           )
         ),
-        React.createElement("main", { className: "max-w-4xl mx-auto mt-6" },
+        
+        // Main
+        React.createElement("main", { className: "max-w-5xl mx-auto mt-6" },
           React.createElement("div", { className: "flex gap-2 mb-6" },
             ["ALL", "RAM", "SSD"].map(f =>
               React.createElement("button", {
@@ -59,24 +63,34 @@
               }, f)
             )
           ),
+          
+          // Product Grid
           React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-6" },
             filteredProducts.map(p =>
-              React.createElement("div", { key: p.id, className: "border p-4 rounded-lg flex flex-col justify-between bg-white/5" },
-                React.createElement("div", null,
-                  React.createElement("span", { className: "text-xs border px-1.5 py-0.5 rounded" }, p.type),
-                  React.createElement("h3", { className: "font-bold mt-2" }, p.name),
-                  React.createElement("p", { className: "text-xs opacity-75 mt-1" }, p.spec)
-                ),
-                React.createElement("div", { className: "flex justify-between items-center mt-4" },
-                  React.createElement("span", { className: "font-bold" }, `฿${p.price.toLocaleString()}`),
-                  React.createElement("button", {
-                    onClick: () => setCart([...cart, p]),
-                    className: "bg-black text-white dark:bg-white dark:text-black px-3 py-1 rounded text-xs"
-                  }, "+ ใส่ตระกร้า")
+              React.createElement("div", { key: p.id, className: "border rounded-lg overflow-hidden flex flex-col justify-between bg-white/5 shadow-sm hover:shadow-md transition" },
+                React.createElement("img", { src: p.img, alt: p.name, className: "w-full h-40 object-cover" }),
+                React.createElement("div", { className: "p-4 flex-grow flex flex-col justify-between" },
+                  React.createElement("div", null,
+                    React.createElement("div", { className: "flex justify-between items-center mb-1" },
+                      React.createElement("span", { className: "text-xs border px-1.5 py-0.5 rounded font-mono" }, p.type),
+                      React.createElement("span", { className: "text-xs text-green-500 font-semibold" }, `คงเหลือ: ${p.stock} ชิ้น`)
+                    ),
+                    React.createElement("h3", { className: "font-bold mt-1 text-base" }, p.name),
+                    React.createElement("p", { className: "text-xs opacity-75 mt-0.5" }, p.spec)
+                  ),
+                  React.createElement("div", { className: "flex justify-between items-center mt-4" },
+                    React.createElement("span", { className: "font-bold text-lg" }, `฿${p.price.toLocaleString()}`),
+                    React.createElement("button", {
+                      onClick: () => setSelectedProduct(p),
+                      className: "bg-black text-white dark:bg-white dark:text-black px-3 py-1.5 rounded text-xs hover:opacity-80 transition"
+                    }, "ดูรายละเอียด / สั่งซื้อ")
+                  )
                 )
               )
             )
           ),
+          
+          // Cart Summary
           cart.length > 0 && React.createElement("div", { className: "mt-8 p-4 border rounded-lg max-w-xs ml-auto" },
             React.createElement("h3", { className: "font-bold mb-2" }, "สรุปคำสั่งซื้อ"),
             React.createElement("p", { className: "text-sm mb-1" }, `จำนวน: ${cart.length} ชิ้น`),
@@ -85,6 +99,39 @@
               onClick: () => alert("สั่งซื้อเรียบร้อยแล้ว!"),
               className: "w-full py-2 bg-green-600 text-white rounded font-bold text-sm"
             }, "ชำระเงิน")
+          )
+        ),
+
+        // Product Detail Modal (หน้าต่างเด้งแสดงรายละเอียดสินค้า)
+        selectedProduct && React.createElement("div", { className: "fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50" },
+          React.createElement("div", { className: "bg-white dark:bg-gray-800 text-gray-900 dark:text-white max-w-md w-full rounded-xl p-6 shadow-2xl border border-gray-200 dark:border-gray-700" },
+            React.createElement("img", { src: selectedProduct.img, alt: selectedProduct.name, className: "w-full h-48 object-cover rounded-lg mb-4" }),
+            React.createElement("div", { className: "flex justify-between items-center mb-2" },
+              React.createElement("span", { className: "text-xs border px-2 py-0.5 rounded font-mono" }, selectedProduct.type),
+              React.createElement("span", { className: "text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-2 py-0.5 rounded-full font-bold" }, `สต็อกพร้อมส่ง: ${selectedProduct.stock} ชิ้น`)
+            ),
+            React.createElement("h2", { className: "text-xl font-bold" }, selectedProduct.name),
+            React.createElement("p", { className: "text-sm font-semibold opacity-80 mt-1" }, selectedProduct.spec),
+            React.createElement("p", { className: "text-xs opacity-70 mt-3 leading-relaxed border-t border-b border-gray-200 dark:border-gray-700 py-3" }, selectedProduct.desc),
+            React.createElement("div", { className: "flex justify-between items-center mt-5" },
+              React.createElement("div", null,
+                React.createElement("span", { className: "text-xs opacity-60 block" }, "ราคา"),
+                React.createElement("span", { className: "text-2xl font-extrabold" }, `฿${selectedProduct.price.toLocaleString()}`)
+              ),
+              React.createElement("div", { className: "flex gap-2" },
+                React.createElement("button", {
+                  onClick: () => setSelectedProduct(null),
+                  className: "px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-xs font-semibold"
+                }, "ยกเลิก"),
+                React.createElement("button", {
+                  onClick: () => {
+                    setCart([...cart, selectedProduct]);
+                    setSelectedProduct(null);
+                  },
+                  className: "px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition"
+                }, "+ เพิ่มลงตะกร้า")
+              )
+            )
           )
         )
       );
