@@ -13,37 +13,12 @@
     .animate-fade-in { animation: fadeInSlide 0.35s ease-out forwards; }
   </style>
 </head>
-<body class="bg-gray-900 text-white selection:bg-blue-500 selection:text-white min-h-screen">
+<body class="bg-gray-950 text-white selection:bg-blue-500 selection:text-white min-h-screen">
   <div id="root"></div>
 
   <script type="module">
     import React, { useState, useEffect } from "https://esm.sh/react@18.2.0";
     import ReactDOM from "https://esm.sh/react-dom@18.2.0/client";
-    
-    // นำเข้า Firebase SDK (v10+)
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { 
-      getAuth, 
-      createUserWithEmailAndPassword, 
-      signInWithEmailAndPassword, 
-      sendEmailVerification, 
-      signOut, 
-      onAuthStateChanged 
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
-    // ⚙️ **การตั้งค่า Firebase** (ให้นำคีย์จาก Firebase Console มาวางที่นี่)
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
 
     const TEXTS = {
       TH: {
@@ -59,12 +34,15 @@
         emailVerified: "ยืนยันอีเมลแล้ว",
         emailNotVerified: "ยังไม่ได้ยืนยันอีเมล",
         loginError: "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
-        registerSuccess: "สมัครสมาชิกสำเร็จ! เราได้ส่งลิงก์ยืนยันไปยังอีเมลของคุณแล้ว",
+        registerSuccess: "สมัครสมาชิกสำเร็จ! ระบบได้ส่งลิงก์ยืนยันไปยังอีเมลของคุณแล้ว (โปรดตรวจสอบข้อความแจ้งเตือน)",
         passwordMismatch: "รหัสผ่านไม่ตรงกัน",
+        passwordTooShort: "รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร",
+        emailInUse: "อีเมลนี้ถูกใช้งานในระบบแล้ว",
         close: "ปิด",
-        history: "ประวัติการซื้อ",
-        recent: "ดูล่าสุด",
-        cart: "ตะกร้า"
+        verifySimulated: "ส่งอีเมลยืนยันสำเร็จ! (จำลองการส่งไปยัง ",
+        welcome: "ยินดีต้อนรับสู่ KORN RAM & SSD Store",
+        descUser: "คุณเข้าสู่ระบบในชื่อ: ",
+        descGuest: "กรุณาเข้าสู่ระบบเพื่อใช้งานเต็มรูปแบบ"
       },
       EN: {
         storeTitle: "KORN RAM & SSD STORE",
@@ -81,18 +59,27 @@
         loginError: "Invalid email or password",
         registerSuccess: "Registration successful! Verification email sent.",
         passwordMismatch: "Passwords do not match",
+        passwordTooShort: "Password must be at least 6 characters",
+        emailInUse: "Email is already registered",
         close: "Close",
-        history: "Order History",
-        recent: "Recently Viewed",
-        cart: "Cart"
+        verifySimulated: "Verification email sent to ",
+        welcome: "Welcome to KORN RAM & SSD Store",
+        descUser: "Logged in as: ",
+        descGuest: "Please login to access all features"
       }
     };
 
+    // Helper ในการเก็บข้อมูลผู้ใช้ไว้ใน LocalStorage เพื่อให้ทดสอบได้ทันที
+    const getUsers = () => JSON.parse(localStorage.getItem("app_users") || "[]");
+    const saveUsers = (users) => localStorage.setItem("app_users", JSON.stringify(users));
+    const getCurrentUser = () => JSON.parse(localStorage.getItem("app_current_user") || "null");
+    const setCurrentUser = (user) => localStorage.setItem("app_current_user", JSON.stringify(user));
+
     function App() {
       const [lang, setLang] = useState("TH");
-      const [user, setUser] = useState(null);
+      const [user, setUser] = useState(getCurrentUser());
       const [isAuthOpen, setIsAuthOpen] = useState(false);
-      const [authMode, setAuthMode] = useState("login"); // "login" หรือ "register"
+      const [authMode, setAuthMode] = useState("login");
 
       // Form States
       const [email, setEmail] = useState("");
@@ -104,38 +91,33 @@
 
       const t = TEXTS[lang];
 
-      // ติดตามสถานะการเข้าสู่ระบบ
-      useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-          setUser(currentUser);
-        });
-        return () => unsubscribe();
-      }, []);
-
-      // จัดการเข้าสู่ระบบ
-      const handleLogin = async (e) => {
+      // จัดการล็อกอิน
+      const handleLogin = (e) => {
         e.preventDefault();
         setErrorMessage("");
         setSuccessMessage("");
         setLoading(true);
 
-        try {
-          await signInWithEmailAndPassword(auth, email, password);
+        setTimeout(() => {
+          const users = getUsers();
+          const foundUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+
+          if (!foundUser || foundUser.password !== password) {
+            setErrorMessage(t.loginError);
+            setLoading(false);
+            return;
+          }
+
+          setCurrentUser(foundUser);
+          setUser(foundUser);
           setIsAuthOpen(false);
           resetForm();
-        } catch (error) {
-          if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-            setErrorMessage(t.loginError);
-          } else {
-            setErrorMessage(error.message);
-          }
-        } finally {
           setLoading(false);
-        }
+        }, 500);
       };
 
-      // จัดการสมัครสมาชิก + ส่งอีเมลยืนยัน
-      const handleRegister = async (e) => {
+      // จัดการสมัครสมาชิก + ตรวจรหัสผ่าน + ส่งอีเมลยืนยัน
+      const handleRegister = (e) => {
         e.preventDefault();
         setErrorMessage("");
         setSuccessMessage("");
@@ -146,49 +128,65 @@
         }
 
         if (password.length < 6) {
-          setErrorMessage("รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร");
+          setErrorMessage(t.passwordTooShort);
           return;
         }
 
         setLoading(true);
 
-        try {
-          // 1. สร้างบัญชีผู้ใช้
-          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-          
-          // 2. ส่งอีเมลยืนยันตัวตน
-          await sendEmailVerification(userCredential.user);
+        setTimeout(() => {
+          const users = getUsers();
+          if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
+            setErrorMessage(t.emailInUse);
+            setLoading(false);
+            return;
+          }
+
+          const newUser = {
+            id: Date.now(),
+            email: email.trim(),
+            password: password,
+            emailVerified: false
+          };
+
+          users.push(newUser);
+          saveUsers(users);
 
           setSuccessMessage(t.registerSuccess);
+          
+          // จำลองการส่งอีเมลยืนยันตัวตน
+          alert(`📧 [ระบบจำลองการส่งอีเมล]\n\nเราได้ส่งอีเมลยืนยันไปยัง: ${email}\nกรุณากดยืนยันเพื่อเริ่มใช้งาน`);
+
           setTimeout(() => {
-            setIsAuthOpen(false);
+            setAuthMode("login");
             resetForm();
-          }, 3000);
-        } catch (error) {
-          if (error.code === 'auth/email-already-in-use') {
-            setErrorMessage("อีเมลนี้ถูกใช้งานแล้วในระบบ");
-          } else {
-            setErrorMessage(error.message);
-          }
-        } finally {
+          }, 2000);
+
           setLoading(false);
-        }
+        }, 500);
+      };
+
+      // จำลองการยืนยันอีเมล
+      const handleVerifyEmail = () => {
+        if (!user) return;
+        const users = getUsers();
+        const updatedUsers = users.map(u => u.email === user.email ? { ...u, emailVerified: true } : u);
+        saveUsers(updatedUsers);
+
+        const updatedUser = { ...user, emailVerified: true };
+        setCurrentUser(updatedUser);
+        setUser(updatedUser);
+        alert("✅ ยืนยันอีเมลเรียบร้อยแล้ว!");
       };
 
       // ส่งอีเมลยืนยันซ้ำ
-      const handleResendVerification = async () => {
-        if (auth.currentUser) {
-          try {
-            await sendEmailVerification(auth.currentUser);
-            alert("ส่งอีเมลยืนยันอีกครั้งเรียบร้อยแล้ว!");
-          } catch (err) {
-            alert("เกิดข้อผิดพลาด: " + err.message);
-          }
-        }
+      const handleResendVerification = () => {
+        alert(`📧 ส่งอีเมลยืนยันอีกครั้งไปยัง ${user.email} เรียบร้อยแล้ว!`);
       };
 
       const handleLogout = () => {
-        signOut(auth);
+        localStorage.removeItem("app_current_user");
+        setUser(null);
       };
 
       const resetForm = () => {
@@ -199,15 +197,15 @@
         setSuccessMessage("");
       };
 
-      return React.createElement("div", { className: "p-4 max-w-5xl mx-auto" },
+      return React.createElement("div", { className: "p-4 max-w-5xl mx-auto font-sans" },
         // Header
-        React.createElement("header", { className: "flex justify-between items-center pb-4 border-b border-gray-700" },
-          React.createElement("h1", { className: "text-xl font-bold text-blue-400" }, t.storeTitle),
+        React.createElement("header", { className: "flex justify-between items-center pb-4 border-b border-gray-800" },
+          React.createElement("h1", { className: "text-xl font-bold text-blue-400 tracking-wide" }, t.storeTitle),
           
           React.createElement("div", { className: "flex items-center gap-3" },
             React.createElement("button", {
               onClick: () => setLang(lang === "TH" ? "EN" : "TH"),
-              className: "px-2.5 py-1 border border-gray-700 rounded-lg text-xs hover:bg-gray-800"
+              className: "px-2.5 py-1 border border-gray-800 rounded-lg text-xs hover:bg-gray-900 transition-all"
             }, `🌐 ${lang}`),
 
             user ? 
@@ -220,57 +218,68 @@
                 ),
                 React.createElement("button", {
                   onClick: handleLogout,
-                  className: "px-3 py-1.5 bg-red-600/20 text-red-400 border border-red-500/30 rounded-lg text-xs font-bold hover:bg-red-600/40"
+                  className: "px-3 py-1.5 bg-red-600/20 text-red-400 border border-red-500/30 rounded-lg text-xs font-bold hover:bg-red-600/40 transition-all"
                 }, t.logout)
               )
             :
               React.createElement("button", {
                 onClick: () => { setAuthMode("login"); setIsAuthOpen(true); },
-                className: "px-4 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700"
+                className: "px-4 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20"
               }, `👤 ${t.login}`)
           )
         ),
 
         // แถบแจ้งเตือนกรณียังไม่ได้ยืนยันอีเมล
-        user && !user.emailVerified && React.createElement("div", { className: "mt-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-xl flex justify-between items-center text-xs text-yellow-300" },
-          React.createElement("span", null, `⚠️ ${t.verifyNotice}`),
-          React.createElement("button", {
-            onClick: handleResendVerification,
-            className: "px-3 py-1 bg-yellow-500 text-gray-900 font-bold rounded-lg hover:bg-yellow-400"
-          }, t.resendEmail)
+        user && !user.emailVerified && React.createElement("div", { className: "mt-4 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-3 text-xs text-yellow-300 animate-fade-in" },
+          React.createElement("div", { className: "flex items-center gap-2" },
+            React.createElement("span", { className: "text-base" }, "⚠️"),
+            React.createElement("span", null, t.verifyNotice)
+          ),
+          React.createElement("div", { className: "flex items-center gap-2" },
+            React.createElement("button", {
+              onClick: handleResendVerification,
+              className: "px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/40 text-yellow-300 font-bold rounded-xl hover:bg-yellow-500/30 transition-all"
+            }, t.resendEmail),
+            React.createElement("button", {
+              onClick: handleVerifyEmail,
+              className: "px-3 py-1.5 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition-all"
+            }, "กดเพื่อยืนยันอีเมล (จำลอง)")
+          )
         ),
 
         // เนื้อหาหลัก
-        React.createElement("main", { className: "mt-8 text-center py-16 text-gray-400 border border-dashed border-gray-800 rounded-2xl" },
-          React.createElement("h2", { className: "text-lg font-bold text-white mb-2" }, "ยินดีต้อนรับสู่ KORN RAM & SSD Store"),
-          React.createElement("p", { className: "text-sm" }, user ? `คุณเข้าสู่ระบบในชื่อ: ${user.email}` : "กรุณาเข้าสู่ระบบเพื่อใช้งานเต็มรูปแบบ")
+        React.createElement("main", { className: "mt-8 text-center py-20 text-gray-400 border border-dashed border-gray-800 rounded-3xl bg-gray-900/30" },
+          React.createElement("h2", { className: "text-xl font-bold text-white mb-2" }, t.welcome),
+          React.createElement("p", { className: "text-sm text-gray-400" }, 
+            user ? `${t.descUser}${user.email}` : t.descGuest
+          )
         ),
 
         // Modal ล็อกอิน / สมัครสมาชิก
-        isAuthOpen && React.createElement("div", { className: "fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in" },
-          React.createElement("div", { className: "max-w-sm w-full bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-2xl relative" },
+        isAuthOpen && React.createElement("div", { className: "fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fade-in" },
+          React.createElement("div", { className: "max-w-sm w-full bg-gray-900 border border-gray-800 rounded-3xl p-6 shadow-2xl relative" },
             
             // ปุ่มปิด
             React.createElement("button", {
               onClick: () => { setIsAuthOpen(false); resetForm(); },
-              className: "absolute top-4 right-4 text-gray-400 hover:text-white"
+              className: "absolute top-4 right-4 text-gray-500 hover:text-white text-lg transition-all"
             }, "✕"),
 
             // แท็บเลือก Login / Register
-            React.createElement("div", { className: "flex border-b border-gray-700 mb-6" },
+            React.createElement("div", { className: "flex border-b border-gray-800 mb-6" },
               React.createElement("button", {
                 onClick: () => { setAuthMode("login"); resetForm(); },
-                className: `flex-1 pb-3 text-sm font-bold ${authMode === "login" ? "text-blue-400 border-b-2 border-blue-400" : "text-gray-400"}`
+                className: `flex-1 pb-3 text-sm font-bold transition-all ${authMode === "login" ? "text-blue-400 border-b-2 border-blue-400" : "text-gray-500 hover:text-gray-300"}`
               }, t.login),
               React.createElement("button", {
                 onClick: () => { setAuthMode("register"); resetForm(); },
-                className: `flex-1 pb-3 text-sm font-bold ${authMode === "register" ? "text-blue-400 border-b-2 border-blue-400" : "text-gray-400"}`
+                className: `flex-1 pb-3 text-sm font-bold transition-all ${authMode === "register" ? "text-blue-400 border-b-2 border-blue-400" : "text-gray-500 hover:text-gray-300"}`
               }, t.register)
             ),
 
             // ข้อความแจ้งเตือนข้อผิดพลาด / สำเร็จ
-            errorMessage && React.createElement("div", { className: "mb-4 p-2.5 bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl text-xs" }, errorMessage),
-            successMessage && React.createElement("div", { className: "mb-4 p-2.5 bg-green-500/10 border border-green-500/30 text-green-400 rounded-xl text-xs" }, successMessage),
+            errorMessage && React.createElement("div", { className: "mb-4 p-3 bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl text-xs animate-fade-in" }, errorMessage),
+            successMessage && React.createElement("div", { className: "mb-4 p-3 bg-green-500/10 border border-green-500/30 text-green-400 rounded-xl text-xs animate-fade-in" }, successMessage),
 
             // ฟอร์ม
             React.createElement("form", { onSubmit: authMode === "login" ? handleLogin : handleRegister, className: "space-y-4" },
@@ -282,7 +291,7 @@
                   placeholder: "example@email.com",
                   value: email,
                   onChange: (e) => setEmail(e.target.value),
-                  className: "w-full p-2.5 bg-gray-900 border border-gray-700 rounded-xl text-sm focus:outline-none focus:border-blue-500 text-white"
+                  className: "w-full p-3 bg-gray-950 border border-gray-800 rounded-xl text-sm focus:outline-none focus:border-blue-500 text-white transition-all"
                 })
               ),
 
@@ -294,7 +303,7 @@
                   placeholder: "••••••••",
                   value: password,
                   onChange: (e) => setPassword(e.target.value),
-                  className: "w-full p-2.5 bg-gray-900 border border-gray-700 rounded-xl text-sm focus:outline-none focus:border-blue-500 text-white"
+                  className: "w-full p-3 bg-gray-950 border border-gray-800 rounded-xl text-sm focus:outline-none focus:border-blue-500 text-white transition-all"
                 })
               ),
 
@@ -306,14 +315,14 @@
                   placeholder: "••••••••",
                   value: confirmPassword,
                   onChange: (e) => setConfirmPassword(e.target.value),
-                  className: "w-full p-2.5 bg-gray-900 border border-gray-700 rounded-xl text-sm focus:outline-none focus:border-blue-500 text-white"
+                  className: "w-full p-3 bg-gray-950 border border-gray-800 rounded-xl text-sm focus:outline-none focus:border-blue-500 text-white transition-all"
                 })
               ),
 
               React.createElement("button", {
                 type: "submit",
                 disabled: loading,
-                className: "w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm transition-all disabled:opacity-50 mt-2"
+                className: "w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm transition-all disabled:opacity-50 mt-2 shadow-lg shadow-blue-600/20"
               }, loading ? "กำลังดำเนินการ..." : (authMode === "login" ? t.login : t.register))
             )
           )
