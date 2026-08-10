@@ -35,7 +35,9 @@
       { id: 3, name: "Kingston FURY Renegade", type: "RAM", spec: "DDR5 64GB 6400MHz", price: 8900, stock: 999, img: "https://notebookspec.com/storage/pc-ram/ram_1242_20211004-174841_5.png", desc: "ความจุจัดเต็ม 64GB พร้อมความเร็วบัส 6400MHz ตอบโจทย์สายโอเวอร์คล็อกและการประมวลผลหนัก", storeName: "Lazada", shopUrl: "https://www.lazada.co.th/tag/kingston-fury-renegade-ddr5-64gb/" },
       { id: 4, name: "Samsung 990 PRO", type: "SSD", spec: "2TB Read 7450MB/s", price: 6990, stock: 999, img: "https://www.jib.co.th/img_master/product/original/2023082416295161614_1.jpg", desc: "SSD NVMe Gen4 ที่เร็วที่สุดจาก Samsung โหลดเกมและไฟล์ขนาดใหญ่ได้ในเสี้ยววินาที", storeName: "Shopee", shopUrl: "https://shopee.co.th/search?keyword=Samsung%20990%20PRO%202TB" },
       { id: 5, name: "WD Black SN850X", type: "SSD", spec: "4TB Read 7300MB/s", price: 14500, stock: 999, img: "https://www.jib.co.th/img_master/product/original/2023120415101463977_1.jpg", desc: "ความจุระดับพรีเมียม 4TB มาพร้อมGame Mode 2.0 ช่วยเพิ่มประสิทธิภาพในการเล่นเกม", storeName: "Advice", shopUrl: "https://www.advice.co.th/product/solid-state-drive-ssd-" },
-      { id: 6, name: "Crucial P3 Plus", type: "SSD", spec: "1TB Read 5000MB/s", price: 2690, stock: 999, img: "https://www.jib.co.th/img_master/product/original/2023082211134861550_1.jpg", desc: "SSD NVMe Gen4 ราคาสบายกระเป๋า คุ้มค่าที่สุดสำหรับการอัปเกรดคอมพิวเตอร์ให้เร็วขึ้น", storeName: "Shopee", shopUrl: "https://shopee.co.th/search?keyword=Crucial%20P3%20Plus%201TB" }
+      { id: 6, name: "Crucial P3 Plus", type: "SSD", spec: "1TB Read 5000MB/s", price: 2690, stock: 999, img: "https://www.jib.co.th/img_master/product/original/2023082211134861550_1.jpg", desc: "SSD NVMe Gen4 ราคาสบายกระเป๋า คุ้มค่าที่สุดสำหรับการอัปเกรดคอมพิวเตอร์ให้เร็วขึ้น", storeName: "Shopee", shopUrl: "https://shopee.co.th/search?keyword=Crucial%20P3%20Plus%201TB" },
+      { id: 7, name: "NZXT Kraken 240 RGB", type: "ชุดน้ำ", spec: "Liquid Cooler 240mm", price: 4990, stock: 50, img: "https://www.jib.co.th/img_master/product/original/2023061314205160002_1.jpg", desc: "ชุดน้ำปิด 240 มม. ดีไซน์พรีเมียมพร้อมไฟ RGB สวยงาม เย็นเงียบ คุมอุณหภูมิซีพียูอยู่หมัด", storeName: "JIB", shopUrl: "https://www.jib.co.th/web/product/readProduct/60000" },
+      { id: 8, name: "Corsair iCUE H150i ELITE", type: "ชุดน้ำ", spec: "Liquid Cooler 360mm", price: 6590, stock: 30, img: "https://www.jib.co.th/img_master/product/original/2021081114251046777_1.jpg", desc: "ชุดน้ำปิดหม้อน้ำ 360 มม. จัดเต็ม 3 พัดลมระบายความร้อนขั้นสุดยอดสำหรับซีพียูรุ่นท็อป", storeName: "Shopee", shopUrl: "https://shopee.co.th/search?keyword=Corsair%20iCUE%20H150i" }
     ];
 
     function App() {
@@ -102,7 +104,7 @@
         // Main Content
         React.createElement("main", { className: "max-w-5xl mx-auto mt-6" },
           React.createElement("div", { className: "flex gap-2 mb-6" },
-            ["ALL", "RAM", "SSD"].map(f =>
+            ["ALL", "RAM", "SSD", "ชุดน้ำ"].map(f =>
               React.createElement("button", {
                 key: f,
                 onClick: () => setFilter(f),
@@ -111,7 +113,7 @@
             )
           ),
           
-          // ใส่ key={filter} เพื่อให้เกิด Animation เฟดและสไลด์ขึ้นมาใหม่ทุกครั้งที่กดเปลี่ยนหมวดหมู่
+          // Animation เปลี่ยนหมวดหมู่สินค้า
           React.createElement("div", { key: filter, className: "grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in" },
             filteredProducts.map(p =>
               React.createElement("div", { key: p.id, className: `border rounded-xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ${cardBgClass}` },
