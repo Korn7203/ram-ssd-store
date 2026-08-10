@@ -62,6 +62,11 @@
       const filteredProducts = filter === "ALL" ? PRODUCTS : PRODUCTS.filter(p => p.type === filter);
       const totalPrice = cart.reduce((sum, item) => sum + item.price, 0);
 
+      // ดึงรายชื่อร้านค้าที่มีอยู่ในตะกร้า (ไม่ซ้ำกัน)
+      const uniqueStores = Array.from(
+        new Map(cart.map(item => [item.storeName, { name: item.storeName, url: item.shopUrl }])).values()
+      );
+
       const getThemeClass = () => {
         if (theme === "dark") return "bg-gray-900 text-white min-h-screen p-6 transition-colors duration-300";
         if (theme === "mono") return "bg-black text-gray-200 grayscale min-h-screen p-6 transition-colors duration-300";
@@ -174,7 +179,7 @@
           )
         ),
 
-        // 🛒 หน้าต่างตะกร้าสินค้าแบบเต็ม (Modal/Drawer Cart)
+        // 🛒 หน้าต่างตะกร้าสินค้า
         isCartOpen && React.createElement("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50" },
           React.createElement("div", { className: `max-w-lg w-full rounded-2xl p-6 shadow-2xl border flex flex-col max-h-[85vh] ${cardBgClass}` },
             
@@ -201,17 +206,14 @@
               :
                 cart.map(item =>
                   React.createElement("div", { key: item.cartItemId, className: "flex items-center justify-between p-3 border border-gray-500/20 rounded-xl bg-gray-500/5 hover:bg-gray-500/10 transition-all gap-3" },
-                    // รูปภาพประกอบรายการ
                     React.createElement("div", { className: "w-14 h-14 bg-white rounded-lg p-1 flex-shrink-0 flex items-center justify-center border" },
                       React.createElement("img", { src: item.img, alt: item.name, className: "max-h-full max-w-full object-contain" })
                     ),
-                    // รายละเอียด
                     React.createElement("div", { className: "flex-grow min-w-0" },
                       React.createElement("h4", { className: "font-bold text-sm truncate" }, item.name),
                       React.createElement("p", { className: "text-xs opacity-70" }, item.spec),
                       React.createElement("span", { className: "text-xs font-bold text-blue-400 block mt-0.5" }, `฿${item.price.toLocaleString()}`)
                     ),
-                    // ปุ่มส่งไปยังร้านจริง + ปุ่มยกเลิกสินค้า
                     React.createElement("div", { className: "flex items-center gap-2 flex-shrink-0" },
                       React.createElement("a", {
                         href: item.shopUrl,
@@ -229,24 +231,30 @@
                 )
             ),
 
-            // Cart Footer (ราคารวม & ปุ่มดำเนินการ)
+            // Cart Footer (ราคารวม & ปุ่มสั่งซื้อแบบแยก 2 ร้าน)
             cart.length > 0 && React.createElement("div", { className: "pt-4 border-t border-gray-500/30" },
-              React.createElement("div", { className: "flex justify-between items-center mb-4" },
+              React.createElement("div", { className: "flex justify-between items-center mb-3" },
                 React.createElement("span", { className: "text-sm font-medium opacity-80" }, "ราคารวมทั้งหมด"),
                 React.createElement("span", { className: "text-2xl font-black text-blue-400" }, `฿${totalPrice.toLocaleString()}`)
               ),
-              React.createElement("div", { className: "flex gap-2" },
+              
+              // Dynamic Action Buttons (แยกตามร้านค้า)
+              React.createElement("div", { className: "flex flex-col gap-2" },
+                React.createElement("div", { className: "grid grid-cols-2 gap-2" },
+                  uniqueStores.map(store => 
+                    React.createElement("a", {
+                      key: store.name,
+                      href: store.url,
+                      target: "_blank",
+                      rel: "noopener noreferrer",
+                      className: "py-2.5 px-3 bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs rounded-xl active:scale-95 transition-all text-center shadow-md shadow-orange-500/20 flex items-center justify-center gap-1 truncate"
+                    }, `🛍️ ไปที่ ${store.name}`)
+                  )
+                ),
                 React.createElement("button", {
                   onClick: clearCart,
-                  className: "px-3 py-2 border border-red-500/40 text-red-400 hover:bg-red-500/10 rounded-xl text-xs font-semibold transition-all"
-                }, "ล้างตะกร้า"),
-                React.createElement("button", {
-                  onClick: () => {
-                    alert(`กำลังนำคุณไปยังหน้าร้านค้าสั่งซื้อสำหรับสินค้าทั้งหมด...`);
-                    window.open(cart[0].shopUrl, "_blank");
-                  },
-                  className: "flex-grow py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold text-sm rounded-xl active:scale-95 transition-all shadow-lg shadow-orange-500/30 flex items-center justify-center gap-1"
-                }, `🛍️ สั่งซื้อสินค้าทั้งหมดที่ (${cart[0].storeName})`)
+                  className: "w-full py-1.5 border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-xl text-xs font-semibold transition-all mt-1"
+                }, "ล้างตะกร้าทั้งหมด")
               )
             )
           )
