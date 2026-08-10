@@ -12,11 +12,27 @@
       100% { transform: scale(1); }
     }
     .animate-cart-pop { animation: cartPop 0.3s ease-in-out; }
+    
     @keyframes fadeInSlide {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
     .animate-fade-in { animation: fadeInSlide 0.35s ease-out forwards; }
+
+    /* อนิเมชั่นสำหรับการเปลี่ยนป้ายสไลด์ใหม่อย่างนุ่มนวล */
+    @keyframes slideTransition {
+      from {
+        opacity: 0;
+        transform: scale(0.98) translateX(15px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateX(0);
+      }
+    }
+    .banner-slide-animate {
+      animation: slideTransition 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-900 selection:bg-blue-500 selection:text-white">
@@ -84,7 +100,6 @@
       }
     };
 
-    // ข้อมูลป้ายสไลด์เทรนด์ตลาด Hardware
     const BANNERS = [
       {
         id: 1,
@@ -113,23 +128,16 @@
     ];
 
     const PRODUCTS = [
-      // --- CPU ---
       { id: 101, name: "Intel Core i5-13400F", type: "CPU", spec: "10 Cores (6P+4E) / 16 Threads / Up to 4.6GHz / LGA1700", price: 6890, stock: 15, img: "https://m.media-amazon.com/images/I/51p1IAnuKBL._AC_SL1000_.jpg", desc: "ซีพียูราคาสุดคุ้มสำหรับการเล่นเกมและความบันเทิง รองรับ DDR4 และ DDR5", storeName: "JIB", shopUrl: "https://www.jib.co.th/web/product/readProduct/57201" },
       { id: 102, name: "Intel Core i7-14700K", type: "CPU", spec: "20 Cores (8P+12E) / 28 Threads / Up to 5.6GHz / LGA1700", price: 16900, stock: 10, img: "https://m.media-amazon.com/images/I/61S3S68f2SL._AC_SL1000_.jpg", desc: "ซีพียูระดับท็อปสำหรับสตรีมเมอร์และสายทำงานกราฟิกหนักๆ รองรับการ Overclock", storeName: "Shopee", shopUrl: "https://shopee.co.th/search?keyword=Intel%20Core%20i7-14700K" },
       { id: 103, name: "AMD Ryzen 5 7600X", type: "CPU", spec: "6 Cores / 12 Threads / Up to 5.3GHz / Socket AM5", price: 8290, stock: 20, img: "https://m.media-amazon.com/images/I/5137B3j1SGL._AC_SL1000_.jpg", desc: "ซีพียูสถาปัตยกรรม Zen 4 บนแพลตฟอร์ม AM5 ประสิทธิภาพสูงสำหรับเกมเมอร์", storeName: "Advice", shopUrl: "https://www.advice.co.th/product/processor-cpu-" },
       { id: 104, name: "AMD Ryzen 7 7800X3D", type: "CPU", spec: "8 Cores / 16 Threads / Up to 5.0GHz / 3D V-Cache", price: 15900, stock: 8, img: "https://m.media-amazon.com/images/I/514I8B+dZdL._AC_SL1000_.jpg", desc: "ที่สุดของซีพียูเกมมิ่งระดับโลกด้วยเทคโนโลยี 3D V-Cache ปั่น FPS เกมได้สูงที่สุด", storeName: "Lazada", shopUrl: "https://www.lazada.co.th/tag/ryzen-7-7800x3d/" },
-
-      // --- RAM ---
       { id: 1, name: "Kingston FURY Beast", type: "RAM", spec: "DDR4 8GB 3200MHz", price: 1150, stock: 999, img: "https://m.media-amazon.com/images/I/61N3nIylxKL._AC_SL1000_.jpg", desc: "แรมประสิทธิภาพสูงสำหรับการเล่นเกมและการทำงานทั่วไป", storeName: "Shopee", shopUrl: "https://shopee.co.th/search?keyword=Kingston%20FURY%20Beast%20DDR4%208GB" },
       { id: 2, name: "Corsair Vengeance", type: "RAM", spec: "DDR5 32GB 6000MHz", price: 4590, stock: 999, img: "https://m.media-amazon.com/images/I/51p1IAnuKBL._AC_SL1000_.jpg", desc: "แรม DDR5 ความเร็วสูงพิเศษ เหมาะสำหรับการสตรีมเมอร์และนักแต่งวิดีโอ", storeName: "JIB", shopUrl: "https://www.jib.co.th/web/product/readProduct/58000" },
       { id: 3, name: "Kingston FURY Renegade", type: "RAM", spec: "DDR5 64GB 6400MHz", price: 8900, stock: 999, img: "https://m.media-amazon.com/images/I/61N3nIylxKL._AC_SL1000_.jpg", desc: "ความจุจัดเต็ม 64GB ตอบโจทย์สายโอเวอร์คล็อกและการประมวลผลหนัก", storeName: "Lazada", shopUrl: "https://www.lazada.co.th/tag/kingston-fury-renegade-ddr5-64gb/" },
-
-      // --- SSD ---
       { id: 4, name: "Samsung 990 PRO", type: "SSD", spec: "2TB Read 7450MB/s", price: 6990, stock: 999, img: "https://m.media-amazon.com/images/I/71I3uAptInL._AC_SL1500_.jpg", desc: "SSD NVMe Gen4 ที่เร็วที่สุดจาก Samsung โหลดเกมและไฟล์ขนาดใหญ่ได้เร็วมาก", storeName: "Shopee", shopUrl: "https://shopee.co.th/search?keyword=Samsung%20990%20PRO%202TB" },
       { id: 5, name: "WD Black SN850X", type: "SSD", spec: "4TB Read 7300MB/s", price: 14500, stock: 999, img: "https://m.media-amazon.com/images/I/61S3S68f2SL._AC_SL1000_.jpg", desc: "ความจุระดับพรีเมียม 4TB มาพร้อม Game Mode 2.0", storeName: "Advice", shopUrl: "https://www.advice.co.th/product/solid-state-drive-ssd-" },
       { id: 6, name: "Crucial P3 Plus", type: "SSD", spec: "1TB Read 5000MB/s", price: 2690, stock: 999, img: "https://m.media-amazon.com/images/I/5137B3j1SGL._AC_SL1000_.jpg", desc: "SSD NVMe Gen4 ราคาสบายกระเป๋า คุ้มค่าที่สุดสำหรับการอัปเกรด", storeName: "Shopee", shopUrl: "https://shopee.co.th/search?keyword=Crucial%20P3%20Plus%201TB" },
-
-      // --- ชุดน้ำ ---
       { id: 7, name: "NZXT Kraken 240 RGB", type: "ชุดน้ำ", spec: "Liquid Cooler 240mm", price: 4990, stock: 50, img: "https://m.media-amazon.com/images/I/51p1IAnuKBL._AC_SL1000_.jpg", desc: "ชุดน้ำปิด 240 มม. ดีไซน์พรีเมียมพร้อมไฟ RGB สวยงาม", storeName: "JIB", shopUrl: "https://www.jib.co.th/web/product/readProduct/60000" },
       { id: 8, name: "Corsair iCUE H150i ELITE", type: "ชุดน้ำ", spec: "Liquid Cooler 360mm", price: 6590, stock: 30, img: "https://m.media-amazon.com/images/I/61S3S68f2SL._AC_SL1000_.jpg", desc: "ชุดน้ำปิดหม้อน้ำ 360 มม. จัดเต็ม 3 พัดลมระบายความร้อนขั้นสุดยอด", storeName: "Shopee", shopUrl: "https://shopee.co.th/search?keyword=Corsair%20iCUE%20H150i" }
     ];
@@ -151,16 +159,14 @@
       const [orderHistory, setOrderHistory] = useState([]);
       const [recentlyViewed, setRecentlyViewed] = useState([]);
 
-      // State สำหรับ Carousel Banner
       const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
 
       const t = TEXTS[lang];
 
-      // Auto Slide ทุกๆ 4 วินาที
       useEffect(() => {
         const timer = setInterval(() => {
           setCurrentBannerIndex((prev) => (prev + 1) % BANNERS.length);
-        }, 4000);
+        }, 4500);
         return () => clearInterval(timer);
       }, []);
 
@@ -287,10 +293,13 @@
         // Main Content
         React.createElement("main", { className: "max-w-5xl mx-auto mt-6" },
           
-          // 📢 ส่วนสไลด์ข่าวสารเทรนด์ตลาด Hardware (Hero Banner Slider)
-          React.createElement("div", { className: "relative mb-8 rounded-2xl overflow-hidden shadow-xl border border-gray-700/50" },
-            React.createElement("div", { className: `bg-gradient-to-r ${currentBanner.bg} text-white p-6 md:p-8 min-h-[180px] flex flex-col md:flex-row items-center justify-between gap-6 transition-all duration-500` },
-              React.createElement("div", { className: "flex-1 space-y-2 animate-fade-in" },
+          // 📢 ส่วนสไลด์ข่าวสารพร้อม Animation การเปลี่ยนป้าย
+          React.createElement("div", { className: "relative mb-8 rounded-2xl overflow-hidden shadow-xl border border-gray-700/50 bg-slate-900" },
+            React.createElement("div", { 
+              key: currentBanner.id, // ใส่ key เพื่อกระตุ้น Animation ใหม่ทุกครั้งที่เปลี่ยนสไลด์
+              className: `banner-slide-animate bg-gradient-to-r ${currentBanner.bg} text-white p-6 md:p-8 min-h-[180px] flex flex-col md:flex-row items-center justify-between gap-6` 
+            },
+              React.createElement("div", { className: "flex-1 space-y-2" },
                 React.createElement("span", { className: "inline-block px-3 py-1 text-[10px] font-extrabold tracking-widest bg-blue-500/30 border border-blue-400/40 rounded-full uppercase" }, currentBanner.badge),
                 React.createElement("h2", { className: "text-lg md:text-2xl font-black" }, currentBanner.title),
                 React.createElement("p", { className: "text-xs md:text-sm text-gray-300 leading-relaxed max-w-2xl" }, currentBanner.desc)
@@ -300,23 +309,23 @@
               )
             ),
 
-            // ปุ่มลูกศรซ้าย/ขวา
+            // ปุ่มเลื่อน
             React.createElement("button", {
               onClick: prevSlide,
-              className: "absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white p-2 rounded-full backdrop-blur-sm transition-all"
+              className: "absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 active:scale-90 text-white p-2 rounded-full backdrop-blur-sm transition-all z-10"
             }, "❮"),
             React.createElement("button", {
               onClick: nextSlide,
-              className: "absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white p-2 rounded-full backdrop-blur-sm transition-all"
+              className: "absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 active:scale-90 text-white p-2 rounded-full backdrop-blur-sm transition-all z-10"
             }, "❯"),
 
-            // จุด Indicator บอกตำแหน่งสไลด์
-            React.createElement("div", { className: "absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2" },
+            // จุด Indicator
+            React.createElement("div", { className: "absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10" },
               BANNERS.map((_, idx) =>
                 React.createElement("button", {
                   key: idx,
                   onClick: () => setCurrentBannerIndex(idx),
-                  className: `h-1.5 rounded-full transition-all ${idx === currentBannerIndex ? "w-6 bg-white" : "w-2 bg-white/40"}`
+                  className: `h-1.5 rounded-full transition-all duration-300 ${idx === currentBannerIndex ? "w-6 bg-white" : "w-2 bg-white/40"}`
                 })
               )
             )
@@ -368,7 +377,7 @@
           )
         ),
 
-        // 👤 Modal ล็อกอิน
+        // Modal ล็อกอิน
         isLoginOpen && React.createElement("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50" },
           React.createElement("form", { onSubmit: handleLogin, className: `max-w-xs w-full rounded-2xl p-6 shadow-2xl border ${cardBgClass}` },
             React.createElement("h2", { className: "text-lg font-bold mb-4" }, t.loginTitle),
@@ -394,7 +403,7 @@
           )
         ),
 
-        // 📜 Modal ประวัติการซื้อ
+        // Modal ประวัติการซื้อ
         isHistoryOpen && React.createElement("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50" },
           React.createElement("div", { className: `max-w-md w-full rounded-2xl p-6 shadow-2xl border flex flex-col max-h-[80vh] ${cardBgClass}` },
             React.createElement("div", { className: "flex justify-between items-center pb-3 border-b border-gray-500/30" },
@@ -426,7 +435,7 @@
           )
         ),
 
-        // 👁️ Modal ประวัติการดูสินค้าล่าสุด
+        // Modal ประวัติการดูสินค้า
         isRecentOpen && React.createElement("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50" },
           React.createElement("div", { className: `max-w-md w-full rounded-2xl p-6 shadow-2xl border flex flex-col max-h-[80vh] ${cardBgClass}` },
             React.createElement("div", { className: "flex justify-between items-center pb-3 border-b border-gray-500/30" },
@@ -503,7 +512,7 @@
           )
         ),
 
-        // 🛒 หน้าต่างตะกร้าสินค้า
+        // ตะกร้าสินค้า
         isCartOpen && React.createElement("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50" },
           React.createElement("div", { className: `max-w-lg w-full rounded-2xl p-6 shadow-2xl border flex flex-col max-h-[85vh] ${cardBgClass}` },
             
