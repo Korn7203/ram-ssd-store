@@ -5,8 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KORN RAM - RAM & SSD Store</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes cartPop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .animate-cart-pop {
+      animation: cartPop 0.3s ease-in-out;
+    }
+  </style>
 </head>
-<body class="bg-gray-50 text-gray-900">
+<body class="bg-gray-50 text-gray-900 selection:bg-blue-500 selection:text-white">
   <div id="root"></div>
   <script type="module">
     import React, { useState } from "https://esm.sh/react@18.2.0";
@@ -26,6 +36,8 @@
       const [cart, setCart] = useState([]);
       const [filter, setFilter] = useState("ALL");
       const [selectedProduct, setSelectedProduct] = useState(null);
+      const [isCartOpen, setIsCartOpen] = useState(false);
+      const [cartAnimate, setCartAnimate] = useState(false);
 
       const toggleTheme = () => {
         if (theme === "light") setTheme("dark");
@@ -33,57 +45,72 @@
         else setTheme("light");
       };
 
+      const addToCart = (product) => {
+        setCart([...cart, { ...product, cartItemId: Date.now() + Math.random() }]);
+        setCartAnimate(true);
+        setTimeout(() => setCartAnimate(false), 300);
+      };
+
+      const removeFromCart = (cartItemId) => {
+        setCart(cart.filter(item => item.cartItemId !== cartItemId));
+      };
+
+      const clearCart = () => {
+        setCart([]);
+      };
+
       const filteredProducts = filter === "ALL" ? PRODUCTS : PRODUCTS.filter(p => p.type === filter);
       const totalPrice = cart.reduce((sum, item) => sum + item.price, 0);
 
       const getThemeClass = () => {
-        if (theme === "dark") return "bg-gray-900 text-white min-h-screen p-6";
-        if (theme === "mono") return "bg-black text-gray-200 grayscale min-h-screen p-6";
-        return "bg-gray-50 text-gray-900 min-h-screen p-6";
+        if (theme === "dark") return "bg-gray-900 text-white min-h-screen p-6 transition-colors duration-300";
+        if (theme === "mono") return "bg-black text-gray-200 grayscale min-h-screen p-6 transition-colors duration-300";
+        return "bg-gray-50 text-gray-900 min-h-screen p-6 transition-colors duration-300";
       };
 
       const cardBgClass = theme === "light" 
         ? "bg-white text-gray-900 border-gray-200" 
         : "bg-gray-800 text-white border-gray-700";
 
-      const handleCheckout = () => {
-        if (cart.length === 0) return;
-        const firstItem = cart[0];
-        alert(`กำลังนำคุณไปยังหน้าร้านค้า (${firstItem.storeName}) เพื่อทำการสั่งซื้อสินค้า...`);
-        window.open(firstItem.shopUrl, "_blank");
-      };
-
       return React.createElement("div", { className: getThemeClass() },
+        // Header
         React.createElement("header", { className: "flex justify-between items-center pb-6 border-b border-gray-300 dark:border-gray-700 max-w-5xl mx-auto" },
-          React.createElement("h1", { className: "text-xl font-bold tracking-wider" }, "KORN RAM & SSD STORE"),
+          React.createElement("h1", { className: "text-xl font-extrabold tracking-wider bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent" }, "KORN RAM & SSD STORE"),
           React.createElement("div", { className: "flex gap-4 items-center" },
-            React.createElement("button", { onClick: toggleTheme, className: "px-3 py-1 border rounded text-xs bg-white/10 hover:bg-white/20 transition" }, `โหมด: ${theme.toUpperCase()}`),
-            React.createElement("span", { className: "font-semibold text-sm" }, `🛒 ตะกร้า (${cart.length})`)
+            React.createElement("button", { onClick: toggleTheme, className: "px-3 py-1 border rounded text-xs bg-white/10 hover:bg-white/20 active:scale-95 transition-all" }, `โหมด: ${theme.toUpperCase()}`),
+            React.createElement("button", {
+              onClick: () => setIsCartOpen(true),
+              className: `font-semibold text-sm flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg active:scale-95 transition-all shadow-md shadow-blue-600/30 ${cartAnimate ? "animate-cart-pop" : ""}`
+            },
+              React.createElement("span", { className: "text-base" }, "🛒"),
+              React.createElement("span", null, `ตะกร้า (${cart.length})`)
+            )
           )
         ),
         
+        // Main Content
         React.createElement("main", { className: "max-w-5xl mx-auto mt-6" },
           React.createElement("div", { className: "flex gap-2 mb-6" },
             ["ALL", "RAM", "SSD"].map(f =>
               React.createElement("button", {
                 key: f,
                 onClick: () => setFilter(f),
-                className: `px-4 py-1.5 rounded text-sm font-semibold transition ${filter === f ? "bg-blue-600 text-white" : "border border-gray-400 hover:bg-gray-200/20"}`
+                className: `px-4 py-1.5 rounded-full text-sm font-semibold transition-all duration-200 active:scale-95 ${filter === f ? "bg-blue-600 text-white shadow-md shadow-blue-500/30" : "border border-gray-400 hover:bg-gray-500/20"}`
               }, f)
             )
           ),
           
           React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-6" },
             filteredProducts.map(p =>
-              React.createElement("div", { key: p.id, className: `border rounded-lg overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md transition ${cardBgClass}` },
-                React.createElement("div", { className: "w-full h-48 bg-white flex items-center justify-center p-4" },
-                  React.createElement("img", { src: p.img, alt: p.name, className: "max-h-full max-w-full object-contain" })
+              React.createElement("div", { key: p.id, className: `border rounded-xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ${cardBgClass}` },
+                React.createElement("div", { className: "w-full h-48 bg-white flex items-center justify-center p-4 overflow-hidden group" },
+                  React.createElement("img", { src: p.img, alt: p.name, className: "max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300" })
                 ),
                 React.createElement("div", { className: "p-4 flex-grow flex flex-col justify-between" },
                   React.createElement("div", null,
                     React.createElement("div", { className: "flex justify-between items-center mb-2" },
-                      React.createElement("span", { className: "text-xs border px-1.5 py-0.5 rounded font-mono font-bold opacity-80" }, p.type),
-                      React.createElement("span", { className: "text-xs text-green-400 font-semibold bg-green-950/40 px-2 py-0.5 rounded" }, `คงเหลือ: ${p.stock} ชิ้น`)
+                      React.createElement("span", { className: "text-xs border px-2 py-0.5 rounded-md font-mono font-bold opacity-80" }, p.type),
+                      React.createElement("span", { className: "text-xs text-green-400 font-semibold bg-green-950/40 px-2 py-0.5 rounded-full" }, `คงเหลือ: ${p.stock} ชิ้น`)
                     ),
                     React.createElement("h3", { className: "font-bold text-base mt-1" }, p.name),
                     React.createElement("p", { className: "text-xs opacity-75 mt-0.5" }, p.spec)
@@ -92,45 +119,36 @@
                     React.createElement("span", { className: "font-bold text-lg text-blue-400" }, `฿${p.price.toLocaleString()}`),
                     React.createElement("button", {
                       onClick: () => setSelectedProduct(p),
-                      className: "bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-xs font-medium transition"
+                      className: "bg-blue-600 hover:bg-blue-700 active:scale-95 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all shadow-md shadow-blue-600/20"
                     }, "รายละเอียด / สั่งซื้อ")
                   )
                 )
               )
             )
-          ),
-          
-          cart.length > 0 && React.createElement("div", { className: `mt-8 p-4 border rounded-lg max-w-xs ml-auto shadow-lg ${cardBgClass}` },
-            React.createElement("h3", { className: "font-bold mb-2" }, "สรุปคำสั่งซื้อ"),
-            React.createElement("p", { className: "text-sm mb-1" }, `จำนวน: ${cart.length} ชิ้น`),
-            React.createElement("p", { className: "font-bold text-lg mb-3 text-blue-400" }, `ราคารวม: ฿${totalPrice.toLocaleString()}`),
-            React.createElement("button", {
-              onClick: handleCheckout,
-              className: "w-full py-2 bg-orange-500 hover:bg-orange-600 text-white rounded font-bold text-sm transition flex items-center justify-center gap-1 shadow"
-            }, `🛍️ สั่งซื้อที่ ${cart[0].storeName}`)
           )
         ),
 
+        // Pop-up รายละเอียดสินค้า
         selectedProduct && React.createElement("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50" },
-          React.createElement("div", { className: `max-w-md w-full rounded-xl p-6 shadow-2xl border ${cardBgClass}` },
-            React.createElement("div", { className: "bg-white p-4 rounded-lg mb-4 flex items-center justify-center h-48" },
+          React.createElement("div", { className: `max-w-md w-full rounded-2xl p-6 shadow-2xl border ${cardBgClass}` },
+            React.createElement("div", { className: "bg-white p-4 rounded-xl mb-4 flex items-center justify-center h-48 shadow-inner" },
               React.createElement("img", { src: selectedProduct.img, alt: selectedProduct.name, className: "max-h-full max-w-full object-contain" })
             ),
             React.createElement("div", { className: "flex justify-between items-center mb-2" },
               React.createElement("span", { className: "text-xs border px-2 py-0.5 rounded font-mono font-bold" }, selectedProduct.type),
-              React.createElement("span", { className: "text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full font-bold" }, `สต็อกพร้อมส่ง: ${selectedProduct.stock} ชิ้น`)
+              React.createElement("span", { className: "text-xs bg-green-500/20 text-green-400 px-2.5 py-0.5 rounded-full font-bold" }, `สต็อกพร้อมส่ง: ${selectedProduct.stock} ชิ้น`)
             ),
             React.createElement("h2", { className: "text-xl font-bold mt-1" }, selectedProduct.name),
             React.createElement("p", { className: "text-sm font-semibold opacity-80 mt-1" }, selectedProduct.spec),
             React.createElement("p", { className: "text-xs opacity-70 mt-3 leading-relaxed border-t border-b border-gray-500/30 py-3" }, selectedProduct.desc),
             
-            React.createElement("div", { className: "mt-3 p-2.5 bg-gray-500/10 rounded-lg flex justify-between items-center" },
-              React.createElement("span", { className: "text-xs opacity-90" }, `ซื้อตรงกับร้าน ${selectedProduct.storeName}`),
+            React.createElement("div", { className: "mt-3 p-2.5 bg-gray-500/10 rounded-xl flex justify-between items-center" },
+              React.createElement("span", { className: "text-xs opacity-90 font-medium" }, `สั่งซื้อตรงกับร้าน ${selectedProduct.storeName}`),
               React.createElement("a", {
                 href: selectedProduct.shopUrl,
                 target: "_blank",
                 rel: "noopener noreferrer",
-                className: "text-xs bg-orange-500 text-white px-3 py-1 rounded font-bold hover:bg-orange-600 transition"
+                className: "text-xs bg-orange-500 hover:bg-orange-600 active:scale-95 text-white px-3 py-1.5 rounded-lg font-bold transition-all"
               }, `ไปที่ ${selectedProduct.storeName} ↗`)
             ),
 
@@ -142,15 +160,93 @@
               React.createElement("div", { className: "flex gap-2" },
                 React.createElement("button", {
                   onClick: () => setSelectedProduct(null),
-                  className: "px-4 py-2 border border-gray-500/50 rounded-lg text-xs font-semibold hover:bg-gray-500/20 transition"
+                  className: "px-4 py-2 border border-gray-500/50 rounded-xl text-xs font-semibold hover:bg-gray-500/20 active:scale-95 transition-all"
                 }, "ยกเลิก"),
                 React.createElement("button", {
                   onClick: () => {
-                    setCart([...cart, selectedProduct]);
+                    addToCart(selectedProduct);
                     setSelectedProduct(null);
                   },
-                  className: "px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition"
+                  className: "px-4 py-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-xl text-xs font-bold transition-all"
                 }, "+ ใส่ตะกร้า")
+              )
+            )
+          )
+        ),
+
+        // 🛒 หน้าต่างตะกร้าสินค้าแบบเต็ม (Modal/Drawer Cart)
+        isCartOpen && React.createElement("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50" },
+          React.createElement("div", { className: `max-w-lg w-full rounded-2xl p-6 shadow-2xl border flex flex-col max-h-[85vh] ${cardBgClass}` },
+            
+            // Cart Header
+            React.createElement("div", { className: "flex justify-between items-center pb-4 border-b border-gray-500/30" },
+              React.createElement("div", { className: "flex items-center gap-2" },
+                React.createElement("span", { className: "text-xl" }, "🛒"),
+                React.createElement("h2", { className: "text-lg font-bold" }, "ตะกร้าสินค้าของคุณ"),
+                React.createElement("span", { className: "text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full font-bold" }, `${cart.length} รายการ`)
+              ),
+              React.createElement("button", {
+                onClick: () => setIsCartOpen(false),
+                className: "text-gray-400 hover:text-white text-lg font-bold p-1 rounded-lg hover:bg-gray-500/20 transition-all"
+              }, "✕")
+            ),
+
+            // Cart Items List
+            React.createElement("div", { className: "flex-grow overflow-y-auto py-4 space-y-3 my-2 pr-1" },
+              cart.length === 0 ? 
+                React.createElement("div", { className: "text-center py-12 opacity-50" },
+                  React.createElement("span", { className: "text-4xl block mb-2" }, "🛒"),
+                  React.createElement("p", { className: "text-sm" }, "ยังไม่มีสินค้าในตะกร้า")
+                )
+              :
+                cart.map(item =>
+                  React.createElement("div", { key: item.cartItemId, className: "flex items-center justify-between p-3 border border-gray-500/20 rounded-xl bg-gray-500/5 hover:bg-gray-500/10 transition-all gap-3" },
+                    // รูปภาพประกอบรายการ
+                    React.createElement("div", { className: "w-14 h-14 bg-white rounded-lg p-1 flex-shrink-0 flex items-center justify-center border" },
+                      React.createElement("img", { src: item.img, alt: item.name, className: "max-h-full max-w-full object-contain" })
+                    ),
+                    // รายละเอียด
+                    React.createElement("div", { className: "flex-grow min-w-0" },
+                      React.createElement("h4", { className: "font-bold text-sm truncate" }, item.name),
+                      React.createElement("p", { className: "text-xs opacity-70" }, item.spec),
+                      React.createElement("span", { className: "text-xs font-bold text-blue-400 block mt-0.5" }, `฿${item.price.toLocaleString()}`)
+                    ),
+                    // ปุ่มส่งไปยังร้านจริง + ปุ่มยกเลิกสินค้า
+                    React.createElement("div", { className: "flex items-center gap-2 flex-shrink-0" },
+                      React.createElement("a", {
+                        href: item.shopUrl,
+                        target: "_blank",
+                        rel: "noopener noreferrer",
+                        className: "text-xs bg-orange-500 hover:bg-orange-600 text-white px-2.5 py-1.5 rounded-lg font-bold transition-all"
+                      }, `ซื้อ (${item.storeName}) ↗`),
+                      React.createElement("button", {
+                        onClick: () => removeFromCart(item.cartItemId),
+                        title: "ยกเลิกสินค้านี้",
+                        className: "text-xs bg-red-500/20 hover:bg-red-500 text-red-400 hover:text-white px-2 py-1.5 rounded-lg font-bold transition-all"
+                      }, "❌")
+                    )
+                  )
+                )
+            ),
+
+            // Cart Footer (ราคารวม & ปุ่มดำเนินการ)
+            cart.length > 0 && React.createElement("div", { className: "pt-4 border-t border-gray-500/30" },
+              React.createElement("div", { className: "flex justify-between items-center mb-4" },
+                React.createElement("span", { className: "text-sm font-medium opacity-80" }, "ราคารวมทั้งหมด"),
+                React.createElement("span", { className: "text-2xl font-black text-blue-400" }, `฿${totalPrice.toLocaleString()}`)
+              ),
+              React.createElement("div", { className: "flex gap-2" },
+                React.createElement("button", {
+                  onClick: clearCart,
+                  className: "px-3 py-2 border border-red-500/40 text-red-400 hover:bg-red-500/10 rounded-xl text-xs font-semibold transition-all"
+                }, "ล้างตะกร้า"),
+                React.createElement("button", {
+                  onClick: () => {
+                    alert(`กำลังนำคุณไปยังหน้าร้านค้าสั่งซื้อสำหรับสินค้าทั้งหมด...`);
+                    window.open(cart[0].shopUrl, "_blank");
+                  },
+                  className: "flex-grow py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold text-sm rounded-xl active:scale-95 transition-all shadow-lg shadow-orange-500/30 flex items-center justify-center gap-1"
+                }, `🛍️ สั่งซื้อสินค้าทั้งหมดที่ (${cart[0].storeName})`)
               )
             )
           )
