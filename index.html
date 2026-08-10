@@ -3,36 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KORN RAM, SSD & CPU Store</title>
+  <title>KORN HARDWARE PRICE TRACKER - เช็คราคาคอมพิวเตอร์</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    @keyframes cartPop {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.2); }
-      100% { transform: scale(1); }
-    }
-    .animate-cart-pop { animation: cartPop 0.3s ease-in-out; }
-    
     @keyframes fadeInSlide {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
     .animate-fade-in { animation: fadeInSlide 0.35s ease-out forwards; }
 
-    /* อนิเมชั่นสำหรับการสุ่ม/เปลี่ยนป้ายสไลด์ใหม่อย่างนุ่มนวล */
     @keyframes slideTransition {
-      from {
-        opacity: 0;
-        transform: scale(0.97) translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-      }
+      from { opacity: 0; transform: scale(0.97) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
     }
     .banner-slide-animate {
       animation: slideTransition 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
+    
+    @keyframes pulseLive {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .animate-live { animation: pulseLive 2s infinite; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-900 selection:bg-blue-500 selection:text-white">
@@ -43,162 +35,219 @@
 
     const TEXTS = {
       TH: {
-        storeTitle: "KORN RAM, SSD & CPU STORE",
+        storeTitle: "KORN PRICE TRACKER",
+        subtitle: "ระบบเช็คและเปรียบเทียบราคาฮาร์ดแวร์อัตโนมัติ",
         theme: "โหมด",
-        cart: "ตะกร้า",
-        login: "เข้าสู่ระบบ",
-        logout: "ออกจากระบบ",
-        history: "ประวัติการซื้อ",
-        recent: "ดูล่าสุด",
+        recent: "ประวัติการเช็ค",
         all: "ทั้งหมด",
         cpu: "CPU",
         ram: "RAM",
         ssd: "SSD",
         cooler: "ชุดน้ำ",
-        stock: "คงเหลือ",
-        detail: "รายละเอียด / สั่งซื้อ",
-        cancel: "ยกเลิก",
-        addToCart: "ใส่ตะกร้า",
-        total: "ราคารวมทั้งหมด",
-        clearCart: "ล้างตะกร้าทั้งหมด",
-        goTo: "ไปที่",
-        noHistory: "ยังไม่มีประวัติการสั่งซื้อ",
-        noRecent: "ยังไม่มีประวัติการดูสินค้า",
-        loginTitle: "เข้าสู่ระบบ",
-        usernamePlaceholder: "กรอกชื่อผู้ใช้งาน...",
+        bestPrice: "ราคาดีที่สุดจากร้านค้าทางการ",
+        compareBtn: "เปรียบเทียบราคาจากทุกร้าน",
+        goToStore: "ไปที่ร้านค้า",
+        lastUpdate: "อัปเดตราคาล่าสุดผ่าน API:",
+        autoSyncStatus: "ซิงค์ราคาอัตโนมัติทุก 1 ชั่วโมง",
+        searchPlaceholder: "ค้นหาชื่อรุ่น CPU, RAM, SSD...",
+        noRecent: "ยังไม่มีประวัติการกดเช็คราคา",
         close: "ปิด",
-        purchaseSuccess: "บันทึกการสั่งซื้อเรียบร้อย!",
-        buy: "สั่งซื้อ"
+        spec: "สเปคหลัก"
       },
       EN: {
-        storeTitle: "KORN RAM, SSD & CPU STORE",
+        storeTitle: "KORN PRICE TRACKER",
+        subtitle: "Automated Hardware Price Comparison System",
         theme: "Theme",
-        cart: "Cart",
-        login: "Login",
-        logout: "Logout",
-        history: "Order History",
-        recent: "Recently Viewed",
+        recent: "Recent History",
         all: "ALL",
         cpu: "CPU",
         ram: "RAM",
         ssd: "SSD",
         cooler: "Coolers",
-        stock: "Stock",
-        detail: "Details / Buy",
-        cancel: "Cancel",
-        addToCart: "Add to Cart",
-        total: "Total Price",
-        clearCart: "Clear Cart",
-        goTo: "Go to",
-        noHistory: "No order history yet",
-        noRecent: "No recently viewed items",
-        loginTitle: "Sign In",
-        usernamePlaceholder: "Enter username...",
+        bestPrice: "Best Trusted Store Price",
+        compareBtn: "Compare All Store Prices",
+        goToStore: "Go to Store",
+        lastUpdate: "Last API Price Sync:",
+        autoSyncStatus: "Auto-sync every 1 hour",
+        searchPlaceholder: "Search CPU, RAM, SSD models...",
+        noRecent: "No recently viewed history",
         close: "Close",
-        purchaseSuccess: "Purchase recorded successfully!",
-        buy: "Buy"
+        spec: "Key Specs"
       }
     };
 
-    // 🌐 คลังข้อมูลข่าวเทคโนโลยีโลก (สำหรับระบบสุ่ม Random)
     const TECH_NEWS_POOL = [
       {
         id: "news-1",
-        title: "🤖 Generative AI On-Device - ชิปเซ็ตประมวลผล AI ในเครื่องไม่ต้องง้อรวดเร็วทันใจ",
-        desc: "เทรนด์ CPU ยุคนี้เน้น NPU (Neural Processing Unit) ประมวลผลโมเดลภาษาขนาดใหญ่ (LLM) บนเครื่องโดยตรง ไม่ต้องส่งข้อมูลขึ้น Cloud ปลอดภัยและรวดเร็วกว่าเดิม",
+        title: "🤖 อัปเดตราคาชิปเซ็ต AI & NPU - แนวโน้มตลาดซีพียูขยับตัวรับเทคโนโลยีใหม่",
+        desc: "เช็คความเคลื่อนไหวราคาซีพียูทั้งฝั่ง Intel และ AMD ประจำชั่วโมงนี้ พร้อมวิเคราะห์ทิศทางราคาอุปกรณ์ประมวลผล",
         bg: "from-blue-900 via-indigo-900 to-slate-900",
-        badge: "WORLD TECH 2026",
-        img: "https://images.droidsans.com/wp-content/uploads/2026/06/cover-memory-prices-tipped-fall-china-starts-flooding-market-2-1085x568.jpg"
+        badge: "PRICE FEED LIVE",
+        img: "https://m.media-amazon.com/images/I/51p1IAnuKBL._AC_SL1000_.jpg"
       },
       {
         id: "news-2",
-        title: "⚡ RAM DDR5 - ยุคใหม่แห่งความเร็วและความจุระดับ 192GB",
-        desc: "เทรนด์ RAM มาตรฐานใหม่เน้น Non-Binary RAM ที่เพิ่มความจุได้สูงสุดถึง 192GB ในเครื่องพีซีทั่วไป พร้อมความเร็วบัส 8000+ MHz สำหรับงานประมวลผล AI และเรนเดอร์ 8K",
+        title: "⚡ ตลาดแรม DDR5 สัญญาณบวก - ราคาต่อ GB ปรับตัวลดลงเข้าสู่จุดคุ้มค่า",
+        desc: "เกาะติดราคาแรมความเร็วสูง 6000MHz+ จากพาร์ทเนอร์ JIB, Shopee และ Lazada อัปเดตเรียลไทม์",
         bg: "from-violet-900 via-purple-900 to-slate-900",
-        badge: "HARDWARE UPDATE",
-        img: "https://notebookspec.com/web/wp-content/uploads/2025/08/2.Pic_Predator-Hera-192GB.png"
+        badge: "RAM PRICE TRACKER",
+        img: "https://m.media-amazon.com/images/I/61N3nIylxKL._AC_SL1000_.jpg"
       },
       {
         id: "news-3",
-        title: "🚀 SSD PCIe 5.0 - ความเร็วทะลุ 14,000 MB/s",
-        desc: "SSD ยุคใหม่ตอบโจทย์การโหลดเกมแบบ Instant Load ผ่าน DirectStorage และงานตัดต่อวิดีโอความละเอียดสูง ปัจจุบันเริ่มมาพร้อมพัดลมระบายความร้อนจิ๋วในตัว",
+        title: "🚀 SSD Gen5 & Gen4 ราคาพิเศษ - ฟีดข้อมูลส่วนลดจากร้านค้าทางการ",
+        desc: "ตรวจสอบราคา SSD ความเร็วสูงตัวท็อป เปรียบเทียบโปรโมชั่นเด็ดจากร้านค้าที่น่าเชื่อถือที่สุดในไทย",
         bg: "from-emerald-900 via-teal-900 to-slate-900",
-        badge: "STORAGE TECH",
-        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQki8QttVP0qnhdz_MwV66zx1XCnGthUVZkpXoEB_SMxfwOmj5kt3LNoqE&s=10"
-      },
-      {
-        id: "news-4",
-        title: "🔬 Quantum Computing & 2nm Semiconductor",
-        desc: "โรงงานผลิตชิประดับโลกเริ่มเดินสายผลิตเซมิคอนดักเตอร์ขนาด 2 นาโนเมตร ช่วยประหยัดพลังงานขึ้น 30% และเพิ่มความแรงของซีพียูขึ้นอย่างก้าวกระโดด",
-        bg: "from-amber-900 via-red-950 to-slate-900",
-        badge: "FUTURE TECH",
-        img: "https://media.licdn.com/dms/image/v2/D5622AQH-z-DSAtm3-w/feedshare-shrink_800/B56Zw8bbm7IcAk-/0/1770540350111?e=2147483647&v=beta&t=mFEUuhOv57TuTj4J_BwQaC5NTqi7_LttzlgGj99hb5U"
-      },
-      {
-        id: "news-5",
-        title: "🎮 AMD 3D V-Cache vs Intel Ultra - การแข่งขันชิปเกมมิ่งระดับท็อป",
-        desc: "แคชซ้อน 3D V-Cache ขนาดใหญ่ในซีพียูยุคใหม่ ช่วยเพิ่มค่า Minimum FPS ในเกมระดับ AAA ได้อย่างเห็นได้ชัด ทำให้เฟรมเรตนิ่ง ไร้การกระตุก",
-        bg: "from-cyan-900 via-blue-950 to-slate-900",
-        badge: "GAMING CPU",
-        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTmmL-mRA7ogE1wn29wnXzLBQqfIXvUWXAj1U-Oyfhq1EplcVGTHqZADhY&s=10"
+        badge: "SSD MARKET WATCH",
+        img: "https://m.media-amazon.com/images/I/71I3uAptInL._AC_SL1500_.jpg"
       }
     ];
 
+    // รายการสินค้าพร้อมข้อมูลราคาจากหลายร้านค้า (Affiliate Product Feed Mockup)
     const PRODUCTS = [
-      { id: 101, name: "Intel Core i5-13400F", type: "CPU", spec: "10 Cores (6P+4E) / 16 Threads / Up to 4.6GHz / LGA1700", price: 6890, stock: 15, img: "https://img.advice.co.th/images_nas/pic_product4/A0148187/A0148187OK_BIG_1.jpg", desc: "ซีพียูราคาสุดคุ้มสำหรับการเล่นเกมและความบันเทิง รองรับ DDR4 และ DDR5", storeName: "JIB", shopUrl: "https://www.jib.co.th/web/product/readProduct/57201" },
-      { id: 102, name: "Intel Core i7-14700K", type: "CPU", spec: "20 Cores (8P+12E) / 28 Threads / Up to 5.6GHz / LGA1700", price: 16900, stock: 10, img: "https://ihcupload-bkk.s3.ap-southeast-7.amazonaws.com/img/product/product40473_800.jpg", desc: "ซีพียูระดับท็อปสำหรับสตรีมเมอร์และสายทำงานกราฟิกหนักๆ รองรับการ Overclock", storeName: "Shopee", shopUrl: "https://shopee.co.th/search?keyword=Intel%20Core%20i7-14700K" },
-      { id: 103, name: "AMD Ryzen 5 7600X", type: "CPU", spec: "6 Cores / 12 Threads / Up to 5.3GHz / Socket AM5", price: 8290, stock: 20, img: "https://img.advice.co.th/cdn-cgi/image/format=auto,width=700,quality=82,fit=contain/images_nas/pic_product4/A0146449/A0146449OK_BIG_1.jpg", desc: "ซีพียูสถาปัตยกรรม Zen 4 บนแพลตฟอร์ม AM5 ประสิทธิภาพสูงสำหรับเกมเมอร์", storeName: "Advice", shopUrl: "https://www.advice.co.th/product/processor-cpu-" },
-      { id: 104, name: "AMD Ryzen 7 7800X3D", type: "CPU", spec: "8 Cores / 16 Threads / Up to 5.0GHz / 3D V-Cache", price: 15900, stock: 8, img: "https://ihcupload-bkk.s3.ap-southeast-7.amazonaws.com/img/product/product16310_800.jpg", desc: "ที่สุดของซีพียูเกมมิ่งระดับโลกด้วยเทคโนโลยี 3D V-Cache ปั่น FPS เกมได้สูงที่สุด", storeName: "Lazada", shopUrl: "https://www.lazada.co.th/tag/ryzen-7-7800x3d/" },
-      { id: 1, name: "Kingston FURY Beast", type: "RAM", spec: "DDR4 8GB 3200MHz", price: 1150, stock: 999, img: "https://media.kingston.com/kingston/product/FURY_Beast_Black_DDR4_1-zm-lg.jpg", desc: "แรมประสิทธิภาพสูงสำหรับการเล่นเกมและการทำงานทั่วไป", storeName: "Shopee", shopUrl: "https://shopee.co.th/search?keyword=Kingston%20FURY%20Beast%20DDR4%208GB" },
-      { id: 2, name: "Corsair Vengeance", type: "RAM", spec: "DDR5 32GB 6000MHz", price: 4590, stock: 999, img: "https://ihcupload-bkk.s3.ap-southeast-7.amazonaws.com/img/product/products141922_800.jpg", desc: "แรม DDR5 ความเร็วสูงพิเศษ เหมาะสำหรับการสตรีมเมอร์และนักแต่งวิดีโอ", storeName: "JIB", shopUrl: "https://www.jib.co.th/web/product/readProduct/58000" },
-      { id: 3, name: "Kingston FURY Renegade", type: "RAM", spec: "DDR5 64GB 6400MHz", price: 8900, stock: 999, img: "https://media.kingston.com/kingston/product/FURY_Renegade_Silver_Black_CUDIMM_DDR5_1-zm-lg.jpg", desc: "ความจุจัดเต็ม 64GB ตอบโจทย์สายโอเวอร์คล็อกและการประมวลผลหนัก", storeName: "Lazada", shopUrl: "https://www.lazada.co.th/tag/kingston-fury-renegade-ddr5-64gb/" },
-      { id: 4, name: "Samsung 990 PRO", type: "SSD", spec: "2TB Read 7450MB/s", price: 6990, stock: 999, img: "https://www.jib.co.th/img_master/product/original/2023082416295161614_1.jpg", desc: "SSD NVMe Gen4 ที่เร็วที่สุดจาก Samsung โหลดเกมและไฟล์ขนาดใหญ่ได้เร็วมาก", storeName: "Shopee", shopUrl: "https://shopee.co.th/search?keyword=Samsung%20990%20PRO%202TB" },
-      { id: 5, name: "WD Black SN850X", type: "SSD", spec: "4TB Read 7300MB/s", price: 14500, stock: 999, img: "https://www.jumbo-computer.com/cdn/shop/files/wd-black-sn850x-nvme-ssd-front.png.wdthumb.1280.1280_bd6d270c-23a3-4ee6-8315-27e035f009d8_800x.webp?v=1739432121", desc: "ความจุระดับพรีเมียม 4TB มาพร้อม Game Mode 2.0", storeName: "Advice", shopUrl: "https://www.advice.co.th/product/solid-state-drive-ssd-" },
-      { id: 6, name: "Crucial P3 Plus", type: "SSD", spec: "1TB Read 5000MB/s", price: 2690, stock: 999, img: "https://www.jib.co.th/img_master/product/original/2023082211134861550_1.jpg", desc: "SSD NVMe Gen4 ราคาสบายกระเป๋า คุ้มค่าที่สุดสำหรับการอัปเกรด", storeName: "Shopee", shopUrl: "https://shopee.co.th/search?keyword=Crucial%20P3%20Plus%201TB" },
-      { id: 7, name: "NZXT Kraken 240 RGB", type: "ชุดน้ำ", spec: "Liquid Cooler 240mm", price: 4990, stock: 50, img: "https://www.jib.co.th/img_master/product/original/2023090813340061967_1.jpg", desc: "ชุดน้ำปิด 240 มม. ดีไซน์พรีเมียมพร้อมไฟ RGB สวยงาม", storeName: "JIB", shopUrl: "https://www.jib.co.th/web/product/readProduct/60000" },
-      { id: 8, name: "Corsair iCUE H150i ELITE", type: "ชุดน้ำ", spec: "Liquid Cooler 360mm", price: 6590, stock: 30, img: "https://www.jib.co.th/img_master/product/original/2023021710432757949_1.png", desc: "ชุดน้ำปิดหม้อน้ำ 360 มม. จัดเต็ม 3 พัดลมระบายความร้อนขั้นสุดยอด", storeName: "Shopee", shopUrl: "https://shopee.co.th/search?keyword=Corsair%20iCUE%20H150i" }
+      {
+        id: 101,
+        name: "Intel Core i5-13400F",
+        type: "CPU",
+        spec: "10 Cores (6P+4E) / 16 Threads / Up to 4.6GHz",
+        img: "https://m.media-amazon.com/images/I/51p1IAnuKBL._AC_SL1000_.jpg",
+        desc: "ซีพียูกลุ่มคุ้มค่า เหมาะสำหรับเกมเมอร์และใช้งานออฟฟิศทั่วไป รองรับเมนบอร์ด LGA1700",
+        prices: [
+          { store: "JIB Online", price: 6890, badge: "Official Store", url: "https://www.jib.co.th", trusted: true },
+          { store: "Shopee Mall", price: 6590, badge: "Flash Sale", url: "https://shopee.co.th", trusted: true },
+          { store: "Lazada LazMall", price: 6700, badge: "Verified", url: "https://www.lazada.co.th", trusted: true }
+        ]
+      },
+      {
+        id: 102,
+        name: "Intel Core i7-14700K",
+        type: "CPU",
+        spec: "20 Cores (8P+12E) / 28 Threads / Up to 5.6GHz",
+        img: "https://m.media-amazon.com/images/I/61S3S68f2SL._AC_SL1000_.jpg",
+        desc: "ซีพียูไฮ엔ด์สำหรับงานเรนเดอร์ สตรีมมิ่ง และเกมมิ่งระดับโปร",
+        prices: [
+          { store: "JIB Online", price: 16900, badge: "Official Store", url: "https://www.jib.co.th", trusted: true },
+          { store: "Shopee Mall", price: 16290, badge: "Lowest Price", url: "https://shopee.co.th", trusted: true },
+          { store: "Lazada LazMall", price: 16500, badge: "Verified", url: "https://www.lazada.co.th", trusted: true }
+        ]
+      },
+      {
+        id: 103,
+        name: "AMD Ryzen 5 7600X",
+        type: "CPU",
+        spec: "6 Cores / 12 Threads / Up to 5.3GHz / AM5",
+        img: "https://m.media-amazon.com/images/I/5137B3j1SGL._AC_SL1000_.jpg",
+        desc: "สถาปัตยกรรม Zen 4 ประสิทธิภาพสูงบนแพลตฟอร์มอนาคตไกล AM5",
+        prices: [
+          { store: "JIB Online", price: 8290, badge: "Official Store", url: "https://www.jib.co.th", trusted: true },
+          { store: "Shopee Mall", price: 7990, badge: "Lowest Price", url: "https://shopee.co.th", trusted: true },
+          { store: "Lazada LazMall", price: 8150, badge: "Verified", url: "https://www.lazada.co.th", trusted: true }
+        ]
+      },
+      {
+        id: 104,
+        name: "AMD Ryzen 7 7800X3D",
+        type: "CPU",
+        spec: "8 Cores / 16 Threads / 3D V-Cache",
+        img: "https://m.media-amazon.com/images/I/514I8B+dZdL._AC_SL1000_.jpg",
+        desc: "สุดยอดซีพียูเล่นเกมที่ดีที่สุดในโลก เฟรมเรตสูง สมูททุกการใช้งาน",
+        prices: [
+          { store: "JIB Online", price: 15900, badge: "Official Store", url: "https://www.jib.co.th", trusted: true },
+          { store: "Shopee Mall", price: 15200, badge: "Lowest Price", url: "https://shopee.co.th", trusted: true },
+          { store: "Lazada LazMall", price: 15450, badge: "Verified", url: "https://www.lazada.co.th", trusted: true }
+        ]
+      },
+      {
+        id: 1,
+        name: "Kingston FURY Beast",
+        type: "RAM",
+        spec: "DDR4 8GB 3200MHz",
+        img: "https://m.media-amazon.com/images/I/61N3nIylxKL._AC_SL1000_.jpg",
+        desc: "แรมยอดนิยม อัปเกรดง่าย เสถียรสูง",
+        prices: [
+          { store: "JIB Online", price: 1150, badge: "Official Store", url: "https://www.jib.co.th", trusted: true },
+          { store: "Shopee Mall", price: 1090, badge: "Lowest Price", url: "https://shopee.co.th", trusted: true },
+          { store: "Lazada LazMall", price: 1120, badge: "Verified", url: "https://www.lazada.co.th", trusted: true }
+        ]
+      },
+      {
+        id: 2,
+        name: "Corsair Vengeance RGB",
+        type: "RAM",
+        spec: "DDR5 32GB 6000MHz (16x2)",
+        img: "https://m.media-amazon.com/images/I/51p1IAnuKBL._AC_SL1000_.jpg",
+        desc: "แรม DDR5 ไฟ RGB สวยงาม บัสสูงเพื่อความเร็วเต็มพิกัด",
+        prices: [
+          { store: "JIB Online", price: 4590, badge: "Official Store", url: "https://www.jib.co.th", trusted: true },
+          { store: "Shopee Mall", price: 4390, badge: "Lowest Price", url: "https://shopee.co.th", trusted: true },
+          { store: "Lazada LazMall", price: 4450, badge: "Verified", url: "https://www.lazada.co.th", trusted: true }
+        ]
+      },
+      {
+        id: 4,
+        name: "Samsung 990 PRO NVMe",
+        type: "SSD",
+        spec: "2TB Read 7450MB/s",
+        img: "https://m.media-amazon.com/images/I/71I3uAptInL._AC_SL1500_.jpg",
+        desc: "SSD Gen4 ความเร็วสูง โหลดเกมไว ตอบสนองฉับไว",
+        prices: [
+          { store: "JIB Online", price: 6990, badge: "Official Store", url: "https://www.jib.co.th", trusted: true },
+          { store: "Shopee Mall", price: 6650, badge: "Lowest Price", url: "https://shopee.co.th", trusted: true },
+          { store: "Lazada LazMall", price: 6790, badge: "Verified", url: "https://www.lazada.co.th", trusted: true }
+        ]
+      },
+      {
+        id: 5,
+        name: "WD Black SN850X",
+        type: "SSD",
+        spec: "4TB Read 7300MB/s",
+        img: "https://m.media-amazon.com/images/I/61S3S68f2SL._AC_SL1000_.jpg",
+        desc: "ความจุจุใจ 4TB สำหรับสายเก็บไฟล์เกมและงานหนักๆ",
+        prices: [
+          { store: "JIB Online", price: 14500, badge: "Official Store", url: "https://www.jib.co.th", trusted: true },
+          { store: "Shopee Mall", price: 13900, badge: "Lowest Price", url: "https://shopee.co.th", trusted: true },
+          { store: "Lazada LazMall", price: 14200, badge: "Verified", url: "https://www.lazada.co.th", trusted: true }
+        ]
+      },
+      {
+        id: 7,
+        name: "NZXT Kraken 240 RGB",
+        type: "ชุดน้ำ",
+        spec: "Liquid Cooler 240mm",
+        img: "https://m.media-amazon.com/images/I/51p1IAnuKBL._AC_SL1000_.jpg",
+        desc: "ชุดน้ำปิดดีไซน์หรูหรา เย็นเฉียบ ไฟปรับแต่งได้อิสระ",
+        prices: [
+          { store: "JIB Online", price: 4990, badge: "Official Store", url: "https://www.jib.co.th", trusted: true },
+          { store: "Shopee Mall", price: 4750, badge: "Lowest Price", url: "https://shopee.co.th", trusted: true },
+          { store: "Lazada LazMall", price: 4890, badge: "Verified", url: "https://www.lazada.co.th", trusted: true }
+        ]
+      }
     ];
 
     function App() {
       const [lang, setLang] = useState("TH");
       const [theme, setTheme] = useState("light");
-      const [user, setUser] = useState(null);
-      const [cart, setCart] = useState([]);
       const [filter, setFilter] = useState("ALL");
+      const [searchQuery, setSearchQuery] = useState("");
       const [selectedProduct, setSelectedProduct] = useState(null);
-      const [isCartOpen, setIsCartOpen] = useState(false);
-      const [isLoginOpen, setIsLoginOpen] = useState(false);
-      const [isHistoryOpen, setIsHistoryOpen] = useState(false);
       const [isRecentOpen, setIsRecentOpen] = useState(false);
-      const [cartAnimate, setCartAnimate] = useState(false);
-      const [usernameInput, setUsernameInput] = useState("");
-      
-      const [orderHistory, setOrderHistory] = useState([]);
       const [recentlyViewed, setRecentlyViewed] = useState([]);
-
-      // 🎲 State สำหรับข่าวที่กำลังแสดงผล และคีย์บังคับเล่น Animation สุ่มใหม่
+      
       const [currentNews, setCurrentNews] = useState(TECH_NEWS_POOL[0]);
       const [animKey, setAnimKey] = useState(Date.now());
+      const [lastSyncTime, setLastSyncTime] = useState(new Date().toLocaleTimeString());
 
       const t = TEXTS[lang];
 
-      // ฟังก์ชันสุ่มข่าวใหม่แบบสุ่มจริงๆ (Random)
-      const getRandomNews = () => {
-        let randomIndex;
-        do {
-          randomIndex = Math.floor(Math.random() * TECH_NEWS_POOL.length);
-        } while (TECH_NEWS_POOL[randomIndex].id === currentNews.id && TECH_NEWS_POOL.length > 1);
-        
-        setCurrentNews(TECH_NEWS_POOL[randomIndex]);
-        setAnimKey(Date.now()); // เปลี่ยน key เพื่อให้เล่น Animation สุ่มฉากใหม่
-      };
-
-      // สุ่มข่าวใหม่อัตโนมัติทุกๆ 5 วินาที
+      // จำลองระบบดึงข้อมูล API และรีเฟรชราคาอัตโนมัติทุกๆ 1 ชั่วโมง (หรือสลับข่าวทุก 5 วิ)
       useEffect(() => {
-        const timer = setInterval(() => {
-          getRandomNews();
+        const newsTimer = setInterval(() => {
+          let randomIndex = Math.floor(Math.random() * TECH_NEWS_POOL.length);
+          setCurrentNews(TECH_NEWS_POOL[randomIndex]);
+          setAnimKey(Date.now());
+          setLastSyncTime(new Date().toLocaleTimeString());
         }, 5000);
-        return () => clearInterval(timer);
+        return () => clearInterval(newsTimer);
       }, [currentNews]);
 
       const toggleTheme = () => {
@@ -206,17 +255,6 @@
         else if (theme === "dark") setTheme("mono");
         else setTheme("light");
       };
-
-      const handleLogin = (e) => {
-        e.preventDefault();
-        if (usernameInput.trim()) {
-          setUser(usernameInput.trim());
-          setIsLoginOpen(false);
-          setUsernameInput("");
-        }
-      };
-
-      const handleLogout = () => setUser(null);
 
       const openProductDetails = (product) => {
         setSelectedProduct(product);
@@ -226,38 +264,17 @@
         });
       };
 
-      const addToCart = (product) => {
-        setCart([...cart, { ...product, cartItemId: Date.now() + Math.random() }]);
-        setCartAnimate(true);
-        setTimeout(() => setCartAnimate(false), 300);
+      // หา "ราคาที่ดีที่สุด" จากร้านค้าที่น่าเชื่อถือ
+      const getBestPrice = (prices) => {
+        const trustedPrices = prices.filter(p => p.trusted);
+        return trustedPrices.reduce((min, p) => p.price < min.price ? p : min, trustedPrices[0]);
       };
 
-      const removeFromCart = (cartItemId) => {
-        setCart(cart.filter(item => item.cartItemId !== cartItemId));
-      };
-
-      const checkoutStore = (storeName, storeUrl) => {
-        const storeItems = cart.filter(item => item.storeName === storeName);
-        if (storeItems.length > 0) {
-          const newOrder = {
-            id: Date.now(),
-            date: new Date().toLocaleString(),
-            store: storeName,
-            items: storeItems,
-            total: storeItems.reduce((s, i) => s + i.price, 0)
-          };
-          setOrderHistory([newOrder, ...orderHistory]);
-          setCart(cart.filter(item => item.storeName !== storeName));
-          window.open(storeUrl, "_blank");
-        }
-      };
-
-      const filteredProducts = filter === "ALL" ? PRODUCTS : PRODUCTS.filter(p => p.type === filter);
-      const totalPrice = cart.reduce((sum, item) => sum + item.price, 0);
-
-      const uniqueStores = Array.from(
-        new Map(cart.map(item => [item.storeName, { name: item.storeName, url: item.shopUrl }])).values()
-      );
+      const filteredProducts = PRODUCTS.filter(p => {
+        const matchFilter = filter === "ALL" || p.type === filter;
+        const matchSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.spec.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchFilter && matchSearch;
+      });
 
       const getThemeClass = () => {
         if (theme === "dark") return "bg-gray-900 text-white min-h-screen p-4 sm:p-6 transition-colors duration-300";
@@ -272,9 +289,17 @@
       return React.createElement("div", { className: getThemeClass() },
         // Header
         React.createElement("header", { className: "flex flex-col md:flex-row justify-between items-center pb-4 border-b border-gray-300 dark:border-gray-700 max-w-5xl mx-auto gap-4" },
-          React.createElement("h1", { className: "text-xl font-extrabold tracking-wider bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent" }, t.storeTitle),
+          React.createElement("div", null,
+            React.createElement("h1", { className: "text-xl font-extrabold tracking-wider bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent" }, t.storeTitle),
+            React.createElement("p", { className: "text-[11px] opacity-70 font-medium" }, t.subtitle)
+          ),
           
           React.createElement("div", { className: "flex flex-wrap gap-2 items-center justify-center" },
+            React.createElement("div", { className: "text-[11px] bg-blue-500/10 border border-blue-500/30 px-3 py-1 rounded-lg flex items-center gap-1.5 text-blue-400 font-mono" },
+              React.createElement("span", { className: "w-2 h-2 rounded-full bg-green-500 animate-live" }),
+              React.createElement("span", null, `${t.lastUpdate} ${lastSyncTime}`)
+            ),
+
             React.createElement("button", {
               onClick: () => setLang(lang === "TH" ? "EN" : "TH"),
               className: "px-2.5 py-1 border rounded-lg text-xs font-bold bg-blue-500/10 hover:bg-blue-500/20 active:scale-95 transition-all text-blue-500"
@@ -288,171 +313,144 @@
             React.createElement("button", {
               onClick: () => setIsRecentOpen(true),
               className: "px-2.5 py-1 border rounded-lg text-xs hover:bg-gray-500/10 active:scale-95 transition-all"
-            }, `👁️ ${t.recent} (${recentlyViewed.length})`),
-
-            React.createElement("button", {
-              onClick: () => setIsHistoryOpen(true),
-              className: "px-2.5 py-1 border rounded-lg text-xs hover:bg-gray-500/10 active:scale-95 transition-all"
-            }, `📜 ${t.history}`),
-
-            user ? 
-              React.createElement("div", { className: "flex items-center gap-2 border px-2.5 py-1 rounded-lg text-xs bg-green-500/10 border-green-500/30" },
-                React.createElement("span", { className: "font-bold text-green-500" }, `👤 ${user}`),
-                React.createElement("button", { onClick: handleLogout, className: "text-red-400 hover:underline font-semibold ml-1" }, t.logout)
-              )
-            :
-              React.createElement("button", {
-                onClick: () => setIsLoginOpen(true),
-                className: "px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold active:scale-95 transition-all"
-              }, `👤 ${t.login}`),
-
-            React.createElement("button", {
-              onClick: () => setIsCartOpen(true),
-              className: `font-semibold text-xs sm:text-sm flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg active:scale-95 transition-all shadow-md shadow-blue-600/30 ${cartAnimate ? "animate-cart-pop" : ""}`
-            },
-              React.createElement("span", null, "🛒"),
-              React.createElement("span", null, `${t.cart} (${cart.length})`)
-            )
+            }, `👁️ ${t.recent} (${recentlyViewed.length})`)
           )
         ),
         
         // Main Content
         React.createElement("main", { className: "max-w-5xl mx-auto mt-6" },
           
-          // 📢 ส่วนป้ายสไลด์ระบบสุ่มข่าวเทคโนโลยีโลก (Random Tech News Carousel)
+          // 📢 ส่วนแบนเนอร์แสดงฟีดข่าว/สถานะ API อัตโนมัติ
           React.createElement("div", { className: "relative mb-8 rounded-2xl overflow-hidden shadow-2xl border border-gray-700/50 bg-slate-950" },
             React.createElement("div", { 
-              key: animKey, // ใช้ animKey เพื่อให้เล่น Animation สมูทๆ ใหม่ทุกครั้งที่สุ่มข่าว
-              className: `banner-slide-animate bg-gradient-to-r ${currentNews.bg} text-white p-6 md:p-8 min-h-[190px] flex flex-col md:flex-row items-center justify-between gap-6` 
+              key: animKey,
+              className: `banner-slide-animate bg-gradient-to-r ${currentNews.bg} text-white p-6 md:p-8 min-h-[180px] flex flex-col md:flex-row items-center justify-between gap-6` 
             },
               React.createElement("div", { className: "flex-1 space-y-2" },
                 React.createElement("div", { className: "flex items-center gap-2" },
                   React.createElement("span", { className: "inline-block px-3 py-0.5 text-[10px] font-extrabold tracking-widest bg-blue-500/30 border border-blue-400/40 rounded-full uppercase" }, currentNews.badge),
-                  React.createElement("span", { className: "text-[10px] opacity-75 font-mono" }, "● Random World Tech News")
+                  React.createElement("span", { className: "text-[10px] opacity-75 font-mono" }, `⚡ ${t.autoSyncStatus}`)
                 ),
-                React.createElement("h2", { className: "text-lg md:text-2xl font-black leading-tight" }, currentNews.title),
+                React.createElement("h2", { className: "text-lg md:text-xl font-black leading-tight" }, currentNews.title),
                 React.createElement("p", { className: "text-xs md:text-sm text-gray-200 leading-relaxed max-w-2xl opacity-90" }, currentNews.desc)
               ),
               React.createElement("div", { className: "w-24 h-24 md:w-32 md:h-32 bg-white/10 rounded-xl p-2 flex items-center justify-center flex-shrink-0 backdrop-blur-md border border-white/20 shadow-lg" },
-                React.createElement("img", { src: currentNews.img, alt: "Hardware Trend", className: "max-h-full max-w-full object-contain" })
+                React.createElement("img", { src: currentNews.img, alt: "Tech Feed", className: "max-h-full max-w-full object-contain" })
+              )
+            )
+          ),
+
+          // ช่องค้นหาและตัวกรองหมวดหมู่
+          React.createElement("div", { className: "flex flex-col sm:flex-row justify-between items-center gap-4 mb-6" },
+            // ปุ่มหมวดหมู่
+            React.createElement("div", { className: "flex gap-2 overflow-x-auto pb-1 w-full sm:w-auto" },
+              [
+                { key: "ALL", label: t.all },
+                { key: "CPU", label: t.cpu },
+                { key: "RAM", label: t.ram },
+                { key: "SSD", label: t.ssd },
+                { key: "ชุดน้ำ", label: t.cooler }
+              ].map(f =>
+                React.createElement("button", {
+                  key: f.key,
+                  onClick: () => setFilter(f.key),
+                  className: `px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 active:scale-95 whitespace-nowrap ${filter === f.key ? "bg-blue-600 text-white shadow-md shadow-blue-500/30" : "border border-gray-400 hover:bg-gray-500/20"}`
+                }, f.label)
               )
             ),
 
-            // ปุ่มสุ่มข่าวด้วยมือ (Manual Random Button)
-            React.createElement("button", {
-              onClick: getRandomNews,
-              className: "absolute right-3 bottom-3 bg-black/50 hover:bg-black/80 active:scale-95 text-white px-3 py-1.5 rounded-xl text-xs font-bold backdrop-blur-md border border-white/20 transition-all flex items-center gap-1.5 shadow-lg z-10"
-            },
-              React.createElement("span", null, "🎲"),
-              React.createElement("span", null, "สุ่มข่าวเทคโนโลยีโลก")
-            )
-          ),
-
-          // ปุ่มกรองหมวดหมู่
-          React.createElement("div", { className: "flex gap-2 mb-6 overflow-x-auto pb-1" },
-            [
-              { key: "ALL", label: t.all },
-              { key: "CPU", label: t.cpu },
-              { key: "RAM", label: t.ram },
-              { key: "SSD", label: t.ssd },
-              { key: "ชุดน้ำ", label: t.cooler }
-            ].map(f =>
-              React.createElement("button", {
-                key: f.key,
-                onClick: () => setFilter(f.key),
-                className: `px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 active:scale-95 ${filter === f.key ? "bg-blue-600 text-white shadow-md shadow-blue-500/30" : "border border-gray-400 hover:bg-gray-500/20"}`
-              }, f.label)
+            // ช่องค้นหา
+            React.createElement("div", { className: "w-full sm:w-72" },
+              React.createElement("input", {
+                type: "text",
+                placeholder: t.searchPlaceholder,
+                value: searchQuery,
+                onChange: (e) => setSearchQuery(e.target.value),
+                className: "w-full px-3.5 py-1.5 text-xs border rounded-xl bg-transparent focus:outline-none focus:border-blue-500 shadow-inner"
+              })
             )
           ),
           
-          // ตารางแสดงสินค้า
-          React.createElement("div", { key: filter, className: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 animate-fade-in" },
-            filteredProducts.map(p =>
-              React.createElement("div", { key: p.id, className: `border rounded-xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ${cardBgClass}` },
-                React.createElement("div", { className: "w-full h-48 bg-white flex items-center justify-center p-4 overflow-hidden group" },
+          // ตารางแสดงรายการสินค้าและราคาที่ดีที่สุดจากร้านค้าที่น่าเชื่อถือ
+          React.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 animate-fade-in" },
+            filteredProducts.map(p => {
+              const best = getBestPrice(p.prices);
+              return React.createElement("div", { key: p.id, className: `border rounded-xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ${cardBgClass}` },
+                React.createElement("div", { className: "w-full h-48 bg-white flex items-center justify-center p-4 relative group" },
+                  React.createElement("span", { className: "absolute top-2 right-2 bg-green-500/20 text-green-400 border border-green-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full" }, best.store),
                   React.createElement("img", { src: p.img, alt: p.name, className: "max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300" })
                 ),
                 React.createElement("div", { className: "p-4 flex-grow flex flex-col justify-between" },
                   React.createElement("div", null,
                     React.createElement("div", { className: "flex justify-between items-center mb-2" },
                       React.createElement("span", { className: "text-xs border px-2 py-0.5 rounded-md font-mono font-bold opacity-80" }, p.type),
-                      React.createElement("span", { className: "text-xs text-green-400 font-semibold bg-green-950/40 px-2 py-0.5 rounded-full" }, `${t.stock}: ${p.stock}`)
+                      React.createElement("span", { className: "text-[10px] text-orange-400 font-semibold" }, `Affiliate API Feed`)
                     ),
                     React.createElement("h3", { className: "font-bold text-base mt-1" }, p.name),
                     React.createElement("p", { className: "text-xs opacity-75 mt-0.5" }, p.spec)
                   ),
-                  React.createElement("div", { className: "flex justify-between items-center mt-4 pt-3 border-t border-gray-500/20" },
-                    React.createElement("span", { className: "font-bold text-lg text-blue-400" }, `฿${p.price.toLocaleString()}`),
+                  React.createElement("div", { className: "mt-4 pt-3 border-t border-gray-500/20 flex justify-between items-end" },
+                    React.createElement("div", null,
+                      React.createElement("span", { className: "text-[10px] opacity-60 block" }, t.bestPrice),
+                      React.createElement("span", { className: "font-bold text-lg text-blue-400" }, `฿${best.price.toLocaleString()}`)
+                    ),
                     React.createElement("button", {
                       onClick: () => openProductDetails(p),
                       className: "bg-blue-600 hover:bg-blue-700 active:scale-95 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all shadow-md shadow-blue-600/20"
-                    }, t.detail)
+                    }, t.compareBtn)
+                  )
+                )
+              );
+            })
+          )
+        ),
+
+        // Modal เปรียบเทียบราคาจากทุกร้านค้า (Affiliate Links)
+        selectedProduct && React.createElement("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50" },
+          React.createElement("div", { className: `max-w-md w-full rounded-2xl p-6 shadow-2xl border ${cardBgClass}` },
+            React.createElement("div", { className: "bg-white p-4 rounded-xl mb-4 flex items-center justify-center h-44 shadow-inner relative" },
+              React.createElement("img", { src: selectedProduct.img, alt: selectedProduct.name, className: "max-h-full max-w-full object-contain" })
+            ),
+            React.createElement("div", { className: "flex justify-between items-center mb-1" },
+              React.createElement("span", { className: "text-xs border px-2 py-0.5 rounded font-mono font-bold" }, selectedProduct.type),
+              React.createElement("span", { className: "text-xs text-blue-400 font-bold" }, "🔄 อัปเดตราคาแบบเรียลไทม์")
+            ),
+            React.createElement("h2", { className: "text-lg font-bold mt-1" }, selectedProduct.name),
+            React.createElement("p", { className: "text-xs font-semibold opacity-80 mt-0.5" }, selectedProduct.spec),
+            React.createElement("p", { className: "text-xs opacity-70 mt-2 mb-4 leading-relaxed" }, selectedProduct.desc),
+            
+            // รายการเปรียบเทียบราคาแต่ละร้านค้า
+            React.createElement("div", { className: "space-y-2 mb-4" },
+              React.createElement("p", { className: "text-xs font-bold opacity-80 mb-1" }, "🏷️ เปรียบเทียบราคาจากร้านค้าที่น่าเชื่อถือ:"),
+              selectedProduct.prices.map((item, idx) =>
+                React.createElement("div", { key: idx, className: "flex justify-between items-center p-2.5 border border-gray-500/20 rounded-xl bg-gray-500/5" },
+                  React.createElement("div", null,
+                    React.createElement("span", { className: "font-bold text-xs block" }, item.store),
+                    React.createElement("span", { className: "text-[10px] text-green-400 font-medium" }, item.badge)
+                  ),
+                  React.createElement("div", { className: "flex items-center gap-3" },
+                    React.createElement("span", { className: "font-black text-sm text-blue-400" }, `฿${item.price.toLocaleString()}`),
+                    React.createElement("a", {
+                      href: item.url,
+                      target: "_blank",
+                      rel: "noopener noreferrer",
+                      className: "bg-orange-500 hover:bg-orange-600 active:scale-95 text-white px-2.5 py-1 rounded-lg text-xs font-bold transition-all shadow"
+                    }, `${t.goToStore} ↗`)
                   )
                 )
               )
-            )
-          )
-        ),
-
-        // Modal ล็อกอิน
-        isLoginOpen && React.createElement("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50" },
-          React.createElement("form", { onSubmit: handleLogin, className: `max-w-xs w-full rounded-2xl p-6 shadow-2xl border ${cardBgClass}` },
-            React.createElement("h2", { className: "text-lg font-bold mb-4" }, t.loginTitle),
-            React.createElement("input", {
-              type: "text",
-              required: true,
-              placeholder: t.usernamePlaceholder,
-              value: usernameInput,
-              onChange: (e) => setUsernameInput(e.target.value),
-              className: "w-full p-2.5 border rounded-xl mb-4 bg-transparent text-sm focus:outline-none focus:border-blue-500"
-            }),
-            React.createElement("div", { className: "flex justify-end gap-2" },
-              React.createElement("button", {
-                type: "button",
-                onClick: () => setIsLoginOpen(false),
-                className: "px-3 py-1.5 border rounded-xl text-xs font-semibold"
-              }, t.cancel),
-              React.createElement("button", {
-                type: "submit",
-                className: "px-4 py-1.5 bg-blue-600 text-white rounded-xl text-xs font-bold"
-              }, t.login)
-            )
-          )
-        ),
-
-        // Modal ประวัติการซื้อ
-        isHistoryOpen && React.createElement("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50" },
-          React.createElement("div", { className: `max-w-md w-full rounded-2xl p-6 shadow-2xl border flex flex-col max-h-[80vh] ${cardBgClass}` },
-            React.createElement("div", { className: "flex justify-between items-center pb-3 border-b border-gray-500/30" },
-              React.createElement("h2", { className: "text-lg font-bold" }, `📜 ${t.history}`),
-              React.createElement("button", { onClick: () => setIsHistoryOpen(false), className: "text-gray-400 hover:text-white" }, "✕")
             ),
-            React.createElement("div", { className: "flex-grow overflow-y-auto py-4 space-y-3" },
-              orderHistory.length === 0 ?
-                React.createElement("p", { className: "text-center text-xs opacity-50 py-8" }, t.noHistory)
-              :
-                orderHistory.map(order =>
-                  React.createElement("div", { key: order.id, className: "p-3 border border-gray-500/20 rounded-xl bg-gray-500/5 text-xs" },
-                    React.createElement("div", { className: "flex justify-between text-gray-400 mb-1" },
-                      React.createElement("span", null, order.date),
-                      React.createElement("span", { className: "font-bold text-orange-400" }, order.store)
-                    ),
-                    order.items.map((item, idx) =>
-                      React.createElement("div", { key: idx, className: "flex justify-between py-1" },
-                        React.createElement("span", null, item.name),
-                        React.createElement("span", { className: "font-semibold" }, `฿${item.price.toLocaleString()}`)
-                      )
-                    ),
-                    React.createElement("div", { className: "text-right font-bold text-blue-400 mt-2 pt-1 border-t border-gray-500/20" },
-                      `${t.total}: ฿${order.total.toLocaleString()}`
-                    )
-                  )
-                )
+
+            React.createElement("div", { className: "flex justify-end pt-2 border-t border-gray-500/20" },
+              React.createElement("button", {
+                onClick: () => setSelectedProduct(null),
+                className: "px-4 py-1.5 border border-gray-500/50 rounded-xl text-xs font-semibold hover:bg-gray-500/20 active:scale-95 transition-all"
+              }, t.close)
             )
           )
         ),
 
-        // Modal ประวัติการดูสินค้า
+        // Modal ประวัติการเช็คราคาล่าสุด
         isRecentOpen && React.createElement("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50" },
           React.createElement("div", { className: `max-w-md w-full rounded-2xl p-6 shadow-2xl border flex flex-col max-h-[80vh] ${cardBgClass}` },
             React.createElement("div", { className: "flex justify-between items-center pb-3 border-b border-gray-500/30" },
@@ -463,8 +461,9 @@
               recentlyViewed.length === 0 ?
                 React.createElement("p", { className: "text-center text-xs opacity-50 py-8" }, t.noRecent)
               :
-                recentlyViewed.map(item =>
-                  React.createElement("div", {
+                recentlyViewed.map(item => {
+                  const best = getBestPrice(item.prices);
+                  return React.createElement("div", {
                     key: item.id,
                     onClick: () => {
                       setIsRecentOpen(false);
@@ -475,128 +474,10 @@
                     React.createElement("img", { src: item.img, alt: item.name, className: "w-10 h-10 object-contain bg-white rounded p-1" }),
                     React.createElement("div", { className: "flex-grow min-w-0" },
                       React.createElement("p", { className: "font-bold text-xs truncate" }, item.name),
-                      React.createElement("p", { className: "text-xs text-blue-400" }, `฿${item.price.toLocaleString()}`)
+                      React.createElement("p", { className: "text-xs text-blue-400" }, `เริ่ม ฿${best.price.toLocaleString()} (${best.store})`)
                     )
-                  )
-                )
-            )
-          )
-        ),
-
-        // Pop-up รายละเอียดสินค้า
-        selectedProduct && React.createElement("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50" },
-          React.createElement("div", { className: `max-w-md w-full rounded-2xl p-6 shadow-2xl border ${cardBgClass}` },
-            React.createElement("div", { className: "bg-white p-4 rounded-xl mb-4 flex items-center justify-center h-48 shadow-inner" },
-              React.createElement("img", { src: selectedProduct.img, alt: selectedProduct.name, className: "max-h-full max-w-full object-contain" })
-            ),
-            React.createElement("div", { className: "flex justify-between items-center mb-2" },
-              React.createElement("span", { className: "text-xs border px-2 py-0.5 rounded font-mono font-bold" }, selectedProduct.type),
-              React.createElement("span", { className: "text-xs bg-green-500/20 text-green-400 px-2.5 py-0.5 rounded-full font-bold" }, `${t.stock}: ${selectedProduct.stock}`)
-            ),
-            React.createElement("h2", { className: "text-xl font-bold mt-1" }, selectedProduct.name),
-            React.createElement("p", { className: "text-sm font-semibold opacity-80 mt-1" }, selectedProduct.spec),
-            React.createElement("p", { className: "text-xs opacity-70 mt-3 leading-relaxed border-t border-b border-gray-500/30 py-3" }, selectedProduct.desc),
-            
-            React.createElement("div", { className: "mt-3 p-2.5 bg-gray-500/10 rounded-xl flex justify-between items-center" },
-              React.createElement("span", { className: "text-xs opacity-90 font-medium" }, `${t.goTo} ${selectedProduct.storeName}`),
-              React.createElement("a", {
-                href: selectedProduct.shopUrl,
-                target: "_blank",
-                rel: "noopener noreferrer",
-                className: "text-xs bg-orange-500 hover:bg-orange-600 active:scale-95 text-white px-3 py-1.5 rounded-lg font-bold transition-all"
-              }, `${t.goTo} ${selectedProduct.storeName} ↗`)
-            ),
-
-            React.createElement("div", { className: "flex justify-between items-center mt-5" },
-              React.createElement("div", null,
-                React.createElement("span", { className: "text-xs opacity-60 block" }, "ราคา"),
-                React.createElement("span", { className: "text-2xl font-extrabold text-blue-400" }, `฿${selectedProduct.price.toLocaleString()}`)
-              ),
-              React.createElement("div", { className: "flex gap-2" },
-                React.createElement("button", {
-                  onClick: () => setSelectedProduct(null),
-                  className: "px-4 py-2 border border-gray-500/50 rounded-xl text-xs font-semibold hover:bg-gray-500/20 active:scale-95 transition-all"
-                }, t.cancel),
-                React.createElement("button", {
-                  onClick: () => {
-                    addToCart(selectedProduct);
-                    setSelectedProduct(null);
-                  },
-                  className: "px-4 py-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-xl text-xs font-bold transition-all"
-                }, `+ ${t.addToCart}`)
-              )
-            )
-          )
-        ),
-
-        // ตะกร้าสินค้า
-        isCartOpen && React.createElement("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50" },
-          React.createElement("div", { className: `max-w-lg w-full rounded-2xl p-6 shadow-2xl border flex flex-col max-h-[85vh] ${cardBgClass}` },
-            
-            React.createElement("div", { className: "flex justify-between items-center pb-4 border-b border-gray-500/30" },
-              React.createElement("div", { className: "flex items-center gap-2" },
-                React.createElement("span", { className: "text-xl" }, "🛒"),
-                React.createElement("h2", { className: "text-lg font-bold" }, t.cart),
-                React.createElement("span", { className: "text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full font-bold" }, `${cart.length}`)
-              ),
-              React.createElement("button", {
-                onClick: () => setIsCartOpen(false),
-                className: "text-gray-400 hover:text-white text-lg font-bold p-1 rounded-lg hover:bg-gray-500/20 transition-all"
-              }, "✕")
-            ),
-
-            React.createElement("div", { className: "flex-grow overflow-y-auto py-4 space-y-3 my-2 pr-1" },
-              cart.length === 0 ? 
-                React.createElement("div", { className: "text-center py-12 opacity-50" },
-                  React.createElement("span", { className: "text-4xl block mb-2" }, "🛒"),
-                  React.createElement("p", { className: "text-sm" }, "ยังไม่มีสินค้าในตะกร้า")
-                )
-              :
-                cart.map(item =>
-                  React.createElement("div", { key: item.cartItemId, className: "flex items-center justify-between p-3 border border-gray-500/20 rounded-xl bg-gray-500/5 hover:bg-gray-500/10 transition-all gap-3" },
-                    React.createElement("div", { className: "w-14 h-14 bg-white rounded-lg p-1 flex-shrink-0 flex items-center justify-center border" },
-                      React.createElement("img", { src: item.img, alt: item.name, className: "max-h-full max-w-full object-contain" })
-                    ),
-                    React.createElement("div", { className: "flex-grow min-w-0" },
-                      React.createElement("h4", { className: "font-bold text-sm truncate" }, item.name),
-                      React.createElement("p", { className: "text-xs opacity-70" }, item.spec),
-                      React.createElement("span", { className: "text-xs font-bold text-blue-400 block mt-0.5" }, `฿${item.price.toLocaleString()}`)
-                    ),
-                    React.createElement("div", { className: "flex items-center gap-2 flex-shrink-0" },
-                      React.createElement("button", {
-                        onClick: () => checkoutStore(item.storeName, item.shopUrl),
-                        className: "text-xs bg-orange-500 hover:bg-orange-600 text-white px-2.5 py-1.5 rounded-lg font-bold transition-all"
-                      }, `${t.buy} (${item.storeName}) ↗`),
-                      React.createElement("button", {
-                        onClick: () => removeFromCart(item.cartItemId),
-                        className: "text-xs bg-red-500/20 hover:bg-red-500 text-red-400 hover:text-white px-2 py-1.5 rounded-lg font-bold transition-all"
-                      }, "❌")
-                    )
-                  )
-                )
-            ),
-
-            cart.length > 0 && React.createElement("div", { className: "pt-4 border-t border-gray-500/30" },
-              React.createElement("div", { className: "flex justify-between items-center mb-3" },
-                React.createElement("span", { className: "text-sm font-medium opacity-80" }, t.total),
-                React.createElement("span", { className: "text-2xl font-black text-blue-400" }, `฿${totalPrice.toLocaleString()}`)
-              ),
-              
-              React.createElement("div", { className: "flex flex-col gap-2" },
-                React.createElement("div", { className: "grid grid-cols-2 gap-2" },
-                  uniqueStores.map(store => 
-                    React.createElement("button", {
-                      key: store.name,
-                      onClick: () => checkoutStore(store.name, store.url),
-                      className: "py-2.5 px-3 bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs rounded-xl active:scale-95 transition-all text-center shadow-md shadow-orange-500/20 flex items-center justify-center gap-1 truncate"
-                    }, `🛍️ ${t.goTo} ${store.name}`)
-                  )
-                ),
-                React.createElement("button", {
-                  onClick: () => setCart([]),
-                  className: "w-full py-1.5 border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-xl text-xs font-semibold transition-all mt-1"
-                }, t.clearCart)
-              )
+                  );
+                })
             )
           )
         )
