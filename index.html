@@ -22,7 +22,7 @@
 <body class="bg-gray-50 text-gray-900 selection:bg-blue-500 selection:text-white">
   <div id="root"></div>
   <script type="module">
-    import React, { useState } from "https://esm.sh/react@18.2.0";
+    import React, { useState, useEffect } from "https://esm.sh/react@18.2.0";
     import ReactDOM from "https://esm.sh/react-dom@18.2.0/client";
 
     const TEXTS = {
@@ -84,26 +84,54 @@
       }
     };
 
+    // ข้อมูลป้ายสไลด์เทรนด์ตลาด Hardware
+    const BANNERS = [
+      {
+        id: 1,
+        title: "⚡ RAM DDR5 - ยุคใหม่แห่งความเร็ว",
+        desc: "เทรนด์ DDR5 มาแทนที่ DDR4 อย่างเต็มตัว! บัสความเร็วเริ่มต้น 6000MHz+ พร้อมระบบ On-Die ECC ให้ความเสถียรสูงสุดสำหรับสายเล่นเกมและทำงานหนัก",
+        bg: "from-blue-900 via-indigo-900 to-slate-900",
+        badge: "RAM TREND 2026",
+        img: "https://m.media-amazon.com/images/I/51p1IAnuKBL._AC_SL1000_.jpg"
+      },
+      {
+        id: 2,
+        title: "🚀 SSD PCIe 5.0 NVMe - ความเร็วทะลุ 14,000 MB/s",
+        desc: "SSD ยุคใหม่ตอบโจทย์การโหลดเกมแบบ Instant Load และการตัดต่อไฟล์ 8K ปัจจุบันเริ่มมีราคาจับต้องได้ง่ายขึ้น พร้อมซิงค์ระบายความร้อนแบบจัดเต็ม",
+        bg: "from-purple-900 via-violet-900 to-slate-900",
+        badge: "SSD MARKET UPDATE",
+        img: "https://m.media-amazon.com/images/I/71I3uAptInL._AC_SL1500_.jpg"
+      },
+      {
+        id: 3,
+        title: "🎮 AMD 3D V-Cache & Intel Ultra - สงครามซีพียูเกมมิ่ง",
+        desc: "ซีพียูยุคใหม่เน้นชิปประมวลผล NPU ช่วยคำนวณ AI ในตัว และเทคโนโลยี 3D V-Cache ที่ทำให้เฟรมเรตเกมพุ่งสูงขึ้นอย่างเห็นได้ชัด",
+        bg: "from-amber-900 via-red-950 to-slate-900",
+        badge: "CPU TRENDS",
+        img: "https://m.media-amazon.com/images/I/514I8B+dZdL._AC_SL1000_.jpg"
+      }
+    ];
+
     const PRODUCTS = [
       // --- CPU ---
-      { id: 101, name: "Intel Core i5-13400F", type: "CPU", spec: "10 Cores (6P+4E) / 16 Threads / Up to 4.6GHz / LGA1700", price: 6890, stock: 15, img: "https://www.jib.co.th/img_master/product/original/2023010411310557201_1.jpg", desc: "ซีพียูราคาสุดคุ้มสำหรับการเล่นเกมและความบันเทิง รองรับ DDR4 และ DDR5", storeName: "JIB", shopUrl: "https://www.jib.co.th/web/product/readProduct/57201" },
-      { id: 102, name: "Intel Core i7-14700K", type: "CPU", spec: "20 Cores (8P+12E) / 28 Threads / Up to 5.6GHz / LGA1700", price: 16900, stock: 10, img: "https://www.jib.co.th/img_master/product/original/2023101710500162981_1.jpg", desc: "ซีพียูระดับท็อปสำหรับสตรีมเมอร์และสายทำงานกราฟิกหนักๆ รองรับการ Overclock", storeName: "Shopee", shopUrl: "https://shopee.co.th/search?keyword=Intel%20Core%20i7-14700K" },
-      { id: 103, name: "AMD Ryzen 5 7600X", type: "CPU", spec: "6 Cores / 12 Threads / Up to 5.3GHz / Socket AM5", price: 8290, stock: 20, img: "https://www.jib.co.th/img_master/product/original/2022092809224455071_1.jpg", desc: "ซีพียูสถาปัตยกรรม Zen 4 บนแพลตฟอร์ม AM5 ประสิทธิภาพสูงสำหรับเกมเมอร์", storeName: "Advice", shopUrl: "https://www.advice.co.th/product/processor-cpu-" },
-      { id: 104, name: "AMD Ryzen 7 7800X3D", type: "CPU", spec: "8 Cores / 16 Threads / Up to 5.0GHz / 3D V-Cache", price: 15900, stock: 8, img: "https://www.jib.co.th/img_master/product/original/2023040616173059170_1.jpg", desc: "ที่สุดของซีพียูเกมมิ่งระดับโลกด้วยเทคโนโลยี 3D V-Cache ปั่น FPS เกมได้สูงที่สุด", storeName: "Lazada", shopUrl: "https://www.lazada.co.th/tag/ryzen-7-7800x3d/" },
+      { id: 101, name: "Intel Core i5-13400F", type: "CPU", spec: "10 Cores (6P+4E) / 16 Threads / Up to 4.6GHz / LGA1700", price: 6890, stock: 15, img: "https://m.media-amazon.com/images/I/51p1IAnuKBL._AC_SL1000_.jpg", desc: "ซีพียูราคาสุดคุ้มสำหรับการเล่นเกมและความบันเทิง รองรับ DDR4 และ DDR5", storeName: "JIB", shopUrl: "https://www.jib.co.th/web/product/readProduct/57201" },
+      { id: 102, name: "Intel Core i7-14700K", type: "CPU", spec: "20 Cores (8P+12E) / 28 Threads / Up to 5.6GHz / LGA1700", price: 16900, stock: 10, img: "https://m.media-amazon.com/images/I/61S3S68f2SL._AC_SL1000_.jpg", desc: "ซีพียูระดับท็อปสำหรับสตรีมเมอร์และสายทำงานกราฟิกหนักๆ รองรับการ Overclock", storeName: "Shopee", shopUrl: "https://shopee.co.th/search?keyword=Intel%20Core%20i7-14700K" },
+      { id: 103, name: "AMD Ryzen 5 7600X", type: "CPU", spec: "6 Cores / 12 Threads / Up to 5.3GHz / Socket AM5", price: 8290, stock: 20, img: "https://m.media-amazon.com/images/I/5137B3j1SGL._AC_SL1000_.jpg", desc: "ซีพียูสถาปัตยกรรม Zen 4 บนแพลตฟอร์ม AM5 ประสิทธิภาพสูงสำหรับเกมเมอร์", storeName: "Advice", shopUrl: "https://www.advice.co.th/product/processor-cpu-" },
+      { id: 104, name: "AMD Ryzen 7 7800X3D", type: "CPU", spec: "8 Cores / 16 Threads / Up to 5.0GHz / 3D V-Cache", price: 15900, stock: 8, img: "https://m.media-amazon.com/images/I/514I8B+dZdL._AC_SL1000_.jpg", desc: "ที่สุดของซีพียูเกมมิ่งระดับโลกด้วยเทคโนโลยี 3D V-Cache ปั่น FPS เกมได้สูงที่สุด", storeName: "Lazada", shopUrl: "https://www.lazada.co.th/tag/ryzen-7-7800x3d/" },
 
       // --- RAM ---
-      { id: 1, name: "Kingston FURY Beast", type: "RAM", spec: "DDR4 8GB 3200MHz", price: 1150, stock: 999, img: "https://notebookspec.com/storage/pc-ram/ram_1242_20211004-174841_5.png", desc: "แรมประสิทธิภาพสูงสำหรับการเล่นเกมและการทำงานทั่วไป", storeName: "Shopee", shopUrl: "https://shopee.co.th/search?keyword=Kingston%20FURY%20Beast%20DDR4%208GB" },
-      { id: 2, name: "Corsair Vengeance", type: "RAM", spec: "DDR5 32GB 6000MHz", price: 4590, stock: 999, img: "https://www.jib.co.th/img_master/product/original/2025120416530182272_1.jpg", desc: "แรม DDR5 ความเร็วสูงพิเศษ เหมาะสำหรับการสตรีมเมอร์และนักแต่งวิดีโอ", storeName: "JIB", shopUrl: "https://www.jib.co.th/web/product/readProduct/58000" },
-      { id: 3, name: "Kingston FURY Renegade", type: "RAM", spec: "DDR5 64GB 6400MHz", price: 8900, stock: 999, img: "https://notebookspec.com/storage/pc-ram/ram_1242_20211004-174841_5.png", desc: "ความจุจัดเต็ม 64GB ตอบโจทย์สายโอเวอร์คล็อกและการประมวลผลหนัก", storeName: "Lazada", shopUrl: "https://www.lazada.co.th/tag/kingston-fury-renegade-ddr5-64gb/" },
+      { id: 1, name: "Kingston FURY Beast", type: "RAM", spec: "DDR4 8GB 3200MHz", price: 1150, stock: 999, img: "https://m.media-amazon.com/images/I/61N3nIylxKL._AC_SL1000_.jpg", desc: "แรมประสิทธิภาพสูงสำหรับการเล่นเกมและการทำงานทั่วไป", storeName: "Shopee", shopUrl: "https://shopee.co.th/search?keyword=Kingston%20FURY%20Beast%20DDR4%208GB" },
+      { id: 2, name: "Corsair Vengeance", type: "RAM", spec: "DDR5 32GB 6000MHz", price: 4590, stock: 999, img: "https://m.media-amazon.com/images/I/51p1IAnuKBL._AC_SL1000_.jpg", desc: "แรม DDR5 ความเร็วสูงพิเศษ เหมาะสำหรับการสตรีมเมอร์และนักแต่งวิดีโอ", storeName: "JIB", shopUrl: "https://www.jib.co.th/web/product/readProduct/58000" },
+      { id: 3, name: "Kingston FURY Renegade", type: "RAM", spec: "DDR5 64GB 6400MHz", price: 8900, stock: 999, img: "https://m.media-amazon.com/images/I/61N3nIylxKL._AC_SL1000_.jpg", desc: "ความจุจัดเต็ม 64GB ตอบโจทย์สายโอเวอร์คล็อกและการประมวลผลหนัก", storeName: "Lazada", shopUrl: "https://www.lazada.co.th/tag/kingston-fury-renegade-ddr5-64gb/" },
 
       // --- SSD ---
-      { id: 4, name: "Samsung 990 PRO", type: "SSD", spec: "2TB Read 7450MB/s", price: 6990, stock: 999, img: "https://www.jib.co.th/img_master/product/original/2023082416295161614_1.jpg", desc: "SSD NVMe Gen4 ที่เร็วที่สุดจาก Samsung โหลดเกมและไฟล์ขนาดใหญ่ได้เร็วมาก", storeName: "Shopee", shopUrl: "https://shopee.co.th/search?keyword=Samsung%20990%20PRO%202TB" },
-      { id: 5, name: "WD Black SN850X", type: "SSD", spec: "4TB Read 7300MB/s", price: 14500, stock: 999, img: "https://www.jib.co.th/img_master/product/original/2023120415101463977_1.jpg", desc: "ความจุระดับพรีเมียม 4TB มาพร้อม Game Mode 2.0", storeName: "Advice", shopUrl: "https://www.advice.co.th/product/solid-state-drive-ssd-" },
-      { id: 6, name: "Crucial P3 Plus", type: "SSD", spec: "1TB Read 5000MB/s", price: 2690, stock: 999, img: "https://www.jib.co.th/img_master/product/original/2023082211134861550_1.jpg", desc: "SSD NVMe Gen4 ราคาสบายกระเป๋า คุ้มค่าที่สุดสำหรับการอัปเกรด", storeName: "Shopee", shopUrl: "https://shopee.co.th/search?keyword=Crucial%20P3%20Plus%201TB" },
+      { id: 4, name: "Samsung 990 PRO", type: "SSD", spec: "2TB Read 7450MB/s", price: 6990, stock: 999, img: "https://m.media-amazon.com/images/I/71I3uAptInL._AC_SL1500_.jpg", desc: "SSD NVMe Gen4 ที่เร็วที่สุดจาก Samsung โหลดเกมและไฟล์ขนาดใหญ่ได้เร็วมาก", storeName: "Shopee", shopUrl: "https://shopee.co.th/search?keyword=Samsung%20990%20PRO%202TB" },
+      { id: 5, name: "WD Black SN850X", type: "SSD", spec: "4TB Read 7300MB/s", price: 14500, stock: 999, img: "https://m.media-amazon.com/images/I/61S3S68f2SL._AC_SL1000_.jpg", desc: "ความจุระดับพรีเมียม 4TB มาพร้อม Game Mode 2.0", storeName: "Advice", shopUrl: "https://www.advice.co.th/product/solid-state-drive-ssd-" },
+      { id: 6, name: "Crucial P3 Plus", type: "SSD", spec: "1TB Read 5000MB/s", price: 2690, stock: 999, img: "https://m.media-amazon.com/images/I/5137B3j1SGL._AC_SL1000_.jpg", desc: "SSD NVMe Gen4 ราคาสบายกระเป๋า คุ้มค่าที่สุดสำหรับการอัปเกรด", storeName: "Shopee", shopUrl: "https://shopee.co.th/search?keyword=Crucial%20P3%20Plus%201TB" },
 
       // --- ชุดน้ำ ---
-      { id: 7, name: "NZXT Kraken 240 RGB", type: "ชุดน้ำ", spec: "Liquid Cooler 240mm", price: 4990, stock: 50, img: "https://www.jib.co.th/img_master/product/original/2023090813340061967_1.jpg", desc: "ชุดน้ำปิด 240 มม. ดีไซน์พรีเมียมพร้อมไฟ RGB สวยงาม", storeName: "JIB", shopUrl: "https://www.jib.co.th/web/product/readProduct/60000" },
-      { id: 8, name: "Corsair iCUE H150i ELITE", type: "ชุดน้ำ", spec: "Liquid Cooler 360mm", price: 6590, stock: 30, img: "https://www.jib.co.th/img_master/product/original/2023021710432757949_1.png", desc: "ชุดน้ำปิดหม้อน้ำ 360 มม. จัดเต็ม 3 พัดลมระบายความร้อนขั้นสุดยอด", storeName: "Shopee", shopUrl: "https://shopee.co.th/search?keyword=Corsair%20iCUE%20H150i" }
+      { id: 7, name: "NZXT Kraken 240 RGB", type: "ชุดน้ำ", spec: "Liquid Cooler 240mm", price: 4990, stock: 50, img: "https://m.media-amazon.com/images/I/51p1IAnuKBL._AC_SL1000_.jpg", desc: "ชุดน้ำปิด 240 มม. ดีไซน์พรีเมียมพร้อมไฟ RGB สวยงาม", storeName: "JIB", shopUrl: "https://www.jib.co.th/web/product/readProduct/60000" },
+      { id: 8, name: "Corsair iCUE H150i ELITE", type: "ชุดน้ำ", spec: "Liquid Cooler 360mm", price: 6590, stock: 30, img: "https://m.media-amazon.com/images/I/61S3S68f2SL._AC_SL1000_.jpg", desc: "ชุดน้ำปิดหม้อน้ำ 360 มม. จัดเต็ม 3 พัดลมระบายความร้อนขั้นสุดยอด", storeName: "Shopee", shopUrl: "https://shopee.co.th/search?keyword=Corsair%20iCUE%20H150i" }
     ];
 
     function App() {
@@ -123,7 +151,21 @@
       const [orderHistory, setOrderHistory] = useState([]);
       const [recentlyViewed, setRecentlyViewed] = useState([]);
 
+      // State สำหรับ Carousel Banner
+      const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
+
       const t = TEXTS[lang];
+
+      // Auto Slide ทุกๆ 4 วินาที
+      useEffect(() => {
+        const timer = setInterval(() => {
+          setCurrentBannerIndex((prev) => (prev + 1) % BANNERS.length);
+        }, 4000);
+        return () => clearInterval(timer);
+      }, []);
+
+      const nextSlide = () => setCurrentBannerIndex((prev) => (prev + 1) % BANNERS.length);
+      const prevSlide = () => setCurrentBannerIndex((prev) => (prev - 1 + BANNERS.length) % BANNERS.length);
 
       const toggleTheme = () => {
         if (theme === "light") setTheme("dark");
@@ -140,9 +182,7 @@
         }
       };
 
-      const handleLogout = () => {
-        setUser(null);
-      };
+      const handleLogout = () => setUser(null);
 
       const openProductDetails = (product) => {
         setSelectedProduct(product);
@@ -195,37 +235,34 @@
         ? "bg-white text-gray-900 border-gray-200" 
         : "bg-gray-800 text-white border-gray-700";
 
+      const currentBanner = BANNERS[currentBannerIndex];
+
       return React.createElement("div", { className: getThemeClass() },
         // Header
         React.createElement("header", { className: "flex flex-col md:flex-row justify-between items-center pb-4 border-b border-gray-300 dark:border-gray-700 max-w-5xl mx-auto gap-4" },
           React.createElement("h1", { className: "text-xl font-extrabold tracking-wider bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent" }, t.storeTitle),
           
           React.createElement("div", { className: "flex flex-wrap gap-2 items-center justify-center" },
-            // สลับภาษา
             React.createElement("button", {
               onClick: () => setLang(lang === "TH" ? "EN" : "TH"),
               className: "px-2.5 py-1 border rounded-lg text-xs font-bold bg-blue-500/10 hover:bg-blue-500/20 active:scale-95 transition-all text-blue-500"
             }, `🌐 ${lang}`),
 
-            // เปลี่ยนธีม
             React.createElement("button", {
               onClick: toggleTheme,
               className: "px-2.5 py-1 border rounded-lg text-xs bg-white/10 hover:bg-white/20 active:scale-95 transition-all"
             }, `${t.theme}: ${theme.toUpperCase()}`),
 
-            // ประวัติการดู
             React.createElement("button", {
               onClick: () => setIsRecentOpen(true),
               className: "px-2.5 py-1 border rounded-lg text-xs hover:bg-gray-500/10 active:scale-95 transition-all"
             }, `👁️ ${t.recent} (${recentlyViewed.length})`),
 
-            // ประวัติการซื้อ
             React.createElement("button", {
               onClick: () => setIsHistoryOpen(true),
               className: "px-2.5 py-1 border rounded-lg text-xs hover:bg-gray-500/10 active:scale-95 transition-all"
             }, `📜 ${t.history}`),
 
-            // ปุ่มล็อกอิน / ผู้ใช้
             user ? 
               React.createElement("div", { className: "flex items-center gap-2 border px-2.5 py-1 rounded-lg text-xs bg-green-500/10 border-green-500/30" },
                 React.createElement("span", { className: "font-bold text-green-500" }, `👤 ${user}`),
@@ -237,7 +274,6 @@
                 className: "px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold active:scale-95 transition-all"
               }, `👤 ${t.login}`),
 
-            // ตะกร้า
             React.createElement("button", {
               onClick: () => setIsCartOpen(true),
               className: `font-semibold text-xs sm:text-sm flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg active:scale-95 transition-all shadow-md shadow-blue-600/30 ${cartAnimate ? "animate-cart-pop" : ""}`
@@ -250,6 +286,43 @@
         
         // Main Content
         React.createElement("main", { className: "max-w-5xl mx-auto mt-6" },
+          
+          // 📢 ส่วนสไลด์ข่าวสารเทรนด์ตลาด Hardware (Hero Banner Slider)
+          React.createElement("div", { className: "relative mb-8 rounded-2xl overflow-hidden shadow-xl border border-gray-700/50" },
+            React.createElement("div", { className: `bg-gradient-to-r ${currentBanner.bg} text-white p-6 md:p-8 min-h-[180px] flex flex-col md:flex-row items-center justify-between gap-6 transition-all duration-500` },
+              React.createElement("div", { className: "flex-1 space-y-2 animate-fade-in" },
+                React.createElement("span", { className: "inline-block px-3 py-1 text-[10px] font-extrabold tracking-widest bg-blue-500/30 border border-blue-400/40 rounded-full uppercase" }, currentBanner.badge),
+                React.createElement("h2", { className: "text-lg md:text-2xl font-black" }, currentBanner.title),
+                React.createElement("p", { className: "text-xs md:text-sm text-gray-300 leading-relaxed max-w-2xl" }, currentBanner.desc)
+              ),
+              React.createElement("div", { className: "w-24 h-24 md:w-32 md:h-32 bg-white/10 rounded-xl p-2 flex items-center justify-center flex-shrink-0 backdrop-blur-sm border border-white/10" },
+                React.createElement("img", { src: currentBanner.img, alt: "Hardware Trend", className: "max-h-full max-w-full object-contain" })
+              )
+            ),
+
+            // ปุ่มลูกศรซ้าย/ขวา
+            React.createElement("button", {
+              onClick: prevSlide,
+              className: "absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white p-2 rounded-full backdrop-blur-sm transition-all"
+            }, "❮"),
+            React.createElement("button", {
+              onClick: nextSlide,
+              className: "absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white p-2 rounded-full backdrop-blur-sm transition-all"
+            }, "❯"),
+
+            // จุด Indicator บอกตำแหน่งสไลด์
+            React.createElement("div", { className: "absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2" },
+              BANNERS.map((_, idx) =>
+                React.createElement("button", {
+                  key: idx,
+                  onClick: () => setCurrentBannerIndex(idx),
+                  className: `h-1.5 rounded-full transition-all ${idx === currentBannerIndex ? "w-6 bg-white" : "w-2 bg-white/40"}`
+                })
+              )
+            )
+          ),
+
+          // ปุ่มกรองหมวดหมู่
           React.createElement("div", { className: "flex gap-2 mb-6 overflow-x-auto pb-1" },
             [
               { key: "ALL", label: t.all },
@@ -266,6 +339,7 @@
             )
           ),
           
+          // ตารางแสดงสินค้า
           React.createElement("div", { key: filter, className: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 animate-fade-in" },
             filteredProducts.map(p =>
               React.createElement("div", { key: p.id, className: `border rounded-xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ${cardBgClass}` },
@@ -433,7 +507,6 @@
         isCartOpen && React.createElement("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50" },
           React.createElement("div", { className: `max-w-lg w-full rounded-2xl p-6 shadow-2xl border flex flex-col max-h-[85vh] ${cardBgClass}` },
             
-            // Cart Header
             React.createElement("div", { className: "flex justify-between items-center pb-4 border-b border-gray-500/30" },
               React.createElement("div", { className: "flex items-center gap-2" },
                 React.createElement("span", { className: "text-xl" }, "🛒"),
@@ -446,7 +519,6 @@
               }, "✕")
             ),
 
-            // Cart Items List
             React.createElement("div", { className: "flex-grow overflow-y-auto py-4 space-y-3 my-2 pr-1" },
               cart.length === 0 ? 
                 React.createElement("div", { className: "text-center py-12 opacity-50" },
@@ -478,7 +550,6 @@
                 )
             ),
 
-            // Cart Footer
             cart.length > 0 && React.createElement("div", { className: "pt-4 border-t border-gray-500/30" },
               React.createElement("div", { className: "flex justify-between items-center mb-3" },
                 React.createElement("span", { className: "text-sm font-medium opacity-80" }, t.total),
