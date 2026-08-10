@@ -12,17 +12,17 @@
     import React, { useState } from "https://esm.sh/react@18.2.0";
     import ReactDOM from "https://esm.sh/react-dom@18.2.0/client";
 
+    // เพิ่มฟิลด์ shopUrl และ storeName สำหรับลิงก์ไปยังร้านจริง
     const PRODUCTS = [
-      { id: 1, name: "Kingston FURY Beast", type: "RAM", spec: "DDR4 8GB 3200MHz", price: 1150, stock: 999, img: "https://notebookspec.com/storage/pc-ram/ram_1242_20211004-174841_5.png", desc: "แรมประสิทธิภาพสูงสำหรับการเล่นเกมและการทำงานทั่วไป ระบายความร้อนได้ดีด้วยฮีตซิงก์อลูมิเนียม" },
-      { id: 2, name: "Corsair Vengeance", type: "RAM", spec: "DDR5 32GB 6000MHz", price: 4590, stock: 999, img: "https://www.jib.co.th/img_master/product/original/2025120416530182272_1.jpg", desc: "แรม DDR5 ความเร็วสูงพิเศษ เหมาะสำหรับการสตรีมเมอร์และนักแต่งวิดีโอระดับมืออาชีพ" },
-      { id: 3, name: "Kingston FURY Renegade", type: "RAM", spec: "DDR5 64GB 6400MHz", price: 8900, stock: 999, img: "https://media.kingston.com/kingston/product/FURY_Renegade_Silver_Black_CUDIMM_DDR5_1-zm-lg.jpg", desc: "ความจุจัดเต็ม 64GB พร้อมความเร็วบัส 6400MHz ตอบโจทย์สายโอเวอร์คล็อกและการประมวลผลหนัก" },
-      { id: 4, name: "Samsung 990 PRO", type: "SSD", spec: "2TB Read 7450MB/s", price: 6990, stock: 999, img: "https://www.jib.co.th/img_master/product/original/2023082416295161614_1.jpg", desc: "SSD NVMe Gen4 ที่เร็วที่สุดจาก Samsung โหลดเกมและไฟล์ขนาดใหญ่ได้ในเสี้ยววินาที" },
-      { id: 5, name: "WD Black SN850X", type: "SSD", spec: "4TB Read 7300MB/s", price: 14500, stock: 999, img: "https://www.jib.co.th/img_master/product/original/2023120415101463977_1.jpg", desc: "ความจุระดับพรีเมียม 4TB มาพร้อมGame Mode 2.0 ช่วยเพิ่มประสิทธิภาพในการเล่นเกม" },
-      { id: 6, name: "Crucial P3 Plus", type: "SSD", spec: "1TB Read 5000MB/s", price: 2690, stock: 999, img: "https://www.jib.co.th/img_master/product/original/2023082211134861550_1.jpg", desc: "SSD NVMe Gen4 ราคาสบายกระเป๋า คุ้มค่าที่สุดสำหรับการอัปเกรดคอมพิวเตอร์ให้เร็วขึ้น" }
+      { id: 1, name: "Kingston FURY Beast", type: "RAM", spec: "DDR4 8GB 3200MHz", price: 1150, stock: 999, img: "https://notebookspec.com/storage/pc-ram/ram_1242_20211004-174841_5.png", desc: "แรมประสิทธิภาพสูงสำหรับการเล่นเกมและการทำงานทั่วไป ระบายความร้อนได้ดีด้วยฮีตซิงก์อลูมิเนียม", storeName: "Shopee", shopUrl: "https://shopee.co.th/search?keyword=Kingston%20FURY%20Beast%20DDR4%208GB" },
+      { id: 2, name: "Corsair Vengeance", type: "RAM", spec: "DDR5 32GB 6000MHz", price: 4590, stock: 999, img: "https://www.jib.co.th/img_master/product/original/2025120416530182272_1.jpg", desc: "แรม DDR5 ความเร็วสูงพิเศษ เหมาะสำหรับการสตรีมเมอร์และนักแต่งวิดีโอระดับมืออาชีพ", storeName: "JIB", shopUrl: "https://www.jib.co.th/web/product/readProduct/58000" },
+      { id: 3, name: "Kingston FURY Renegade", type: "RAM", spec: "DDR5 64GB 6400MHz", price: 8900, stock: 999, img: "https://notebookspec.com/storage/pc-ram/ram_1242_20211004-174841_5.png", desc: "ความจุจัดเต็ม 64GB พร้อมความเร็วบัส 6400MHz ตอบโจทย์สายโอเวอร์คล็อกและการประมวลผลหนัก", storeName: "Lazada", shopUrl: "https://www.lazada.co.th/tag/kingston-fury-renegade-ddr5-64gb/" },
+      { id: 4, name: "Samsung 990 PRO", type: "SSD", spec: "2TB Read 7450MB/s", price: 6990, stock: 999, img: "https://www.jib.co.th/img_master/product/original/2023082416295161614_1.jpg", desc: "SSD NVMe Gen4 ที่เร็วที่สุดจาก Samsung โหลดเกมและไฟล์ขนาดใหญ่ได้ในเสี้ยววินาที", storeName: "Shopee", shopUrl: "https://shopee.co.th/search?keyword=Samsung%20990%20PRO%202TB" },
+      { id: 5, name: "WD Black SN850X", type: "SSD", spec: "4TB Read 7300MB/s", price: 14500, stock: 999, img: "https://www.jib.co.th/img_master/product/original/2023120415101463977_1.jpg", desc: "ความจุระดับพรีเมียม 4TB มาพร้อมGame Mode 2.0 ช่วยเพิ่มประสิทธิภาพในการเล่นเกม", storeName: "Advice", shopUrl: "https://www.advice.co.th/product/solid-state-drive-ssd-" },
+      { id: 6, name: "Crucial P3 Plus", type: "SSD", spec: "1TB Read 5000MB/s", price: 2690, stock: 999, img: "https://www.jib.co.th/img_master/product/original/2023082211134861550_1.jpg", desc: "SSD NVMe Gen4 ราคาสบายกระเป๋า คุ้มค่าที่สุดสำหรับการอัปเกรดคอมพิวเตอร์ให้เร็วขึ้น", storeName: "Shopee", shopUrl: "https://shopee.co.th/search?keyword=Crucial%20P3%20Plus%201TB" }
     ];
 
     function App() {
-    
       const [theme, setTheme] = useState("light");
       const [cart, setCart] = useState([]);
       const [filter, setFilter] = useState("ALL");
@@ -43,17 +43,23 @@
         return "bg-gray-50 text-gray-900 min-h-screen p-6";
       };
 
+      // ฟังก์ชันเมื่อกดชำระเงินในตะกร้า จะเปิดหน้าค้นหา/ซื้อในร้านจริง
+      const handleCheckout = () => {
+        if (cart.length === 0) return;
+        const firstItem = cart[0];
+        alert(`กำลังนำคุณไปยังหน้าร้านค้า (${firstItem.storeName}) เพื่อทำการสั่งซื้อสินค้า...`);
+        window.open(firstItem.shopUrl, "_blank");
+      };
+
       return React.createElement("div", { className: getThemeClass() },
-        // Header
         React.createElement("header", { className: "flex justify-between items-center pb-6 border-b border-gray-300 dark:border-gray-700 max-w-5xl mx-auto" },
-          React.createElement("h1", { className: "text-xl font-bold tracking-wider" }, "SILICON VAULT"),
+          React.createElement("h1", { className: "text-xl font-bold tracking-wider" }, "KORN RAM & SSD STORE"),
           React.createElement("div", { className: "flex gap-4 items-center" },
             React.createElement("button", { onClick: toggleTheme, className: "px-3 py-1 border rounded text-xs" }, `โหมด: ${theme.toUpperCase()}`),
             React.createElement("span", { className: "font-semibold text-sm" }, `🛒 ตระกร้า (${cart.length})`)
           )
         ),
         
-        // Main
         React.createElement("main", { className: "max-w-5xl mx-auto mt-6" },
           React.createElement("div", { className: "flex gap-2 mb-6" },
             ["ALL", "RAM", "SSD"].map(f =>
@@ -65,11 +71,10 @@
             )
           ),
           
-          // Product Grid
           React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-6" },
             filteredProducts.map(p =>
-              React.createElement("div", { key: p.id, className: "border rounded-lg overflow-hidden flex flex-col justify-between bg-white/5 shadow-sm hover:shadow-md transition" },
-                React.createElement("img", { src: p.img, alt: p.name, className: "w-full h-40 object-cover" }),
+              React.createElement("div", { key: p.id, className: "border rounded-lg overflow-hidden flex flex-col justify-between bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition" },
+                React.createElement("img", { src: p.img, alt: p.name, className: "w-full h-48 object-contain p-2 bg-white" }),
                 React.createElement("div", { className: "p-4 flex-grow flex flex-col justify-between" },
                   React.createElement("div", null,
                     React.createElement("div", { className: "flex justify-between items-center mb-1" },
@@ -91,22 +96,21 @@
             )
           ),
           
-          // Cart Summary
-          cart.length > 0 && React.createElement("div", { className: "mt-8 p-4 border rounded-lg max-w-xs ml-auto" },
+          cart.length > 0 && React.createElement("div", { className: "mt-8 p-4 border rounded-lg max-w-xs ml-auto bg-white dark:bg-gray-800" },
             React.createElement("h3", { className: "font-bold mb-2" }, "สรุปคำสั่งซื้อ"),
             React.createElement("p", { className: "text-sm mb-1" }, `จำนวน: ${cart.length} ชิ้น`),
             React.createElement("p", { className: "font-bold text-lg mb-3" }, `ราคารวม: ฿${totalPrice.toLocaleString()}`),
             React.createElement("button", {
-              onClick: () => alert("สั่งซื้อเรียบร้อยแล้ว!"),
-              className: "w-full py-2 bg-green-600 text-white rounded font-bold text-sm"
-            }, "ชำระเงิน")
+              onClick: handleCheckout,
+              className: "w-full py-2 bg-orange-500 text-white rounded font-bold text-sm hover:bg-orange-600 transition flex items-center justify-center gap-1"
+            }, `🛍️ ไปยังหน้าร้านค้าจริง (${cart[0].storeName})`)
           )
         ),
 
-        // Product Detail Modal (หน้าต่างเด้งแสดงรายละเอียดสินค้า)
+        // ป๊อบอัพรายละเอียดสินค้า + ปุ่มไปร้านค้าจริง
         selectedProduct && React.createElement("div", { className: "fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50" },
           React.createElement("div", { className: "bg-white dark:bg-gray-800 text-gray-900 dark:text-white max-w-md w-full rounded-xl p-6 shadow-2xl border border-gray-200 dark:border-gray-700" },
-            React.createElement("img", { src: selectedProduct.img, alt: selectedProduct.name, className: "w-full h-48 object-cover rounded-lg mb-4" }),
+            React.createElement("img", { src: selectedProduct.img, alt: selectedProduct.name, className: "w-full h-48 object-contain p-2 bg-white rounded-lg mb-4" }),
             React.createElement("div", { className: "flex justify-between items-center mb-2" },
               React.createElement("span", { className: "text-xs border px-2 py-0.5 rounded font-mono" }, selectedProduct.type),
               React.createElement("span", { className: "text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-2 py-0.5 rounded-full font-bold" }, `สต็อกพร้อมส่ง: ${selectedProduct.stock} ชิ้น`)
@@ -114,6 +118,18 @@
             React.createElement("h2", { className: "text-xl font-bold" }, selectedProduct.name),
             React.createElement("p", { className: "text-sm font-semibold opacity-80 mt-1" }, selectedProduct.spec),
             React.createElement("p", { className: "text-xs opacity-70 mt-3 leading-relaxed border-t border-b border-gray-200 dark:border-gray-700 py-3" }, selectedProduct.desc),
+            
+            // ปุ่มเปิดลิงก์ร้านค้าจริงในหน้าป๊อบอัพ
+            React.createElement("div", { className: "mt-3 p-2 bg-gray-100 dark:bg-gray-700 rounded-lg flex justify-between items-center" },
+              React.createElement("span", { className: "text-xs opacity-80" }, `สั่งซื้อโดยตรงจาก ${selectedProduct.storeName}`),
+              React.createElement("a", {
+                href: selectedProduct.shopUrl,
+                target: "_blank",
+                rel: "noopener noreferrer",
+                className: "text-xs bg-orange-500 text-white px-2.5 py-1 rounded font-bold hover:bg-orange-600 transition"
+              }, `ไปที่ ${selectedProduct.storeName} ↗`)
+            ),
+
             React.createElement("div", { className: "flex justify-between items-center mt-5" },
               React.createElement("div", null,
                 React.createElement("span", { className: "text-xs opacity-60 block" }, "ราคา"),
