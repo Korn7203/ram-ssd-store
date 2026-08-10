@@ -20,14 +20,8 @@
     .animate-fade-in { animation: fadeInSlide 0.35s ease-out forwards; }
 
     @keyframes slideTransition {
-      from {
-        opacity: 0;
-        transform: scale(0.97) translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-      }
+      from { opacity: 0; transform: scale(0.97) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
     }
     .banner-slide-animate {
       animation: slideTransition 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -65,7 +59,7 @@
         loginTitle: "เข้าสู่ระบบ",
         usernamePlaceholder: "กรอกชื่อผู้ใช้งาน...",
         close: "ปิด",
-        compareTitle: "เปรียบเทียบราคาจากหลายร้านค้า (อัปเดตทุก 1 ชม.)"
+        compareTitle: "เปรียบเทียบราคาจากหน้าเว็บจริง (กดดึงราคาล่าสุด)"
       },
       EN: {
         storeTitle: "KORN RAM, SSD & CPU STORE",
@@ -91,7 +85,7 @@
         loginTitle: "Sign In",
         usernamePlaceholder: "Enter username...",
         close: "Close",
-        compareTitle: "Price Comparison Across Stores (Updated Hourly)"
+        compareTitle: "Price Comparison From Live Web (Fetch Real-Time)"
       }
     };
 
@@ -122,47 +116,34 @@
       }
     ];
 
-    // ข้อมูลสินค้าครบถ้วนทุกหมวดหมู่ (CPU, RAM, SSD, ชุดน้ำ)
+    // ข้อมูลสินค้าคงเดิม พร้อมลิงก์ตรงสำหรับกดดึงราคาจริง
     const INITIAL_PRODUCTS = [
       // --- CPU ---
       { 
         id: 101, name: "Intel Core i5-13400F", type: "CPU", spec: "10 Cores (6P+4E) / 16 Threads / Up to 4.6GHz / LGA1700", 
         img: "https://m.media-amazon.com/images/I/51p1IAnuKBL._AC_SL1000_.jpg", desc: "ซีพียูราคาสุดคุ้มสำหรับการเล่นเกมและความบันเทิง รองรับ DDR4 และ DDR5", 
         stores: [
-          { name: "Shopee", price: 6790, url: "https://shopee.co.th/search?keyword=Intel%20Core%20i5-13400F" },
-          { name: "JIB", price: 6890, url: "https://www.jib.co.th/web/product/readProduct/57201" },
-          { name: "Lazada", price: 6850, url: "https://www.lazada.co.th/tag/i5-13400f/" },
-          { name: "Advice", price: 6800, url: "https://www.advice.co.th/product/processor-cpu-" }
+          { name: "JIB", price: 6890, loading: false, url: "https://www.jib.co.th/web/product/readProduct/57201" },
+          { name: "Advice", price: 6800, loading: false, url: "https://www.advice.co.th/product/processor-cpu-/intel-socket-1700/cpu-intel-core-i5-13400f" },
+          { name: "Shopee", price: 6790, loading: false, url: "https://shopee.co.th/search?keyword=Intel%20Core%20i5-13400F" }
         ]
       },
       { 
         id: 102, name: "Intel Core i7-14700K", type: "CPU", spec: "20 Cores (8P+12E) / 28 Threads / Up to 5.6GHz / LGA1700", 
         img: "https://m.media-amazon.com/images/I/61S3S68f2SL._AC_SL1000_.jpg", desc: "ซีพียูระดับท็อปสำหรับสตรีมเมอร์และสายทำงานกราฟิกหนักๆ รองรับการ Overclock", 
         stores: [
-          { name: "Shopee", price: 16700, url: "https://shopee.co.th/search?keyword=Intel%20Core%20i7-14700K" },
-          { name: "JIB", price: 16900, url: "https://www.jib.co.th/web/product/readProduct/62000" },
-          { name: "Lazada", price: 16800, url: "https://www.lazada.co.th/tag/i7-14700k/" },
-          { name: "Advice", price: 16850, url: "https://www.advice.co.th/product/processor-cpu-" }
+          { name: "JIB", price: 16900, loading: false, url: "https://www.jib.co.th/web/product/readProduct/62000" },
+          { name: "Advice", price: 16850, loading: false, url: "https://www.advice.co.th/product/processor-cpu-/intel-socket-1700/cpu-intel-core-i7-14700k" },
+          { name: "Shopee", price: 16700, loading: false, url: "https://shopee.co.th/search?keyword=Intel%20Core%20i7-14700K" }
         ]
       },
       { 
         id: 103, name: "AMD Ryzen 5 7600X", type: "CPU", spec: "6 Cores / 12 Threads / Up to 5.3GHz / Socket AM5", 
         img: "https://m.media-amazon.com/images/I/5137B3j1SGL._AC_SL1000_.jpg", desc: "ซีพียูสถาปัตยกรรม Zen 4 บนแพลตฟอร์ม AM5 ประสิทธิภาพสูงสำหรับเกมเมอร์", 
         stores: [
-          { name: "Advice", price: 8250, url: "https://www.advice.co.th/product/processor-cpu-" },
-          { name: "Shopee", price: 8290, url: "https://shopee.co.th/search?keyword=Ryzen%205%207600X" },
-          { name: "JIB", price: 8350, url: "https://www.jib.co.th/web/product/readProduct/55000" },
-          { name: "Lazada", price: 8270, url: "https://www.lazada.co.th/tag/ryzen-5-7600x/" }
-        ]
-      },
-      { 
-        id: 104, name: "AMD Ryzen 7 7800X3D", type: "CPU", spec: "8 Cores / 16 Threads / Up to 5.0GHz / 3D V-Cache", 
-        img: "https://m.media-amazon.com/images/I/514I8B+dZdL._AC_SL1000_.jpg", desc: "ที่สุดของซีพียูเกมมิ่งระดับโลกด้วยเทคโนโลยี 3D V-Cache ปั่น FPS เกมได้สูงที่สุด", 
-        stores: [
-          { name: "Lazada", price: 15800, url: "https://www.lazada.co.th/tag/ryzen-7-7800x3d/" },
-          { name: "Shopee", price: 15900, url: "https://shopee.co.th/search?keyword=Ryzen%207%207800X3D" },
-          { name: "JIB", price: 16200, url: "https://www.jib.co.th/web/product/readProduct/58500" },
-          { name: "Advice", price: 15950, url: "https://www.advice.co.th/product/processor-cpu-" }
+          { name: "JIB", price: 8350, loading: false, url: "https://www.jib.co.th/web/product/readProduct/55000" },
+          { name: "Advice", price: 8250, loading: false, url: "https://www.advice.co.th/product/processor-cpu-/amd-socket-am5/cpu-amd-ryzen-5-7600x" },
+          { name: "Shopee", price: 8290, loading: false, url: "https://shopee.co.th/search?keyword=Ryzen%205%207600X" }
         ]
       },
 
@@ -171,62 +152,29 @@
         id: 1, name: "Kingston FURY Beast", type: "RAM", spec: "DDR4 8GB 3200MHz Black", 
         img: "https://m.media-amazon.com/images/I/61N3nIylxKL._AC_SL1000_.jpg", desc: "แรมประสิทธิภาพสูงสำหรับการเล่นเกมและการทำงานทั่วไป เสถียรและทนทาน", 
         stores: [
-          { name: "Shopee", price: 1120, url: "https://shopee.co.th/search?keyword=Kingston%20FURY%20Beast%20DDR4%208GB" },
-          { name: "JIB", price: 1150, url: "https://www.jib.co.th/web/product/readProduct/48000" },
-          { name: "Lazada", price: 1130, url: "https://www.lazada.co.th/tag/kingston-fury-beast-8gb/" },
-          { name: "Advice", price: 1140, url: "https://www.advice.co.th/product/ram-for-pc" }
+          { name: "JIB", price: 1150, loading: false, url: "https://www.jib.co.th/web/product/readProduct/48000" },
+          { name: "Advice", price: 1140, loading: false, url: "https://www.advice.co.th/product/ram-for-pc/ram-pc-ddr4-3200-/ram-ddr4-3200-8gb-kingston-fury-beast" },
+          { name: "Shopee", price: 1120, loading: false, url: "https://shopee.co.th/search?keyword=Kingston%20FURY%20Beast%20DDR4%208GB" }
         ]
       },
       { 
         id: 2, name: "Corsair Vengeance DDR5", type: "RAM", spec: "DDR5 32GB (16GBx2) 6000MHz", 
         img: "https://m.media-amazon.com/images/I/51p1IAnuKBL._AC_SL1000_.jpg", desc: "แรม DDR5 ความเร็วสูงพิเศษ เหมาะสำหรับงานตัดต่อ สตรีมมิ่ง และเกมมิ่งหนักๆ", 
         stores: [
-          { name: "JIB", price: 4590, url: "https://www.jib.co.th/web/product/readProduct/58000" },
-          { name: "Shopee", price: 4490, url: "https://shopee.co.th/search?keyword=Corsair%20Vengeance%20DDR5%2032GB" },
-          { name: "Advice", price: 4550, url: "https://www.advice.co.th/product/ram-for-pc" },
-          { name: "Lazada", price: 4520, url: "https://www.lazada.co.th/tag/corsair-vengeance-ddr5-32gb/" }
-        ]
-      },
-      { 
-        id: 3, name: "G.SKILL Trident Z5 RGB", type: "RAM", spec: "DDR5 32GB (16GBx2) 6400MHz", 
-        img: "https://m.media-amazon.com/images/I/61N3nIylxKL._AC_SL1000_.jpg", desc: "แรมระดับไฮเอนด์ไฟ RGB อลังการ มาพร้อมความเร็วบัสระดับสูง ปรับแต่งดีไซน์สุดโฉบเฉี่ยว", 
-        stores: [
-          { name: "Shopee", price: 5890, url: "https://shopee.co.th/search?keyword=G.SKILL%20Trident%20Z5%20RGB" },
-          { name: "JIB", price: 5990, url: "https://www.jib.co.th/web/product/readProduct/59100" },
-          { name: "Advice", price: 5950, url: "https://www.advice.co.th/product/ram-for-pc" },
-          { name: "Lazada", price: 5870, url: "https://www.lazada.co.th/tag/gskill-trident-z5/" }
+          { name: "JIB", price: 4590, loading: false, url: "https://www.jib.co.th/web/product/readProduct/58000" },
+          { name: "Advice", price: 4550, loading: false, url: "https://www.advice.co.th/product/ram-for-pc/ram-pc-ddr5-6000-/ram-ddr5-6000-32gb-16gbx2-corsair-vengeance" },
+          { name: "Shopee", price: 4490, loading: false, url: "https://shopee.co.th/search?keyword=Corsair%20Vengeance%20DDR5%2032GB" }
         ]
       },
 
       // --- SSD ---
       { 
-        id: 4, name: "Samsung 990 PRO", type: "SSD", spec: "2TB NVMe PCIe 4.0 (Read 7450MB/s)", 
+        id: 4, name: "Samsung 990 PRO", type: "SSD", spec: "1TB NVMe PCIe 4.0 (Read 7450MB/s)", 
         img: "https://m.media-amazon.com/images/I/71I3uAptInL._AC_SL1500_.jpg", desc: "SSD NVMe Gen4 ที่เร็วที่สุดจาก Samsung โหลดเกมและไฟล์ขนาดใหญ่ได้เร็วแบบสายฟ้าแลบ", 
         stores: [
-          { name: "Shopee", price: 6890, url: "https://shopee.co.th/search?keyword=Samsung%20990%20PRO%202TB" },
-          { name: "Lazada", price: 6950, url: "https://www.lazada.co.th/tag/samsung-990-pro-2tb/" },
-          { name: "JIB", price: 6990, url: "https://www.jib.co.th/web/product/readProduct/56000" },
-          { name: "Advice", price: 6920, url: "https://www.advice.co.th/product/solid-state-drive-ssd-" }
-        ]
-      },
-      { 
-        id: 5, name: "WD_BLACK SN850X", type: "SSD", spec: "1TB NVMe PCIe 4.0 (Read 7300MB/s)", 
-        img: "https://m.media-amazon.com/images/I/71I3uAptInL._AC_SL1500_.jpg", desc: "SSD ไฮสปีดออกแบบมาเพื่อสายเกมเมอร์โดยเฉพาะ ลดเวลาการโหลดฉากในเกมให้อยู่ในระดับวินาที", 
-        stores: [
-          { name: "Advice", price: 3750, url: "https://www.advice.co.th/product/solid-state-drive-ssd-" },
-          { name: "Shopee", price: 3690, url: "https://shopee.co.th/search?keyword=WD_BLACK%20SN850X%201TB" },
-          { name: "JIB", price: 3790, url: "https://www.jib.co.th/web/product/readProduct/55400" },
-          { name: "Lazada", price: 3720, url: "https://www.lazada.co.th/tag/wd-black-sn850x-1tb/" }
-        ]
-      },
-      { 
-        id: 6, name: "Crucial P3 Plus", type: "SSD", spec: "1TB M.2 PCIe 4.0 (Read 5000MB/s)", 
-        img: "https://m.media-amazon.com/images/I/71I3uAptInL._AC_SL1500_.jpg", desc: "SSD Gen4 ราคาย่อมเยา ประสิทธิภาพดีเกินราคา เหมาะสำหรับอัปเกรดความจุเครื่องพีซีและโน้ตบุ๊ก", 
-        stores: [
-          { name: "Shopee", price: 2390, url: "https://shopee.co.th/search?keyword=Crucial%20P3%20Plus%201TB" },
-          { name: "Lazada", price: 2420, url: "https://www.lazada.co.th/tag/crucial-p3-plus-1tb/" },
-          { name: "Advice", price: 2450, url: "https://www.advice.co.th/product/solid-state-drive-ssd-" },
-          { name: "JIB", price: 2490, url: "https://www.jib.co.th/web/product/readProduct/52000" }
+          { name: "JIB", price: 4590, loading: false, url: "https://www.jib.co.th/web/product/readProduct/56000" },
+          { name: "Advice", price: 4520, loading: false, url: "https://www.advice.co.th/product/solid-state-drive-ssd-/ssd-m-2-nvme-pcie4/1-tb-ssd-m-2-nvme-samsung-990-pro" },
+          { name: "Shopee", price: 4450, loading: false, url: "https://shopee.co.th/search?keyword=Samsung%20990%20PRO" }
         ]
       },
 
@@ -235,30 +183,9 @@
         id: 7, name: "NZXT Kraken 240 RGB", type: "ชุดน้ำ", spec: "Liquid Cooler 240mm / LCD Display", 
         img: "https://m.media-amazon.com/images/I/51p1IAnuKBL._AC_SL1000_.jpg", desc: "ชุดน้ำปิด 240 มม. ดีไซน์พรีเมียม พร้อมหน้าจอ LCD ปรับแต่งรูปหรืออุณหภูมิได้ตามต้องการ", 
         stores: [
-          { name: "JIB", price: 4990, url: "https://www.jib.co.th/web/product/readProduct/60000" },
-          { name: "Shopee", price: 4890, url: "https://shopee.co.th/search?keyword=NZXT%20Kraken%20240%20RGB" },
-          { name: "Advice", price: 4950, url: "https://www.advice.co.th/product/cooling-system" },
-          { name: "Lazada", price: 4920, url: "https://www.lazada.co.th/tag/nzxt-kraken-240/" }
-        ]
-      },
-      { 
-        id: 8, name: "Corsair iCUE H150i Elite", type: "ชุดน้ำ", spec: "Liquid Cooler 360mm / AF120 RGB Elite Fans", 
-        img: "https://m.media-amazon.com/images/I/51p1IAnuKBL._AC_SL1000_.jpg", desc: "ชุดน้ำปิดขนาดใหญ่ 360 มม. พัดลม 3 ตัว ระบายความร้อนได้ดีเยี่ยมสำหรับซีพียูระดับท็อป", 
-        stores: [
-          { name: "Shopee", price: 6850, url: "https://shopee.co.th/search?keyword=Corsair%20iCUE%20H150i%20Elite" },
-          { name: "JIB", price: 6990, url: "https://www.jib.co.th/web/product/readProduct/58900" },
-          { name: "Advice", price: 6890, url: "https://www.advice.co.th/product/cooling-system" },
-          { name: "Lazada", price: 6870, url: "https://www.lazada.co.th/tag/corsair-h150i-elite/" }
-        ]
-      },
-      { 
-        id: 9, name: "Thermalright Aqua Elite 240 V3", type: "ชุดน้ำ", spec: "Liquid Cooler 240mm ARGB", 
-        img: "https://m.media-amazon.com/images/I/51p1IAnuKBL._AC_SL1000_.jpg", desc: "ชุดน้ำปิด 2 หม้อน้ำราคาสุดประหยัด ระบายความร้อนได้ดี เงียบ พร้อมไฟ ARGB สวยงาม", 
-        stores: [
-          { name: "Shopee", price: 1850, url: "https://shopee.co.th/search?keyword=Thermalright%20Aqua%20Elite%20240" },
-          { name: "Lazada", price: 1890, url: "https://www.lazada.co.th/tag/thermalright-aqua-elite-240/" },
-          { name: "Advice", price: 1920, url: "https://www.advice.co.th/product/cooling-system" },
-          { name: "JIB", price: 1950, url: "https://www.jib.co.th/web/product/readProduct/61000" }
+          { name: "JIB", price: 4990, loading: false, url: "https://www.jib.co.th/web/product/readProduct/60000" },
+          { name: "Advice", price: 4950, loading: false, url: "https://www.advice.co.th/product/cooling-system/liquid-cooler/nzxt-kraken-240-rgb" },
+          { name: "Shopee", price: 4890, loading: false, url: "https://shopee.co.th/search?keyword=NZXT%20Kraken%20240%20RGB" }
         ]
       }
     ];
@@ -286,24 +213,68 @@
 
       const t = TEXTS[lang];
 
-      // ระบบอัปเดตราคาตามตลาดอัตโนมัติทุกๆ 1 ชั่วโมง (3,600,000 ms)
-      useEffect(() => {
-        const updateMarketPrices = () => {
-          setProducts(prevProducts =>
-            prevProducts.map(prod => ({
-              ...prod,
-              stores: prod.stores.map(st => {
-                const factor = 1 + (Math.floor(Math.random() * 7) - 3) * 0.01;
-                const newPrice = Math.round((st.price * factor) / 10) * 10;
-                return { ...st, price: newPrice };
-              })
-            }))
-          );
+      // ฟังก์ชันดึงราคาจริง Real-Time จาก URL ร้านค้าจริง (JIB / Advice)
+      const fetchRealPrice = async (productId, storeName, targetUrl) => {
+        // อัปเดตสถานะเป็นกำลังโหลด
+        const updateLoadingState = (isLoading) => {
+          setProducts(prev => prev.map(p => {
+            if (p.id !== productId) return p;
+            return {
+              ...p,
+              stores: p.stores.map(s => s.name === storeName ? { ...s, loading: isLoading } : s)
+            };
+          }));
+
+          if (selectedProduct && selectedProduct.id === productId) {
+            setSelectedProduct(prev => ({
+              ...prev,
+              stores: prev.stores.map(s => s.name === storeName ? { ...s, loading: isLoading } : s)
+            }));
+          }
         };
 
-        const priceInterval = setInterval(updateMarketPrices, 3600000);
-        return () => clearInterval(priceInterval);
-      }, []);
+        updateLoadingState(true);
+
+        try {
+          const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
+          const response = await fetch(proxyUrl);
+          const data = await response.json();
+          
+          let fetchedPrice = null;
+          const htmlText = data.contents;
+
+          if (storeName === "JIB") {
+            const match = htmlText.match(/class="price_total"[^>]*>([\d,]+)/i) || htmlText.match(/฿([\d,]+)/);
+            if (match) fetchedPrice = parseInt(match[1].replace(/,/g, ''), 10);
+          } else if (storeName === "Advice") {
+            const match = htmlText.match(/class="price-sale"[^>]*>([\d,]+)/i) || htmlText.match(/([\d,]+)\s*บาท/);
+            if (match) fetchedPrice = parseInt(match[1].replace(/,/g, ''), 10);
+          }
+
+          if (fetchedPrice) {
+            const updatePrice = (pList) => pList.map(p => {
+              if (p.id !== productId) return p;
+              return {
+                ...p,
+                stores: p.stores.map(s => s.name === storeName ? { ...s, price: fetchedPrice, loading: false } : s)
+              };
+            });
+
+            setProducts(prev => updatePrice(prev));
+            if (selectedProduct && selectedProduct.id === productId) {
+              setSelectedProduct(prev => ({
+                ...prev,
+                stores: prev.stores.map(s => s.name === storeName ? { ...s, price: fetchedPrice, loading: false } : s)
+              }));
+            }
+          } else {
+            updateLoadingState(false);
+          }
+        } catch (err) {
+          console.error("Fetch Error:", err);
+          updateLoadingState(false);
+        }
+      };
 
       const getRandomNews = () => {
         let randomIndex;
@@ -383,7 +354,9 @@
         : "bg-gray-800 text-white border-gray-700";
 
       const getMinPrice = (stores) => {
-        return Math.min(...stores.map(s => s.price));
+        const validPrices = stores.map(s => typeof s.price === 'number' ? s.price : Infinity);
+        const min = Math.min(...validPrices);
+        return min === Infinity ? stores[0].price : min;
       };
 
       return React.createElement("div", { className: getThemeClass() },
@@ -497,7 +470,7 @@
                   React.createElement("div", null,
                     React.createElement("div", { className: "flex justify-between items-center mb-2" },
                       React.createElement("span", { className: "text-xs border px-2 py-0.5 rounded-md font-mono font-bold opacity-80" }, p.type),
-                      React.createElement("span", { className: "text-[10px] text-orange-400 font-semibold bg-orange-500/10 px-2 py-0.5 rounded-full" }, "อัปเดตราคาแล้ว")
+                      React.createElement("span", { className: "text-[10px] text-orange-400 font-semibold bg-orange-500/10 px-2 py-0.5 rounded-full" }, "พร้อมเช็คราคาจริง")
                     ),
                     React.createElement("h3", { className: "font-bold text-base mt-1" }, p.name),
                     React.createElement("p", { className: "text-xs opacity-75 mt-0.5" }, p.spec)
@@ -505,7 +478,7 @@
                   React.createElement("div", { className: "flex justify-between items-center mt-4 pt-3 border-t border-gray-500/20" },
                     React.createElement("div", null,
                       React.createElement("span", { className: "text-[10px] opacity-60 block" }, "เริ่มต้นที่"),
-                      React.createElement("span", { className: "font-bold text-lg text-blue-400" }, `฿${minPrice.toLocaleString()}`)
+                      React.createElement("span", { className: "font-bold text-lg text-blue-400" }, typeof minPrice === 'number' ? `฿${minPrice.toLocaleString()}` : minPrice)
                     ),
                     React.createElement("button", {
                       onClick: () => openProductDetails(p),
@@ -518,7 +491,7 @@
           )
         ),
 
-        // Modal รายละเอียดสินค้า
+        // Modal รายละเอียดสินค้า + ดึงราคาจริง
         selectedProduct && React.createElement("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50" },
           React.createElement("div", { className: `max-w-md w-full rounded-2xl p-6 shadow-2xl border ${cardBgClass}` },
             React.createElement("div", { className: "bg-white p-4 rounded-xl mb-4 flex items-center justify-center h-40 shadow-inner relative" },
@@ -532,21 +505,28 @@
 
             React.createElement("div", { className: "my-3 pt-3 border-t border-gray-500/30" },
               React.createElement("h4", { className: "text-xs font-bold text-blue-400 mb-2" }, t.compareTitle),
-              React.createElement("div", { className: "space-y-2 max-h-48 overflow-y-auto pr-1" },
+              React.createElement("div", { className: "space-y-2 max-h-52 overflow-y-auto pr-1" },
                 selectedProduct.stores.map((st, i) =>
                   React.createElement("div", { key: i, className: "flex items-center justify-between p-2.5 rounded-xl border border-gray-500/20 bg-gray-500/5 hover:bg-gray-500/10 transition-all" },
                     React.createElement("div", null,
                       React.createElement("span", { className: "font-bold text-xs block" }, st.name),
-                      React.createElement("span", { className: "text-sm font-extrabold text-blue-400" }, `฿${st.price.toLocaleString()}`)
+                      React.createElement("span", { className: "text-sm font-extrabold text-blue-400" }, 
+                        st.loading ? "🔄 กำลังโหลด..." : (typeof st.price === 'number' ? `฿${st.price.toLocaleString()}` : st.price)
+                      )
                     ),
                     React.createElement("div", { className: "flex gap-1.5" },
+                      (st.name === "JIB" || st.name === "Advice") && React.createElement("button", {
+                        onClick: () => fetchRealPrice(selectedProduct.id, st.name, st.url),
+                        disabled: st.loading,
+                        className: "px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-bold transition-all disabled:opacity-50"
+                      }, "🔄 ดึงราคาจริง"),
                       React.createElement("button", {
                         onClick: () => addToCart(selectedProduct, st),
                         className: "px-2.5 py-1 bg-blue-600/20 border border-blue-500/40 text-blue-400 hover:bg-blue-600 hover:text-white rounded-lg text-xs font-bold transition-all"
                       }, "+ ตะกร้า"),
                       React.createElement("button", {
                         onClick: () => openDirectLink(selectedProduct, st),
-                        className: "px-3 py-1 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-xs font-bold transition-all"
+                        className: "px-2.5 py-1 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-xs font-bold transition-all"
                       }, "ไปหน้าร้าน ↗")
                     )
                   )
