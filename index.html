@@ -18,14 +18,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
     .animate-fade-in { animation: fadeInSlide 0.35s ease-out forwards; }
-
-    @keyframes slideTransition {
-      from { opacity: 0; transform: scale(0.97) translateY(10px); }
-      to { opacity: 1; transform: scale(1) translateY(0); }
-    }
-    .banner-slide-animate {
-      animation: slideTransition 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-900 selection:bg-blue-500 selection:text-white">
@@ -43,8 +35,6 @@
         cart: "ตะกร้า",
         login: "เข้าสู่ระบบ",
         logout: "ออกจากระบบ",
-        history: "ประวัติการคลิก",
-        recent: "ดูล่าสุด",
         all: "ทั้งหมด",
         cpu: "CPU",
         ram: "RAM",
@@ -54,20 +44,12 @@
         acc: "ตกแต่ง/พัดลม",
         detail: "เปรียบเทียบราคา / ไปหน้าเว็บ",
         cancel: "ยกเลิก",
-        addToCart: "ใส่ตะกร้า",
-        total: "ราคารวมทั้งหมด",
-        clearCart: "ล้างตะกร้าทั้งหมด",
-        noHistory: "ยังไม่มีประวัติการคลิกสินค้า",
-        noRecent: "ยังไม่มีประวัติการดูสินค้า",
         loginTitle: "เข้าสู่ระบบ",
         usernamePlaceholder: "กรอกชื่อผู้ใช้งาน...",
         close: "ปิด",
-        compareTitle: "เปรียบเทียบราคาจากหน้าเว็บจริง",
         adminBtn: "⚙️ จัดการสินค้า (Admin)",
-        adminTitle: "ระบบจัดการสินค้า (Admin Dashboard)",
         addProduct: "+ เพิ่มสินค้าใหม่",
         editProduct: "✏️ แก้ไขสินค้า",
-        deleteProduct: "🗑️ ลบสินค้า",
         save: "บันทึกข้อมูล",
         resetDefault: "🔄 คืนค่าสินค้าเริ่มต้น"
       },
@@ -77,8 +59,6 @@
         cart: "Cart",
         login: "Login",
         logout: "Logout",
-        history: "Click History",
-        recent: "Recently Viewed",
         all: "ALL",
         cpu: "CPU",
         ram: "RAM",
@@ -88,45 +68,20 @@
         acc: "Decor & Fans",
         detail: "Compare Prices / Open Link",
         cancel: "Cancel",
-        addToCart: "Add to Cart",
-        total: "Total Price",
-        clearCart: "Clear Cart",
-        noHistory: "No click history yet",
-        noRecent: "No recently viewed items",
         loginTitle: "Sign In",
         usernamePlaceholder: "Enter username...",
         close: "Close",
-        compareTitle: "Price Comparison From Live Web",
         adminBtn: "⚙️ Manage Products",
-        adminTitle: "Product Management (Admin)",
         addProduct: "+ Add New Product",
         editProduct: "✏️ Edit Product",
-        deleteProduct: "🗑️ Delete",
         save: "Save Changes",
         resetDefault: "🔄 Reset Defaults"
       }
     };
 
-    const TECH_NEWS_POOL = [
-      {
-        id: "news-1",
-        title: "🤖 Generative AI On-Device - ชิปเซ็ตประมวลผล AI ในเครื่องไม่ต้องง้อรวดเร็วทันใจ",
-        desc: "เทรนด์ CPU ยุคนี้เน้น NPU ประมวลผลโมเดลภาษาขนาดใหญ่ (LLM) บนเครื่องโดยตรง ปลอดภัยและรวดเร็วกว่าเดิม",
-        bg: "from-blue-900 via-indigo-900 to-slate-900",
-        badge: "WORLD TECH 2026",
-        img: "https://assets.brandinside.asia/uploads/2024/07/Chips-AI-Web.png"
-      },
-      {
-        id: "news-2",
-        title: "⚡ RAM DDR5 - ยุคใหม่แห่งความเร็วและความจุระดับ 192GB",
-        desc: "เทรนด์ RAM มาตรฐานใหม่เน้น Non-Binary RAM ความจุสูงสุด 192GB ความเร็วบัส 8000+ MHz",
-        bg: "from-violet-900 via-purple-900 to-slate-900",
-        badge: "HARDWARE UPDATE",
-        img: "https://notebookspec.com/web/wp-content/uploads/2025/08/2.Pic_Predator-Hera-192GB.png"
-      }
-    ];
-
+    // สินค้าทั้งหมดครบทุกหมวดหมู่
     const DEFAULT_PRODUCTS = [
+      // --- CPU ---
       { 
         id: 101, name: "Intel Core i5-13400F", type: "CPU", spec: "10 Cores (6P+4E) / 16 Threads / Up to 4.6GHz", 
         img: "https://www.autonetpc.com/wp-content/uploads/2023/01/2022122610011856972_3.webp", desc: "ซีพียูราคาสุดคุ้มสำหรับการเล่นเกมและความบันเทิง", 
@@ -137,12 +92,98 @@
         ]
       },
       { 
+        id: 102, name: "AMD Ryzen 5 7600X", type: "CPU", spec: "6 Cores / 12 Threads / Up to 5.3GHz / AM5", 
+        img: "https://www.jib.co.th/img_filter/item_hardware/20220927163820_55581_1.jpg", desc: "แรงจัดเต็มในสถาปัตยกรรม Zen 4 รองรับ DDR5", 
+        stores: [
+          { name: "JIB", price: 8290, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 7990, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 8100, url: "https://shopee.co.th" }
+        ]
+      },
+      // --- RAM ---
+      { 
         id: 1, name: "Kingston FURY Beast", type: "RAM", spec: "DDR4 8GB 3200MHz Black", 
         img: "https://media.kingston.com/kingston/product/FURY_Beast_Black_DDR4_1-zm-lg.jpg", desc: "แรมประสิทธิภาพสูง เสถียรและทนทาน", 
         stores: [
           { name: "JIB", price: 1490, url: "https://www.jib.co.th" },
           { name: "Advice", price: 1450, url: "https://www.advice.co.th" },
           { name: "Shopee", price: 1390, url: "https://shopee.co.th" }
+        ]
+      },
+      { 
+        id: 2, name: "Corsair Vengeance LPX", type: "RAM", spec: "DDR4 16GB (8GBx2) 3200MHz", 
+        img: "https://cwsmgmt.corsair.com/pdp/vengeance-lpx/images/lpx-pdp-hero-black.png", desc: "ดีไซน์อลูมิเนียมระบายความร้อนได้ดีเยี่ยม", 
+        stores: [
+          { name: "JIB", price: 2190, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 2090, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 1990, url: "https://shopee.co.th" }
+        ]
+      },
+      { 
+        id: 3, name: "G.Skill Trident Z RGB", type: "RAM", spec: "DDR4 16GB (8GBx2) 3600MHz", 
+        img: "https://www.gskill.com/gskill-device/product/1582270911/1582271018.png", desc: "ไฟ RGB สวยงาม ปรับแต่งได้ตามต้องการ", 
+        stores: [
+          { name: "JIB", price: 2890, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 2790, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 2650, url: "https://shopee.co.th" }
+        ]
+      },
+      // --- SSD ---
+      { 
+        id: 4, name: "Samsung 980 PRO", type: "SSD", spec: "1TB PCIe 4.0 NVMe M.2", 
+        img: "https://images.samsung.com/is/image/samsung/p6pim/th/mz-v8v1t0bw/gallery/th-980-nvme-m2-ssd-mz-v8v1t0bw-397262657", desc: "ความเร็วอ่าน/เขียนระดับท็อปสำหรับเกมเมอร์", 
+        stores: [
+          { name: "JIB", price: 3590, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 3490, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 3290, url: "https://shopee.co.th" }
+        ]
+      },
+      { 
+        id: 5, name: "WD Black SN770", type: "SSD", spec: "500GB PCIe 4.0 NVMe M.2", 
+        img: "https://www.westerndigital.com/content/dam/store/en-us/assets/products/internal-storage/wd-black-sn770-nvme-ssd/gallery/wd-black-sn770-nvme-ssd-front.png.wdthumb.1280.1280.webp", desc: "โหลดเกมไว ตอบสนองทันใจ ราคาสบายกระเป๋า", 
+        stores: [
+          { name: "JIB", price: 1890, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 1790, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 1690, url: "https://shopee.co.th" }
+        ]
+      },
+      { 
+        id: 6, name: "Crucial P3 Plus", type: "SSD", spec: "1TB PCIe 4.0 NVMe M.2", 
+        img: "https://content.crucial.com/content/dam/crucial/ssd-products/p3-plus/flyout/crucial-p3-plus-ssd-product-image.png", desc: "ความจุเยอะ คุ้มค่า ประสิทธิภาพสูง", 
+        stores: [
+          { name: "JIB", price: 2490, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 2390, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 2250, url: "https://shopee.co.th" }
+        ]
+      },
+      // --- ชุดน้ำ (Coolers) ---
+      {
+        id: 201, name: "Thermalright Frozen Prism 360", type: "ชุดน้ำ", spec: "360mm ARGB Liquid Cooler Black",
+        img: "https://www.jib.co.th/img_filter/item_hardware/20230502151659_60098_1.jpg", desc: "ชุดน้ำ 3 ตอน ระบายความร้อนดีเยี่ยม ราคาสุดคุ้ม",
+        stores: [
+          { name: "JIB", price: 2390, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 2290, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 2150, url: "https://shopee.co.th" }
+        ]
+      },
+      // --- เคสคอม (Cases) ---
+      {
+        id: 301, name: "NZXT H6 Flow RGB", type: "เคสคอม", spec: "Dual-Chamber Mid-Tower ATX Case",
+        img: "https://www.jib.co.th/img_filter/item_hardware/20231108162234_63801_1.jpg", desc: "เคสกระจกตู้ปลาสุดฮิต ทางลมดีเยี่ยมพร้อมพัดลม RGB",
+        stores: [
+          { name: "JIB", price: 4290, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 4190, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 3990, url: "https://shopee.co.th" }
+        ]
+      },
+      // --- ตกแต่ง/พัดลม ---
+      {
+        id: 401, name: "LIAN LI UNI FAN TL120 RGB", type: "ตกแต่ง/พัดลม", spec: "120mm Daisy-Chain ARGB Fan",
+        img: "https://www.jib.co.th/img_filter/item_hardware/20240112104523_65089_1.jpg", desc: "พัดลมไร้สายต่อแบบไร้รอยต่อ พร้อมไฟ ARGB สวยงาม",
+        stores: [
+          { name: "JIB", price: 1190, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 1150, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 1090, url: "https://shopee.co.th" }
         ]
       }
     ];
@@ -152,7 +193,6 @@
       const [theme, setTheme] = useState("light");
       const [user, setUser] = useState(null);
       
-      // ดึงข้อมูลสินค้าจาก LocalStorage ถ้าไม่มีให้ใช้ค่าเริ่มต้น
       const [products, setProducts] = useState(() => {
         const saved = localStorage.getItem("korn_store_products");
         return saved ? JSON.parse(saved) : DEFAULT_PRODUCTS;
@@ -162,21 +202,13 @@
       const [filter, setFilter] = useState("ALL");
       const [selectedProduct, setSelectedProduct] = useState(null);
       
-      // Modals
       const [isCartOpen, setIsCartOpen] = useState(false);
       const [isLoginOpen, setIsLoginOpen] = useState(false);
-      const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-      const [isRecentOpen, setIsRecentOpen] = useState(false);
       const [isAdminOpen, setIsAdminOpen] = useState(false);
 
       const [cartAnimate, setCartAnimate] = useState(false);
       const [usernameInput, setUsernameInput] = useState("");
-      
-      const [orderHistory, setOrderHistory] = useState([]);
-      const [recentlyViewed, setRecentlyViewed] = useState([]);
-      const [currentNews, setCurrentNews] = useState(TECH_NEWS_POOL[0]);
 
-      // State สำหรับฟอร์มแอดมิน
       const [editingProduct, setEditingProduct] = useState(null);
       const [adminForm, setAdminForm] = useState({
         name: "", type: "CPU", spec: "", img: "", desc: "",
@@ -186,7 +218,6 @@
       const t = TEXTS[lang];
       const isAdmin = user === ADMIN_USERNAME;
 
-      // บันทึกสินค้าลง LocalStorage เมื่อมีการเปลี่ยนแปลง
       useEffect(() => {
         localStorage.setItem("korn_store_products", JSON.stringify(products));
       }, [products]);
@@ -211,7 +242,6 @@
         setIsAdminOpen(false);
       };
 
-      // จัดการฟอร์ม Admin (เปิดหน้าเพิ่ม/แก้ไข)
       const openAdminModal = (productToEdit = null) => {
         if (productToEdit) {
           setEditingProduct(productToEdit);
@@ -239,7 +269,6 @@
         setIsAdminOpen(true);
       };
 
-      // บันทึกการเพิ่ม/แก้ไขสินค้า
       const handleSaveProduct = (e) => {
         e.preventDefault();
         const stores = [
@@ -249,7 +278,6 @@
         ];
 
         if (editingProduct) {
-          // แก้ไข
           const updated = products.map(p => p.id === editingProduct.id ? {
             ...p,
             name: adminForm.name,
@@ -261,7 +289,6 @@
           } : p);
           setProducts(updated);
         } else {
-          // เพิ่มใหม่
           const newProd = {
             id: Date.now(),
             name: adminForm.name,
@@ -276,7 +303,6 @@
         setIsAdminOpen(false);
       };
 
-      // ลบสินค้า
       const handleDeleteProduct = (id) => {
         if (confirm("คุณต้องการลบสินค้านี้ใช่หรือไม่?")) {
           setProducts(products.filter(p => p.id !== id));
@@ -284,7 +310,6 @@
         }
       };
 
-      // คืนค่าสินค้าตั้งต้น
       const handleResetDefaults = () => {
         if (confirm("ต้องการคืนค่าสินค้าเริ่มต้นทั้งหมดใช่หรือไม่?")) {
           setProducts(DEFAULT_PRODUCTS);
@@ -293,33 +318,14 @@
       };
 
       const openDirectLink = (product, store) => {
-        const newRecord = {
-          id: Date.now(),
-          date: new Date().toLocaleString(),
-          store: store.name,
-          items: [{ name: product.name, price: store.price }],
-          total: store.price
-        };
-        setOrderHistory(prev => [newRecord, ...prev]);
         window.open(store.url, "_blank", "noopener,noreferrer");
       };
 
       const openProductDetails = (product) => {
         setSelectedProduct(product);
-        setRecentlyViewed(prev => {
-          const filtered = prev.filter(p => p.id !== product.id);
-          return [product, ...filtered];
-        });
-      };
-
-      const addToCart = (product, store) => {
-        setCart([...cart, { ...product, selectedStore: store, cartItemId: Date.now() + Math.random() }]);
-        setCartAnimate(true);
-        setTimeout(() => setCartAnimate(false), 300);
       };
 
       const filteredProducts = filter === "ALL" ? products : products.filter(p => p.type === filter);
-      const totalPrice = cart.reduce((sum, item) => sum + item.selectedStore.price, 0);
 
       const getThemeClass = () => {
         if (theme === "dark") return "bg-gray-900 text-white min-h-screen p-4 sm:p-6 transition-colors duration-300";
@@ -336,7 +342,6 @@
       };
 
       return React.createElement("div", { className: getThemeClass() },
-        // Header
         React.createElement("header", { className: "flex flex-col md:flex-row justify-between items-center pb-4 border-b border-gray-300 dark:border-gray-700 max-w-5xl mx-auto gap-4" },
           React.createElement("h1", { className: "text-xl font-extrabold tracking-wider bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent" }, t.storeTitle),
           
@@ -351,7 +356,6 @@
               className: "px-2.5 py-1 border rounded-lg text-xs bg-white/10 hover:bg-white/20"
             }, `${t.theme}: ${theme.toUpperCase()}`),
 
-            // แสดงปุ่ม Admin หากลงชื่อเข้าใช้ด้วย musicnoa7
             isAdmin && React.createElement("button", {
               onClick: () => openAdminModal(),
               className: "px-3 py-1 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-lg text-xs shadow-md animate-pulse"
@@ -366,19 +370,11 @@
               React.createElement("button", {
                 onClick: () => setIsLoginOpen(true),
                 className: "px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold"
-              }, `👤 ${t.login}`),
-
-            React.createElement("button", {
-              onClick: () => setIsCartOpen(true),
-              className: `font-semibold text-xs sm:text-sm flex items-center gap-1.5 bg-blue-600 text-white px-3 py-1.5 rounded-lg shadow-md ${cartAnimate ? "animate-cart-pop" : ""}`
-            }, `🛒 ${t.cart} (${cart.length})`)
+              }, `👤 ${t.login}`)
           )
         ),
         
-        // Main Content
         React.createElement("main", { className: "max-w-5xl mx-auto mt-6" },
-          
-          // ปุ่มกรองหมวดหมู่
           React.createElement("div", { className: "flex gap-2 mb-6 overflow-x-auto pb-1" },
             [
               { key: "ALL", label: t.all },
@@ -397,13 +393,11 @@
             )
           ),
           
-          // รายการสินค้า
           React.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 animate-fade-in" },
             filteredProducts.map(p => {
               const minPrice = getMinPrice(p.stores);
               return React.createElement("div", { key: p.id, className: `border rounded-xl overflow-hidden flex flex-col justify-between shadow-sm relative group ${cardBgClass}` },
                 
-                // ปุ่มแก้ไข/ลบ สำหรับ Admin บนการ์ดสินค้า
                 isAdmin && React.createElement("div", { className: "absolute top-2 left-2 z-10 flex gap-1" },
                   React.createElement("button", {
                     onClick: () => openAdminModal(p),
@@ -443,7 +437,6 @@
           )
         ),
 
-        // Modal จัดการสินค้า (Admin Dashboard)
         isAdminOpen && React.createElement("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50" },
           React.createElement("div", { className: `max-w-lg w-full rounded-2xl p-6 shadow-2xl border max-h-[90vh] overflow-y-auto ${cardBgClass}` },
             React.createElement("div", { className: "flex justify-between items-center pb-3 border-b border-gray-500/30" },
@@ -540,7 +533,6 @@
           )
         ),
 
-        // Modal ล็อกอิน
         isLoginOpen && React.createElement("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50" },
           React.createElement("form", { onSubmit: handleLogin, className: `max-w-xs w-full rounded-2xl p-6 shadow-2xl border ${cardBgClass}` },
             React.createElement("h2", { className: "text-lg font-bold mb-4" }, t.loginTitle),
@@ -567,7 +559,6 @@
           )
         ),
 
-        // Modal รายละเอียดสินค้า
         selectedProduct && React.createElement("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50" },
           React.createElement("div", { className: `max-w-md w-full rounded-2xl p-6 shadow-2xl border ${cardBgClass}` },
             React.createElement("div", { className: "bg-white p-4 rounded-xl mb-4 flex items-center justify-center h-40 shadow-inner" },
