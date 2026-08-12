@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KORN PC Store - Full System</title>
+  <title>KORN PC Store - Full System with Storage</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @keyframes cartPop {
@@ -53,7 +53,7 @@
         cooler: "ชุดน้ำ",
         cases: "เคสคอม",
         acc: "ตกแต่ง/พัดลม",
-        detail: "เปรียบเทียบราคา / ไปหน้าเว็บ",
+        detail: "รายละเอียด / เปรียบเทียบ",
         cancel: "ยกเลิก",
         addToCart: "ใส่ตะกร้า",
         total: "ราคารวมทั้งหมด",
@@ -74,7 +74,9 @@
         imageUrl: "ลิงก์รูปภาพ (Image URL)",
         productName: "ชื่อสินค้า",
         spec: "สเปกสินค้า",
-        category: "หมวดหมู่"
+        category: "หมวดหมู่",
+        resetData: "คืนค่าเริ่มต้น",
+        outOfStock: "สินค้าหมด / เลิกผลิต"
       },
       EN: {
         storeTitle: "KORN PC HARDWARE STORE",
@@ -82,8 +84,8 @@
         cart: "Cart",
         login: "Login",
         logout: "Logout",
-        history: "Click History",
-        recent: "Recently Viewed",
+        history: "History",
+        recent: "Recent",
         all: "ALL",
         cpu: "CPU",
         gpu: "GPU",
@@ -92,18 +94,18 @@
         cooler: "Coolers",
         cases: "Cases",
         acc: "Decor & Fans",
-        detail: "Compare Prices / Open Link",
+        detail: "Details / Compare",
         cancel: "Cancel",
         addToCart: "Add to Cart",
         total: "Total Price",
         clearCart: "Clear Cart",
         goTo: "Go to Store",
-        noHistory: "No click history yet",
-        noRecent: "No recently viewed items",
+        noHistory: "No history yet",
+        noRecent: "No recent items",
         loginTitle: "Sign In",
         usernamePlaceholder: "Enter username...",
         close: "Close",
-        compareTitle: "Price Comparison From Stores",
+        compareTitle: "Price Comparison",
         adminMode: "Admin",
         userMode: "Customer",
         editProduct: "Edit Product",
@@ -113,7 +115,9 @@
         imageUrl: "Image URL",
         productName: "Product Name",
         spec: "Specifications",
-        category: "Category"
+        category: "Category",
+        resetData: "Reset Data",
+        outOfStock: "Out of Stock"
       }
     };
 
@@ -145,10 +149,9 @@
     ];
 
     const INITIAL_PRODUCTS = [
-      // --- CPU (4) ---
       { 
         id: 101, name: "Intel Core i5-13400F", type: "CPU", spec: "10 Cores (6P+4E) / 16 Threads / Up to 4.6GHz / LGA1700", 
-        img: "https://www.autonetpc.com/wp-content/uploads/2023/01/2022122610011856972_3.webp", desc: "ซีพียูราคาสุดคุ้มสำหรับการเล่นเกมและความบันเทิง", 
+        img: "https://www.autonetpc.com/wp-content/uploads/2023/01/2022122610011856972_3.webp", desc: "ซีพียูราคาสุดคุ้มสำหรับการเล่นเกมและความบันเทิง", outOfStock: false,
         stores: [
           { name: "JIB", price: 5190, url: "https://www.jib.co.th/web/product/readProduct/56972" },
           { name: "Advice", price: 4950, url: "https://www.advice.co.th/product/A0148187" },
@@ -157,7 +160,7 @@
       },
       { 
         id: 102, name: "Intel Core i7-14700K", type: "CPU", spec: "20 Cores (8P+12E) / 28 Threads / Up to 5.6GHz / LGA1700", 
-        img: "https://ihcupload-bkk.s3.ap-southeast-7.amazonaws.com/img/product/product40473_800.jpg", desc: "ซีพียูระดับท็อปสำหรับสตรีมเมอร์และงานกราฟิกหนักๆ", 
+        img: "https://ihcupload-bkk.s3.ap-southeast-7.amazonaws.com/img/product/product40473_800.jpg", desc: "ซีพียูระดับท็อปสำหรับสตรีมเมอร์และงานกราฟิกหนักๆ", outOfStock: false,
         stores: [
           { name: "JIB", price: 12900, url: "https://www.jib.co.th/web/product/readProduct/63038" },
           { name: "Advice", price: 14510, url: "https://www.advice.co.th" },
@@ -166,7 +169,7 @@
       },
       { 
         id: 103, name: "AMD Ryzen 5 7600X", type: "CPU", spec: "6 Cores / 12 Threads / Up to 5.3GHz / Socket AM5", 
-        img: "https://www.jib.co.th/img_master/product/original/2022092611052955401_2.jpg", desc: "ซีพียูสถาปัตยกรรม Zen 4 สำหรับเกมเมอร์", 
+        img: "https://www.jib.co.th/img_master/product/original/2022092611052955401_2.jpg", desc: "ซีพียูสถาปัตยกรรม Zen 4 สำหรับเกมเมอร์", outOfStock: false,
         stores: [
           { name: "JIB", price: 7190, url: "https://www.jib.co.th/web/product/readProduct/57299" },
           { name: "Advice", price: 8190, url: "https://www.advice.co.th" },
@@ -174,19 +177,8 @@
         ]
       },
       { 
-        id: 104, name: "AMD Ryzen 7 7800X3D", type: "CPU", spec: "8 Cores / 16 Threads / Up to 5.0GHz / 3D V-Cache / AM5", 
-        img: "https://www.jib.co.th/img_master/product/original/2023040616182958742_1.jpg", desc: "ราชาแห่งการเล่นเกมด้วยเทคโนโลยี 3D V-Cache", 
-        stores: [
-          { name: "JIB", price: 14900, url: "https://www.jib.co.th" },
-          { name: "Advice", price: 14500, url: "https://www.advice.co.th" },
-          { name: "Shopee", price: 14800, url: "https://shopee.co.th" }
-        ]
-      },
-
-      // --- GPU / การ์ดจอ (5) ---
-      { 
         id: 201, name: "ASUS ROG Strix RTX 4070 Ti Super", type: "การ์ดจอ", spec: "16GB GDDR6X / 256-bit / Tri-Fan RGB", 
-        img: "https://dlcdnrog.asus.com/rog/media/1704760236894.webp", desc: "การ์ดจอเล่นเกม 4K สเปกโหด ดีไซน์พรีเมียมจาก ROG", 
+        img: "https://dlcdnrog.asus.com/rog/media/1704760236894.webp", desc: "การ์ดจอเล่นเกม 4K สเปกโหด ดีไซน์พรีเมียมจาก ROG", outOfStock: false,
         stores: [
           { name: "JIB", price: 35900, url: "https://www.jib.co.th" },
           { name: "Advice", price: 35500, url: "https://www.advice.co.th" },
@@ -195,7 +187,7 @@
       },
       { 
         id: 202, name: "MSI GeForce RTX 4060 Ventus 2X", type: "การ์ดจอ", spec: "8GB GDDR6 / 128-bit / Dual Fan", 
-        img: "https://asset.msi.com/resize/image/global/product/product_1684980644b931fa3571d9a202c525f20f862bc346.png62405b38c58fe0f07fcef2367d8a9ba1/1024.png", desc: "การ์ดจอยอดนิยมสำหรับการเล่นเกม FHD ปรับสุด", 
+        img: "https://asset.msi.com/resize/image/global/product/product_1684980644b931fa3571d9a202c525f20f862bc346.png62405b38c58fe0f07fcef2367d8a9ba1/1024.png", desc: "การ์ดจอยอดนิยมสำหรับการเล่นเกม FHD ปรับสุด", outOfStock: false,
         stores: [
           { name: "JIB", price: 10500, url: "https://www.jib.co.th" },
           { name: "Advice", price: 10290, url: "https://www.advice.co.th" },
@@ -203,37 +195,8 @@
         ]
       },
       { 
-        id: 203, name: "GIGABYTE RTX 4080 Super Gaming OC", type: "การ์ดจอ", spec: "16GB GDDR6X / 256-bit / WINDFORCE 3X", 
-        img: "https://www.gigabyte.com/media/10427/png/1000", desc: "ความแรงระดับท็อป รองรับ Ray Tracing + DLSS 3", 
-        stores: [
-          { name: "JIB", price: 42900, url: "https://www.jib.co.th" },
-          { name: "Advice", price: 42500, url: "https://www.advice.co.th" },
-          { name: "Shopee", price: 41900, url: "https://shopee.co.th" }
-        ]
-      },
-      { 
-        id: 204, name: "SAPPHIRE PULSE RX 7800 XT", type: "การ์ดจอ", spec: "16GB GDDR6 / 256-bit / Dual-X Cooling", 
-        img: "https://www.sapphiretech.com/-/media/sites/sapphire/products/graphics-cards/7000-series/1133002/1133002_rx7800xt_pulse_16g_c01_1000x1000.ashx", desc: "การ์ดจอฝั่งแดงคุ้มค่า คมชัดลื่นไหลทุกเกม", 
-        stores: [
-          { name: "JIB", price: 18900, url: "https://www.jib.co.th" },
-          { name: "Advice", price: 18500, url: "https://www.advice.co.th" },
-          { name: "Shopee", price: 17900, url: "https://shopee.co.th" }
-        ]
-      },
-      { 
-        id: 205, name: "ZOTAC GAMING RTX 3060 Twin Edge", type: "การ์ดจอ", spec: "12GB GDDR6 / 192-bit / IceStorm 2.0", 
-        img: "https://www.zotac.com/download/files/styles/w1024/public/product_main_images/graphics_cards/zt-a30600e-10m-image01.jpg", desc: "การ์ดจอ VRAM 12GB เล่นเกมทำงานสุดคุ้มค่า", 
-        stores: [
-          { name: "JIB", price: 9200, url: "https://www.jib.co.th" },
-          { name: "Advice", price: 8990, url: "https://www.advice.co.th" },
-          { name: "Shopee", price: 8790, url: "https://shopee.co.th" }
-        ]
-      },
-
-      // --- RAM (5) ---
-      { 
         id: 1, name: "Kingston FURY Beast DDR4", type: "RAM", spec: "DDR4 8GB 3200MHz Black", 
-        img: "https://media.kingston.com/kingston/product/FURY_Beast_Black_DDR4_1-zm-lg.jpg", desc: "แรมเสถียรทนทานสำหรับการใช้งานทั่วไป", 
+        img: "https://media.kingston.com/kingston/product/FURY_Beast_Black_DDR4_1-zm-lg.jpg", desc: "แรมเสถียรทนทานสำหรับการใช้งานทั่วไป", outOfStock: false,
         stores: [
           { name: "JIB", price: 890, url: "https://www.jib.co.th" },
           { name: "Advice", price: 850, url: "https://www.advice.co.th" },
@@ -242,7 +205,7 @@
       },
       { 
         id: 2, name: "Corsair Vengeance DDR5", type: "RAM", spec: "DDR5 32GB (16GBx2) 6000MHz Black", 
-        img: "https://www.jib.co.th/img_master/product/original/2025070114454478140_1.jpg", desc: "แรม DDR5 สปีดสูง สำหรับคอเกมและสตรีมเมอร์", 
+        img: "https://www.jib.co.th/img_master/product/original/2025070114454478140_1.jpg", desc: "แรม DDR5 สปีดสูง สำหรับคอเกมและสตรีมเมอร์", outOfStock: false,
         stores: [
           { name: "JIB", price: 4500, url: "https://www.jib.co.th" },
           { name: "Advice", price: 4390, url: "https://www.advice.co.th" },
@@ -250,37 +213,8 @@
         ]
       },
       { 
-        id: 3, name: "G.SKILL Trident Z5 RGB DDR5", type: "RAM", spec: "DDR5 32GB (16GBx2) 6400MHz Silver", 
-        img: "https://www.gskill.com/img/pr/1633512398.png", desc: "ดีไซน์อะลูมิเนียมหรูหรา ไฟ RGB สวยสะดุดตา", 
-        stores: [
-          { name: "JIB", price: 5690, url: "https://www.jib.co.th" },
-          { name: "Advice", price: 5500, url: "https://www.advice.co.th" },
-          { name: "Shopee", price: 5390, url: "https://shopee.co.th" }
-        ]
-      },
-      { 
-        id: 5, name: "TEAMGROUP T-Force Delta RGB DDR5", type: "RAM", spec: "DDR5 32GB (16GBx2) 6000MHz White", 
-        img: "https://www.teamgroupinc.com/en/catalog/act.php?act=view&prod_id=2311", desc: "แรมสีขาวทรงสปอร์ต ไฟ RGB กระจายแสงกว้าง", 
-        stores: [
-          { name: "JIB", price: 4890, url: "https://www.jib.co.th" },
-          { name: "Advice", price: 4750, url: "https://www.advice.co.th" },
-          { name: "Shopee", price: 4590, url: "https://shopee.co.th" }
-        ]
-      },
-      { 
-        id: 6, name: "ADATA XPG Lancer RGB DDR5", type: "RAM", spec: "DDR5 16GB (8GBx2) 5200MHz Black", 
-        img: "https://www.adata.com/upload/download/product_images/1000x1000/xpg_lancer_rgb_ddr5_black_01.jpg", desc: "เริ่มต้นยุค DDR5 ในราคาสบายกระเป๋า", 
-        stores: [
-          { name: "JIB", price: 2590, url: "https://www.jib.co.th" },
-          { name: "Advice", price: 2490, url: "https://www.advice.co.th" },
-          { name: "Shopee", price: 2390, url: "https://shopee.co.th" }
-        ]
-      },
-
-      // --- SSD (4) ---
-      { 
         id: 4, name: "Samsung 990 PRO", type: "SSD", spec: "1TB NVMe PCIe 4.0 (Read 7450MB/s)", 
-        img: "https://down-th.img.susercontent.com/file/sg-11134201-7rd71-m7m55wvhh51j4b@resize_w900_nl.webp", desc: "SSD ตัวแรงระดับเรือธงจาก Samsung", 
+        img: "https://down-th.img.susercontent.com/file/sg-11134201-7rd71-m7m55wvhh51j4b@resize_w900_nl.webp", desc: "SSD ตัวแรงระดับเรือธงจาก Samsung", outOfStock: false,
         stores: [
           { name: "JIB", price: 4290, url: "https://www.jib.co.th" },
           { name: "Advice", price: 4150, url: "https://www.advice.co.th" },
@@ -289,7 +223,7 @@
       },
       { 
         id: 301, name: "WD_BLACK SN850X", type: "SSD", spec: "1TB NVMe M.2 PCIe 4.0 (Read 7300MB/s)", 
-        img: "https://www.westerndigital.com/content/dam/store/en-us/assets/products/internal-storage/wd-black-sn850x-nvme-ssd/gallery/wd-black-sn850x-1tb.png", desc: "SSD เพื่อเกมเมอร์โหลดฉากไวลื่นไหล", 
+        img: "https://www.westerndigital.com/content/dam/store/en-us/assets/products/internal-storage/wd-black-sn850x-nvme-ssd/gallery/wd-black-sn850x-1tb.png", desc: "SSD เพื่อเกมเมอร์โหลดฉากไวลื่นไหล", outOfStock: false,
         stores: [
           { name: "JIB", price: 3890, url: "https://www.jib.co.th" },
           { name: "Advice", price: 3750, url: "https://www.advice.co.th" },
@@ -297,28 +231,8 @@
         ]
       },
       { 
-        id: 302, name: "Kingston NV2", type: "SSD", spec: "1TB NVMe M.2 PCIe 4.0 (Read 3500MB/s)", 
-        img: "https://media.kingston.com/kingston/product/ktc-product-ssd-snv2s-1000g-1-zm-lg.jpg", desc: "SSD M.2 คุ้มค่าที่สุดสำหรับประกอบเครื่องใหม่", 
-        stores: [
-          { name: "JIB", price: 2190, url: "https://www.jib.co.th" },
-          { name: "Advice", price: 2050, url: "https://www.advice.co.th" },
-          { name: "Shopee", price: 1990, url: "https://shopee.co.th" }
-        ]
-      },
-      { 
-        id: 303, name: "Crucial T700 PCIe 5.0", type: "SSD", spec: "1TB M.2 NVMe (Read 11700MB/s)", 
-        img: "https://content.crucial.com/content/dam/crucial/ssd-products/t700/flyout/crucial-t700-ssd-product-image.png", desc: "ความเร็วแรงระดับ Gen5 อ่านเขียนทะลุหมื่น", 
-        stores: [
-          { name: "JIB", price: 6890, url: "https://www.jib.co.th" },
-          { name: "Advice", price: 6700, url: "https://www.advice.co.th" },
-          { name: "Shopee", price: 6590, url: "https://shopee.co.th" }
-        ]
-      },
-
-      // --- ชุดน้ำ / Coolers (5) ---
-      { 
         id: 7, name: "NZXT Kraken 240 RGB", type: "ชุดน้ำ", spec: "Liquid Cooler 240mm / LCD Display / White", 
-        img: "https://www.jib.co.th/img_master/product/original/2023090813340061967_1.jpg", desc: "ชุดน้ำปิดหน้าจอ LCD ดีไซน์เรียบหรูสไตล์ NZXT", 
+        img: "https://www.jib.co.th/img_master/product/original/2023090813340061967_1.jpg", desc: "ชุดน้ำปิดหน้าจอ LCD ดีไซน์เรียบหรูสไตล์ NZXT", outOfStock: false,
         stores: [
           { name: "JIB", price: 5390, url: "https://www.jib.co.th" },
           { name: "Advice", price: 5450, url: "https://www.advice.co.th" },
@@ -326,46 +240,8 @@
         ]
       },
       { 
-        id: 401, name: "CORSAIR iCUE LINK H150i RGB", type: "ชุดน้ำ", spec: "Liquid Cooler 360mm / Black / iCUE Link System", 
-        img: "https://www.corsair.com/medias/sys_master/images/images/h60/hc1/10185903276062/CW-9061003-WW/Gallery/iCUE_LINK_H150i_RGB_BLACK_01.png", desc: "ชุดน้ำ 360 มม. สายเคเบิลเส้นเดียว ต่อพ่วงง่าย", 
-        stores: [
-          { name: "JIB", price: 8290, url: "https://www.jib.co.th" },
-          { name: "Advice", price: 8100, url: "https://www.advice.co.th" },
-          { name: "Shopee", price: 7990, url: "https://shopee.co.th" }
-        ]
-      },
-      { 
-        id: 402, name: "Thermalright Frozen Prism 360 ARGB", type: "ชุดน้ำ", spec: "Liquid Cooler 360mm / White ARGB", 
-        img: "https://www.thermalright.com/wp-content/uploads/2022/11/FROZEN-PRISM-360-WHITE-ARGB-1.jpg", desc: "ชุดน้ำ 3 พัดลม ราคาสุดประหยัด เย็นเงียบเกินราคา", 
-        stores: [
-          { name: "JIB", price: 2390, url: "https://www.jib.co.th" },
-          { name: "Advice", price: 2290, url: "https://www.advice.co.th" },
-          { name: "Shopee", price: 2150, url: "https://shopee.co.th" }
-        ]
-      },
-      { 
-        id: 403, name: "ASUS ROG Ryujin III 360 ARGB", type: "ชุดน้ำ", spec: "Liquid Cooler 360mm / 3.5” LCD Screen", 
-        img: "https://dlcdnrog.asus.com/rog/media/1681980315276.webp", desc: "สุดยอดชุดน้ำพร้อมจอ LCD ใหญ่ 3.5 นิ้ว และพัดลมพัดซิงค์", 
-        stores: [
-          { name: "JIB", price: 13900, url: "https://www.jib.co.th" },
-          { name: "Advice", price: 13500, url: "https://www.advice.co.th" },
-          { name: "Shopee", price: 13200, url: "https://shopee.co.th" }
-        ]
-      },
-      { 
-        id: 404, name: "DeepCool LE520 ARGB", type: "ชุดน้ำ", spec: "Liquid Cooler 240mm / Anti-Leak Tech", 
-        img: "https://www.deepcool.com/download/Image/LE520/Gallery/LE520_01.jpg", desc: "ชุดน้ำ 2 ตอน มีระบบป้องกันน้ำรั่วซึม Anti-Leak", 
-        stores: [
-          { name: "JIB", price: 1990, url: "https://www.jib.co.th" },
-          { name: "Advice", price: 1890, url: "https://www.advice.co.th" },
-          { name: "Shopee", price: 1790, url: "https://shopee.co.th" }
-        ]
-      },
-
-      // --- เคสคอม / Cases (5) ---
-      { 
         id: 10, name: "Lian Li O11 Vision", type: "เคสคอม", spec: "Mid Tower / Chrome Glass 3 Sides / White", 
-        img: "https://www.jib.co.th/img_master/product/original/2023112814524864003_1.jpg", desc: "เคสกระจก 3 ด้าน โชว์อุปกรณ์ภายในแบบไร้เสากั้น", 
+        img: "https://www.jib.co.th/img_master/product/original/2023112814524864003_1.jpg", desc: "เคสกระจก 3 ด้าน โชว์อุปกรณ์ภายในแบบไร้เสากั้น", outOfStock: false,
         stores: [
           { name: "JIB", price: 4890, url: "https://www.jib.co.th" },
           { name: "Advice", price: 4790, url: "https://www.advice.co.th" },
@@ -373,77 +249,12 @@
         ]
       },
       { 
-        id: 501, name: "HYTE Y60 Panoramic Glass", type: "เคสคอม", spec: "Mid Tower / 3-Piece Panoramic Glass / Red-Black", 
-        img: "https://hyte.com/store/y60/images/y60-red-hero.png", desc: "เคสทรงตู้ปลาพาโนรามา มาพร้อมสาย Riser สำหรับแนวตั้ง", 
-        stores: [
-          { name: "JIB", price: 6990, url: "https://www.jib.co.th" },
-          { name: "Advice", price: 6800, url: "https://www.advice.co.th" },
-          { name: "Shopee", price: 6690, url: "https://shopee.co.th" }
-        ]
-      },
-      { 
-        id: 502, name: "NZXT H6 Flow RGB", type: "เคสคอม", spec: "Compact Dual-Chamber / Dual Glass / Black", 
-        img: "https://nzxt.com/assets/cms/34299/1698288593-h6-flow-rgb-black-main.png", desc: "เคสองห้องทรงเฉียง ระบายอากาศได้ดี พร้อมพัดลม RGB", 
-        stores: [
-          { name: "JIB", price: 4290, url: "https://www.jib.co.th" },
-          { name: "Advice", price: 4150, url: "https://www.advice.co.th" },
-          { name: "Shopee", price: 3990, url: "https://shopee.co.th" }
-        ]
-      },
-      { 
-        id: 503, name: "Montech KING 95 PRO", type: "เคสคอม", spec: "Curved Glass / 6 ARGB Fans Included / White", 
-        img: "https://www.montechpc.com/upload/product/202311171015381.jpg", desc: "เคสกระจกโค้งไร้เสา แถมพัดลม ARGB มาให้ถึง 6 ตัว", 
-        stores: [
-          { name: "JIB", price: 4590, url: "https://www.jib.co.th" },
-          { name: "Advice", price: 4450, url: "https://www.advice.co.th" },
-          { name: "Shopee", price: 4390, url: "https://shopee.co.th" }
-        ]
-      },
-      { 
-        id: 504, name: "Cooler Master MasterBox Q300L", type: "เคสคอม", spec: "Micro-ATX / Magnetic Dust Filters", 
-        img: "https://coolermaster.egnyte.com/m-preview/8a42f53d-24ea-4c91-9c6a-637a7b8e5d32/400", desc: "เคสขนาดกะทัดรัด แผ่นกรองฝุ่นแม่เหล็ก ถอดล้างง่าย", 
-        stores: [
-          { name: "JIB", price: 1490, url: "https://www.jib.co.th" },
-          { name: "Advice", price: 1390, url: "https://www.advice.co.th" },
-          { name: "Shopee", price: 1290, url: "https://shopee.co.th" }
-        ]
-      },
-
-      // --- ตกแต่ง / พัดลม (4) ---
-      { 
         id: 13, name: "Lian Li UNI FAN TL LCD 120", type: "ตกแต่ง/พัดลม", spec: "120mm PWM Fan with 1.6 inch LCD Screen", 
-        img: "https://www.jib.co.th/img_master/product/original/2024011210283064875_1.jpg", desc: "พัดลมไร้สายต่อแบบ Daisy-Chain พร้อมหน้าจอ LCD เล่น GIF ได้", 
+        img: "https://www.jib.co.th/img_master/product/original/2024011210283064875_1.jpg", desc: "พัดลมไร้สายต่อแบบ Daisy-Chain พร้อมหน้าจอ LCD เล่น GIF ได้", outOfStock: true,
         stores: [
           { name: "JIB", price: 1690, url: "https://www.jib.co.th" },
           { name: "Advice", price: 1650, url: "https://www.advice.co.th" },
           { name: "Shopee", price: 1590, url: "https://shopee.co.th" }
-        ]
-      },
-      { 
-        id: 601, name: "LIAN LI STRIMER PLUS V2 24-PIN", type: "ตกแต่ง/พัดลม", spec: "ARGB Extension Cable for Motherboard 24-Pin", 
-        img: "https://lian-li.com/wp-content/uploads/2022/05/strimer_v2_24pin_01.jpg", desc: "สายถักต่อเพิ่มความยาวไฟ RGB วิจิตรอลังการ", 
-        stores: [
-          { name: "JIB", price: 1990, url: "https://www.jib.co.th" },
-          { name: "Advice", price: 1950, url: "https://www.advice.co.th" },
-          { name: "Shopee", price: 1890, url: "https://shopee.co.th" }
-        ]
-      },
-      { 
-        id: 602, name: "CORSAIR iCUE AR120 Digital RGB", type: "ตกแต่ง/พัดลม", spec: "120mm Triple Fan Pack with Controller", 
-        img: "https://www.corsair.com/medias/sys_master/images/images/hce/hcb/10182603702302/CO-9050167-WW/Gallery/AR120_RGB_TRIPLE_PACK_01.png", desc: "พัดลมแพ็ค 3 ตัว ไฟ ARGB คุมผ่านบอร์ดหรือกล่องได้", 
-        stores: [
-          { name: "JIB", price: 1590, url: "https://www.jib.co.th" },
-          { name: "Advice", price: 1490, url: "https://www.advice.co.th" },
-          { name: "Shopee", price: 1390, url: "https://shopee.co.th" }
-        ]
-      },
-      { 
-        id: 603, name: "Cooler Master Universal Vertical GPU Holder V3", type: "ตกแต่ง/พัดลม", spec: "Vertical Graphics Card Holder with Riser Cable PCIe 4.0", 
-        img: "https://coolermaster.egnyte.com/m-preview/c873a4b0-33e4-4115-b778-958a719d3bb3/400", desc: "ขาตั้งการ์ดจอแนวตั้ง ปรับความยาวและระดับได้อิสระ", 
-        stores: [
-          { name: "JIB", price: 2190, url: "https://www.jib.co.th" },
-          { name: "Advice", price: 2090, url: "https://www.advice.co.th" },
-          { name: "Shopee", price: 1990, url: "https://shopee.co.th" }
         ]
       }
     ];
@@ -452,7 +263,22 @@
       const [lang, setLang] = useState("TH");
       const [theme, setTheme] = useState("light");
       const [user, setUser] = useState(null);
-      const [products, setProducts] = useState(INITIAL_PRODUCTS);
+      
+      // ดึงข้อมูลรองรับทั้ง Key ใหม่ และ Key เก่า เพื่อป้องกันข้อมูลหาย
+      const [products, setProducts] = useState(() => {
+        const savedNew = localStorage.getItem("korn_pc_products");
+        const savedOld = localStorage.getItem("products");
+        const saved = savedNew || savedOld;
+        if (saved) {
+          try {
+            return JSON.parse(saved);
+          } catch (e) {
+            console.error("Failed to parse local storage products", e);
+          }
+        }
+        return INITIAL_PRODUCTS;
+      });
+
       const [cart, setCart] = useState([]);
       const [filter, setFilter] = useState("ALL");
       const [selectedProduct, setSelectedProduct] = useState(null);
@@ -472,6 +298,13 @@
 
       const t = TEXTS[lang];
       const isAdmin = user === ADMIN_USERNAME;
+
+      // บันทึกขนานไว้ทั้งสอง Key เพื่อให้ปลอดภัยที่สุด
+      useEffect(() => {
+        const dataStr = JSON.stringify(products);
+        localStorage.setItem("korn_pc_products", dataStr);
+        localStorage.setItem("products", dataStr);
+      }, [products]);
 
       const getRandomNews = () => {
         let randomIndex;
@@ -556,6 +389,14 @@
         }
       };
 
+      const handleResetData = () => {
+        if (confirm("คุณต้องการล้างข้อมูลที่แก้ไขทั้งหมด แล้วคืนค่าเริ่มต้นใช่หรือไม่?")) {
+          localStorage.removeItem("korn_pc_products");
+          localStorage.removeItem("products");
+          setProducts(INITIAL_PRODUCTS);
+        }
+      };
+
       const handleCreateNewProduct = () => {
         const newProd = {
           id: Date.now(),
@@ -564,6 +405,7 @@
           spec: "ระบุสเปกสินค้า...",
           img: "https://via.placeholder.com/300",
           desc: "คำอธิบายสินค้า...",
+          outOfStock: false,
           stores: [
             { name: "JIB", price: 1000, url: "https://www.jib.co.th" },
             { name: "Advice", price: 1000, url: "https://www.advice.co.th" },
@@ -615,6 +457,11 @@
               onClick: () => setIsHistoryOpen(true),
               className: "px-2.5 py-1 border rounded-lg text-xs hover:bg-gray-500/10 active:scale-95 transition-all"
             }, `📜 ${t.history}`),
+
+            isAdmin && React.createElement("button", {
+              onClick: handleResetData,
+              className: "px-2.5 py-1 border border-red-500/40 text-red-400 hover:bg-red-500/20 rounded-lg text-xs font-bold active:scale-95 transition-all"
+            }, `🔄 ${t.resetData}`),
 
             user ? 
               React.createElement("div", { className: `flex items-center gap-2 border px-2.5 py-1 rounded-lg text-xs font-bold ${isAdmin ? "bg-amber-500/10 border-amber-500/40 text-amber-500" : "bg-green-500/10 border-green-500/30 text-green-500"}` },
@@ -693,19 +540,23 @@
           React.createElement("div", { key: filter, className: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 animate-fade-in" },
             filteredProducts.map(p => {
               const minPrice = getMinPrice(p.stores);
-              return React.createElement("div", { key: p.id, className: `border rounded-xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative ${cardBgClass}` },
+              return React.createElement("div", { key: p.id, className: `border rounded-xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative ${cardBgClass} ${p.outOfStock ? 'opacity-80' : ''}` },
                 
                 isAdmin && React.createElement("button", {
                   onClick: () => setEditingProduct(p),
-                  className: "absolute top-2 left-2 z-10 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-2.5 py-1 rounded-md shadow-lg flex items-center gap-1 active:scale-95 transition-all"
+                  className: "absolute top-2 left-2 z-20 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-2.5 py-1 rounded-md shadow-lg flex items-center gap-1 active:scale-95 transition-all"
                 }, "✏️ แก้ไข"),
+
+                p.outOfStock && React.createElement("div", { className: "absolute top-3 right-3 z-20" },
+                  React.createElement("span", { className: "bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-md shadow-lg border border-red-400" }, t.outOfStock)
+                ),
 
                 React.createElement("div", { 
                   onClick: () => openProductDetails(p),
                   className: "w-full h-48 bg-white flex items-center justify-center p-4 overflow-hidden group cursor-pointer relative" 
                 },
-                  React.createElement("span", { className: "absolute top-2 right-2 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow" }, `${p.stores.length} ร้านค้า`),
-                  React.createElement("img", { src: p.img, alt: p.name, className: "max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300" })
+                  !p.outOfStock && React.createElement("span", { className: "absolute top-2 right-2 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow z-10" }, `${p.stores.length} ร้านค้า`),
+                  React.createElement("img", { src: p.img, alt: p.name, className: `max-h-full max-w-full object-contain transition-transform duration-300 ${p.outOfStock ? 'grayscale opacity-70' : 'group-hover:scale-105'}` })
                 ),
                 React.createElement("div", { className: "p-4 flex-grow flex flex-col justify-between" },
                   React.createElement("div", null,
@@ -717,12 +568,14 @@
                   ),
                   React.createElement("div", { className: "flex justify-between items-center mt-4 pt-3 border-t border-gray-500/20" },
                     React.createElement("div", null,
-                      React.createElement("span", { className: "text-[10px] opacity-60 block" }, "เริ่มต้นที่"),
-                      React.createElement("span", { className: "font-bold text-lg text-blue-400" }, `฿${minPrice.toLocaleString()}`)
+                      !p.outOfStock && React.createElement("span", { className: "text-[10px] opacity-60 block" }, "เริ่มต้นที่"),
+                      p.outOfStock 
+                        ? React.createElement("span", { className: "font-bold text-sm text-red-500" }, t.outOfStock)
+                        : React.createElement("span", { className: "font-bold text-lg text-blue-400" }, `฿${minPrice.toLocaleString()}`)
                     ),
                     React.createElement("button", {
                       onClick: () => openProductDetails(p),
-                      className: "bg-blue-600 hover:bg-blue-700 active:scale-95 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all shadow-md shadow-blue-600/20"
+                      className: `${p.outOfStock ? 'bg-gray-500 hover:bg-gray-600' : 'bg-blue-600 hover:bg-blue-700'} active:scale-95 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all shadow-md`
                     }, t.detail)
                   )
                 )
@@ -739,6 +592,23 @@
             ),
             
             React.createElement("div", { className: "space-y-4 max-h-[70vh] overflow-y-auto pr-1" },
+              
+              React.createElement("div", { className: "bg-red-500/10 border border-red-500/30 p-3 rounded-xl flex items-center justify-between" },
+                React.createElement("div", null,
+                  React.createElement("h4", { className: "text-sm font-bold text-red-500" }, "สถานะสินค้า"),
+                  React.createElement("p", { className: "text-[10px] opacity-70" }, "ติ๊กเมื่อสินค้าหมดชั่วคราว หรือหาซื้อมือ 1 ไม่ได้แล้ว")
+                ),
+                React.createElement("label", { className: "relative inline-flex items-center cursor-pointer" },
+                  React.createElement("input", {
+                    type: "checkbox",
+                    checked: !!editingProduct.outOfStock,
+                    onChange: (e) => setEditingProduct({ ...editingProduct, outOfStock: e.target.checked }),
+                    className: "sr-only peer"
+                  }),
+                  React.createElement("div", { className: "w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500" })
+                )
+              ),
+
               React.createElement("div", null,
                 React.createElement("label", { className: "block text-xs font-bold mb-1 opacity-80" }, t.imageUrl),
                 React.createElement("input", {
@@ -848,7 +718,8 @@
         selectedProduct && React.createElement("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50" },
           React.createElement("div", { className: `max-w-md w-full rounded-2xl p-6 shadow-2xl border ${cardBgClass}` },
             React.createElement("div", { className: "bg-white p-4 rounded-xl mb-4 flex items-center justify-center h-40 shadow-inner relative" },
-              React.createElement("img", { src: selectedProduct.img, alt: selectedProduct.name, className: "max-h-full max-w-full object-contain" })
+              selectedProduct.outOfStock && React.createElement("span", { className: "absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-md shadow-lg z-10" }, t.outOfStock),
+              React.createElement("img", { src: selectedProduct.img, alt: selectedProduct.name, className: `max-h-full max-w-full object-contain ${selectedProduct.outOfStock ? 'grayscale opacity-70' : ''}` })
             ),
             React.createElement("div", { className: "flex justify-between items-center mb-2" },
               React.createElement("span", { className: "text-xs border px-2 py-0.5 rounded font-mono font-bold" }, selectedProduct.type)
@@ -858,26 +729,33 @@
 
             React.createElement("div", { className: "my-3 pt-3 border-t border-gray-500/30" },
               React.createElement("h4", { className: "text-xs font-bold text-blue-400 mb-2" }, t.compareTitle),
-              React.createElement("div", { className: "space-y-2 max-h-52 overflow-y-auto pr-1" },
-                selectedProduct.stores.map((st, i) =>
-                  React.createElement("div", { key: i, className: "flex items-center justify-between p-2.5 rounded-xl border border-gray-500/20 bg-gray-500/5 hover:bg-gray-500/10 transition-all" },
-                    React.createElement("div", null,
-                      React.createElement("span", { className: "font-bold text-xs block" }, st.name),
-                      React.createElement("span", { className: "text-sm font-extrabold text-blue-400" }, `฿${st.price.toLocaleString()}`)
-                    ),
-                    React.createElement("div", { className: "flex gap-1.5" },
-                      React.createElement("button", {
-                        onClick: () => addToCart(selectedProduct, st),
-                        className: "px-2.5 py-1 bg-blue-600/20 border border-blue-500/40 text-blue-400 hover:bg-blue-600 hover:text-white rounded-lg text-xs font-bold transition-all"
-                      }, "+ ตะกร้า"),
-                      React.createElement("button", {
-                        onClick: () => openDirectLink(selectedProduct, st),
-                        className: "px-2.5 py-1 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-xs font-bold transition-all"
-                      }, "ไปหน้าร้าน ↗")
+              
+              selectedProduct.outOfStock ? 
+                React.createElement("div", { className: "p-4 border border-red-500/30 bg-red-500/10 rounded-xl text-center" },
+                  React.createElement("p", { className: "text-sm font-bold text-red-500" }, "❌ " + t.outOfStock),
+                  React.createElement("p", { className: "text-xs opacity-70 mt-1" }, "สินค้ารายการนี้ไม่สามารถสั่งซื้อผ่านระบบได้ชั่วคราว")
+                )
+              :
+                React.createElement("div", { className: "space-y-2 max-h-52 overflow-y-auto pr-1" },
+                  selectedProduct.stores.map((st, i) =>
+                    React.createElement("div", { key: i, className: "flex items-center justify-between p-2.5 rounded-xl border border-gray-500/20 bg-gray-500/5 hover:bg-gray-500/10 transition-all" },
+                      React.createElement("div", null,
+                        React.createElement("span", { className: "font-bold text-xs block" }, st.name),
+                        React.createElement("span", { className: "text-sm font-extrabold text-blue-400" }, `฿${st.price.toLocaleString()}`)
+                      ),
+                      React.createElement("div", { className: "flex gap-1.5" },
+                        React.createElement("button", {
+                          onClick: () => addToCart(selectedProduct, st),
+                          className: "px-2.5 py-1 bg-blue-600/20 border border-blue-500/40 text-blue-400 hover:bg-blue-600 hover:text-white rounded-lg text-xs font-bold transition-all"
+                        }, "+ ตะกร้า"),
+                        React.createElement("button", {
+                          onClick: () => openDirectLink(selectedProduct, st),
+                          className: "px-2.5 py-1 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-xs font-bold transition-all"
+                        }, "ไปหน้าร้าน ↗")
+                      )
                     )
                   )
                 )
-              )
             ),
             
             React.createElement("button", {
@@ -1017,10 +895,12 @@
                     },
                     className: "flex items-center gap-3 p-2 border border-gray-500/20 rounded-xl bg-gray-500/5 hover:bg-gray-500/10 cursor-pointer transition-all"
                   },
-                    React.createElement("img", { src: item.img, alt: item.name, className: "w-10 h-10 object-contain bg-white rounded p-1" }),
+                    React.createElement("img", { src: item.img, alt: item.name, className: `w-10 h-10 object-contain bg-white rounded p-1 ${item.outOfStock ? 'grayscale opacity-70' : ''}` }),
                     React.createElement("div", { className: "flex-grow min-w-0" },
                       React.createElement("p", { className: "font-bold text-xs truncate" }, item.name),
-                      React.createElement("p", { className: "text-xs text-blue-400" }, `เริ่มต้น ฿${getMinPrice(item.stores).toLocaleString()}`)
+                      item.outOfStock
+                        ? React.createElement("p", { className: "text-xs text-red-500 font-bold" }, t.outOfStock)
+                        : React.createElement("p", { className: "text-xs text-blue-400" }, `เริ่มต้น ฿${getMinPrice(item.stores).toLocaleString()}`)
                     )
                   )
                 )
