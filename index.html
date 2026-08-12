@@ -47,6 +47,7 @@
         recent: "ดูล่าสุด",
         all: "ทั้งหมด",
         cpu: "CPU",
+        gpu: "การ์ดจอ",
         ram: "RAM",
         ssd: "SSD",
         cooler: "ชุดน้ำ",
@@ -73,8 +74,7 @@
         imageUrl: "ลิงก์รูปภาพ (Image URL)",
         productName: "ชื่อสินค้า",
         spec: "สเปกสินค้า",
-        category: "หมวดหมู่",
-        loginHint: "💡 ใส่ 'musicnoa7' เพื่อเข้าสู่โหมดแอดมิน"
+        category: "หมวดหมู่"
       },
       EN: {
         storeTitle: "KORN PC HARDWARE STORE",
@@ -86,6 +86,7 @@
         recent: "Recently Viewed",
         all: "ALL",
         cpu: "CPU",
+        gpu: "GPU",
         ram: "RAM",
         ssd: "SSD",
         cooler: "Coolers",
@@ -112,8 +113,7 @@
         imageUrl: "Image URL",
         productName: "Product Name",
         spec: "Specifications",
-        category: "Category",
-        loginHint: "💡 Enter 'musicnoa7' for Admin Mode"
+        category: "Category"
       }
     };
 
@@ -145,9 +145,10 @@
     ];
 
     const INITIAL_PRODUCTS = [
+      // --- CPU (4) ---
       { 
         id: 101, name: "Intel Core i5-13400F", type: "CPU", spec: "10 Cores (6P+4E) / 16 Threads / Up to 4.6GHz / LGA1700", 
-        img: "https://www.autonetpc.com/wp-content/uploads/2023/01/2022122610011856972_3.webp", desc: "ซีพียูราคาสุดคุ้มสำหรับการเล่นเกมและความบันเทิง รองรับ DDR4 และ DDR5", 
+        img: "https://www.autonetpc.com/wp-content/uploads/2023/01/2022122610011856972_3.webp", desc: "ซีพียูราคาสุดคุ้มสำหรับการเล่นเกมและความบันเทิง", 
         stores: [
           { name: "JIB", price: 5190, url: "https://www.jib.co.th/web/product/readProduct/56972" },
           { name: "Advice", price: 4950, url: "https://www.advice.co.th/product/A0148187" },
@@ -156,52 +157,130 @@
       },
       { 
         id: 102, name: "Intel Core i7-14700K", type: "CPU", spec: "20 Cores (8P+12E) / 28 Threads / Up to 5.6GHz / LGA1700", 
-        img: "https://ihcupload-bkk.s3.ap-southeast-7.amazonaws.com/img/product/product40473_800.jpg", desc: "ซีพียูระดับท็อปสำหรับสตรีมเมอร์และสายทำงานกราฟิกหนักๆ รองรับการ Overclock", 
+        img: "https://ihcupload-bkk.s3.ap-southeast-7.amazonaws.com/img/product/product40473_800.jpg", desc: "ซีพียูระดับท็อปสำหรับสตรีมเมอร์และงานกราฟิกหนักๆ", 
         stores: [
           { name: "JIB", price: 12900, url: "https://www.jib.co.th/web/product/readProduct/63038" },
-          { name: "Advice", price: 14510, url: "https://www.advice.co.th/product/cpu/intel-1700/cpu-core-i7-14700k" },
+          { name: "Advice", price: 14510, url: "https://www.advice.co.th" },
           { name: "Shopee", price: 15550, url: "https://shopee.co.th" }
         ]
       },
       { 
         id: 103, name: "AMD Ryzen 5 7600X", type: "CPU", spec: "6 Cores / 12 Threads / Up to 5.3GHz / Socket AM5", 
-        img: "https://www.jib.co.th/img_master/product/original/2022092611052955401_2.jpg", desc: "ซีพียูสถาปัตยกรรม Zen 4 บนแพลตฟอร์ม AM5 ประสิทธิภาพสูงสำหรับเกมเมอร์", 
+        img: "https://www.jib.co.th/img_master/product/original/2022092611052955401_2.jpg", desc: "ซีพียูสถาปัตยกรรม Zen 4 สำหรับเกมเมอร์", 
         stores: [
           { name: "JIB", price: 7190, url: "https://www.jib.co.th/web/product/readProduct/57299" },
-          { name: "Advice", price: 8190, url: "https://www.advice.co.th/product/cpu/amd-am5/cpu-amd-am5-ryzen-5-7600x" },
+          { name: "Advice", price: 8190, url: "https://www.advice.co.th" },
           { name: "Shopee", price: 8174, url: "https://shopee.co.th" }
         ]
       },
       { 
         id: 104, name: "AMD Ryzen 7 7800X3D", type: "CPU", spec: "8 Cores / 16 Threads / Up to 5.0GHz / 3D V-Cache / AM5", 
-        img: "https://www.jib.co.th/img_master/product/original/2023040616182958742_1.jpg", desc: "ราชาแห่งการเล่นเกมด้วยเทคโนโลยี 3D V-Cache ช่วยดัน FPS เกมให้สูงลิ่ว", 
+        img: "https://www.jib.co.th/img_master/product/original/2023040616182958742_1.jpg", desc: "ราชาแห่งการเล่นเกมด้วยเทคโนโลยี 3D V-Cache", 
         stores: [
           { name: "JIB", price: 14900, url: "https://www.jib.co.th" },
           { name: "Advice", price: 14500, url: "https://www.advice.co.th" },
           { name: "Shopee", price: 14800, url: "https://shopee.co.th" }
         ]
       },
+
+      // --- GPU / การ์ดจอ (5) ---
       { 
-        id: 1, name: "Kingston FURY Beast", type: "RAM", spec: "DDR4 8GB 3200MHz Black", 
-        img: "https://media.kingston.com/kingston/product/FURY_Beast_Black_DDR4_1-zm-lg.jpg", desc: "แรมประสิทธิภาพสูงสำหรับการเล่นเกมและการทำงานทั่วไป เสถียรและทนทาน", 
+        id: 201, name: "ASUS ROG Strix RTX 4070 Ti Super", type: "การ์ดจอ", spec: "16GB GDDR6X / 256-bit / Tri-Fan RGB", 
+        img: "https://dlcdnrog.asus.com/rog/media/1704760236894.webp", desc: "การ์ดจอเล่นเกม 4K สเปกโหด ดีไซน์พรีเมียมจาก ROG", 
         stores: [
-          { name: "Kingston", price: 1490, url: "https://www.kingston.com" },
-          { name: "Advice", price: 2990, url: "https://www.advice.co.th" },
-          { name: "Shopee", price: 1468, url: "https://shopee.co.th" }
+          { name: "JIB", price: 35900, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 35500, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 34900, url: "https://shopee.co.th" }
         ]
       },
       { 
-        id: 2, name: "Corsair Vengeance DDR5", type: "RAM", spec: "DDR5 32GB (16GBx2) 6000MHz", 
-        img: "https://www.jib.co.th/img_master/product/original/2025070114454478140_1.jpg", desc: "แรม DDR5 ความเร็วสูงพิเศษ เหมาะสำหรับงานตัดต่อ สตรีมมิ่ง และเกมมิ่งหนักๆ", 
+        id: 202, name: "MSI GeForce RTX 4060 Ventus 2X", type: "การ์ดจอ", spec: "8GB GDDR6 / 128-bit / Dual Fan", 
+        img: "https://asset.msi.com/resize/image/global/product/product_1684980644b931fa3571d9a202c525f20f862bc346.png62405b38c58fe0f07fcef2367d8a9ba1/1024.png", desc: "การ์ดจอยอดนิยมสำหรับการเล่นเกม FHD ปรับสุด", 
         stores: [
-          { name: "JIB", price: 16500, url: "https://www.jib.co.th" },
-          { name: "Advice", price: 16330, url: "https://www.advice.co.th" },
-          { name: "Shopee", price: 13990, url: "https://shopee.co.th" }
+          { name: "JIB", price: 10500, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 10290, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 9990, url: "https://shopee.co.th" }
         ]
       },
+      { 
+        id: 203, name: "GIGABYTE RTX 4080 Super Gaming OC", type: "การ์ดจอ", spec: "16GB GDDR6X / 256-bit / WINDFORCE 3X", 
+        img: "https://www.gigabyte.com/media/10427/png/1000", desc: "ความแรงระดับท็อป รองรับ Ray Tracing + DLSS 3", 
+        stores: [
+          { name: "JIB", price: 42900, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 42500, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 41900, url: "https://shopee.co.th" }
+        ]
+      },
+      { 
+        id: 204, name: "SAPPHIRE PULSE RX 7800 XT", type: "การ์ดจอ", spec: "16GB GDDR6 / 256-bit / Dual-X Cooling", 
+        img: "https://www.sapphiretech.com/-/media/sites/sapphire/products/graphics-cards/7000-series/1133002/1133002_rx7800xt_pulse_16g_c01_1000x1000.ashx", desc: "การ์ดจอฝั่งแดงคุ้มค่า คมชัดลื่นไหลทุกเกม", 
+        stores: [
+          { name: "JIB", price: 18900, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 18500, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 17900, url: "https://shopee.co.th" }
+        ]
+      },
+      { 
+        id: 205, name: "ZOTAC GAMING RTX 3060 Twin Edge", type: "การ์ดจอ", spec: "12GB GDDR6 / 192-bit / IceStorm 2.0", 
+        img: "https://www.zotac.com/download/files/styles/w1024/public/product_main_images/graphics_cards/zt-a30600e-10m-image01.jpg", desc: "การ์ดจอ VRAM 12GB เล่นเกมทำงานสุดคุ้มค่า", 
+        stores: [
+          { name: "JIB", price: 9200, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 8990, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 8790, url: "https://shopee.co.th" }
+        ]
+      },
+
+      // --- RAM (5) ---
+      { 
+        id: 1, name: "Kingston FURY Beast DDR4", type: "RAM", spec: "DDR4 8GB 3200MHz Black", 
+        img: "https://media.kingston.com/kingston/product/FURY_Beast_Black_DDR4_1-zm-lg.jpg", desc: "แรมเสถียรทนทานสำหรับการใช้งานทั่วไป", 
+        stores: [
+          { name: "JIB", price: 890, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 850, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 790, url: "https://shopee.co.th" }
+        ]
+      },
+      { 
+        id: 2, name: "Corsair Vengeance DDR5", type: "RAM", spec: "DDR5 32GB (16GBx2) 6000MHz Black", 
+        img: "https://www.jib.co.th/img_master/product/original/2025070114454478140_1.jpg", desc: "แรม DDR5 สปีดสูง สำหรับคอเกมและสตรีมเมอร์", 
+        stores: [
+          { name: "JIB", price: 4500, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 4390, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 4250, url: "https://shopee.co.th" }
+        ]
+      },
+      { 
+        id: 3, name: "G.SKILL Trident Z5 RGB DDR5", type: "RAM", spec: "DDR5 32GB (16GBx2) 6400MHz Silver", 
+        img: "https://www.gskill.com/img/pr/1633512398.png", desc: "ดีไซน์อะลูมิเนียมหรูหรา ไฟ RGB สวยสะดุดตา", 
+        stores: [
+          { name: "JIB", price: 5690, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 5500, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 5390, url: "https://shopee.co.th" }
+        ]
+      },
+      { 
+        id: 5, name: "TEAMGROUP T-Force Delta RGB DDR5", type: "RAM", spec: "DDR5 32GB (16GBx2) 6000MHz White", 
+        img: "https://www.teamgroupinc.com/en/catalog/act.php?act=view&prod_id=2311", desc: "แรมสีขาวทรงสปอร์ต ไฟ RGB กระจายแสงกว้าง", 
+        stores: [
+          { name: "JIB", price: 4890, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 4750, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 4590, url: "https://shopee.co.th" }
+        ]
+      },
+      { 
+        id: 6, name: "ADATA XPG Lancer RGB DDR5", type: "RAM", spec: "DDR5 16GB (8GBx2) 5200MHz Black", 
+        img: "https://www.adata.com/upload/download/product_images/1000x1000/xpg_lancer_rgb_ddr5_black_01.jpg", desc: "เริ่มต้นยุค DDR5 ในราคาสบายกระเป๋า", 
+        stores: [
+          { name: "JIB", price: 2590, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 2490, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 2390, url: "https://shopee.co.th" }
+        ]
+      },
+
+      // --- SSD (4) ---
       { 
         id: 4, name: "Samsung 990 PRO", type: "SSD", spec: "1TB NVMe PCIe 4.0 (Read 7450MB/s)", 
-        img: "https://down-th.img.susercontent.com/file/sg-11134201-7rd71-m7m55wvhh51j4b@resize_w900_nl.webp", desc: "SSD NVMe Gen4 ที่เร็วที่สุดจาก Samsung โหลดเกมและไฟล์ขนาดใหญ่ได้เร็วแบบสายฟ้าแลบ", 
+        img: "https://down-th.img.susercontent.com/file/sg-11134201-7rd71-m7m55wvhh51j4b@resize_w900_nl.webp", desc: "SSD ตัวแรงระดับเรือธงจาก Samsung", 
         stores: [
           { name: "JIB", price: 4290, url: "https://www.jib.co.th" },
           { name: "Advice", price: 4150, url: "https://www.advice.co.th" },
@@ -209,8 +288,37 @@
         ]
       },
       { 
+        id: 301, name: "WD_BLACK SN850X", type: "SSD", spec: "1TB NVMe M.2 PCIe 4.0 (Read 7300MB/s)", 
+        img: "https://www.westerndigital.com/content/dam/store/en-us/assets/products/internal-storage/wd-black-sn850x-nvme-ssd/gallery/wd-black-sn850x-1tb.png", desc: "SSD เพื่อเกมเมอร์โหลดฉากไวลื่นไหล", 
+        stores: [
+          { name: "JIB", price: 3890, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 3750, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 3690, url: "https://shopee.co.th" }
+        ]
+      },
+      { 
+        id: 302, name: "Kingston NV2", type: "SSD", spec: "1TB NVMe M.2 PCIe 4.0 (Read 3500MB/s)", 
+        img: "https://media.kingston.com/kingston/product/ktc-product-ssd-snv2s-1000g-1-zm-lg.jpg", desc: "SSD M.2 คุ้มค่าที่สุดสำหรับประกอบเครื่องใหม่", 
+        stores: [
+          { name: "JIB", price: 2190, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 2050, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 1990, url: "https://shopee.co.th" }
+        ]
+      },
+      { 
+        id: 303, name: "Crucial T700 PCIe 5.0", type: "SSD", spec: "1TB M.2 NVMe (Read 11700MB/s)", 
+        img: "https://content.crucial.com/content/dam/crucial/ssd-products/t700/flyout/crucial-t700-ssd-product-image.png", desc: "ความเร็วแรงระดับ Gen5 อ่านเขียนทะลุหมื่น", 
+        stores: [
+          { name: "JIB", price: 6890, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 6700, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 6590, url: "https://shopee.co.th" }
+        ]
+      },
+
+      // --- ชุดน้ำ / Coolers (5) ---
+      { 
         id: 7, name: "NZXT Kraken 240 RGB", type: "ชุดน้ำ", spec: "Liquid Cooler 240mm / LCD Display / White", 
-        img: "https://www.jib.co.th/img_master/product/original/2023090813340061967_1.jpg", desc: "ชุดน้ำปิด 240 มม. ดีไซน์พรีเมียม พร้อมหน้าจอ LCD ปรับแต่งรูปหรืออุณหภูมิได้ตามต้องการ", 
+        img: "https://www.jib.co.th/img_master/product/original/2023090813340061967_1.jpg", desc: "ชุดน้ำปิดหน้าจอ LCD ดีไซน์เรียบหรูสไตล์ NZXT", 
         stores: [
           { name: "JIB", price: 5390, url: "https://www.jib.co.th" },
           { name: "Advice", price: 5450, url: "https://www.advice.co.th" },
@@ -218,8 +326,46 @@
         ]
       },
       { 
+        id: 401, name: "CORSAIR iCUE LINK H150i RGB", type: "ชุดน้ำ", spec: "Liquid Cooler 360mm / Black / iCUE Link System", 
+        img: "https://www.corsair.com/medias/sys_master/images/images/h60/hc1/10185903276062/CW-9061003-WW/Gallery/iCUE_LINK_H150i_RGB_BLACK_01.png", desc: "ชุดน้ำ 360 มม. สายเคเบิลเส้นเดียว ต่อพ่วงง่าย", 
+        stores: [
+          { name: "JIB", price: 8290, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 8100, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 7990, url: "https://shopee.co.th" }
+        ]
+      },
+      { 
+        id: 402, name: "Thermalright Frozen Prism 360 ARGB", type: "ชุดน้ำ", spec: "Liquid Cooler 360mm / White ARGB", 
+        img: "https://www.thermalright.com/wp-content/uploads/2022/11/FROZEN-PRISM-360-WHITE-ARGB-1.jpg", desc: "ชุดน้ำ 3 พัดลม ราคาสุดประหยัด เย็นเงียบเกินราคา", 
+        stores: [
+          { name: "JIB", price: 2390, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 2290, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 2150, url: "https://shopee.co.th" }
+        ]
+      },
+      { 
+        id: 403, name: "ASUS ROG Ryujin III 360 ARGB", type: "ชุดน้ำ", spec: "Liquid Cooler 360mm / 3.5” LCD Screen", 
+        img: "https://dlcdnrog.asus.com/rog/media/1681980315276.webp", desc: "สุดยอดชุดน้ำพร้อมจอ LCD ใหญ่ 3.5 นิ้ว และพัดลมพัดซิงค์", 
+        stores: [
+          { name: "JIB", price: 13900, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 13500, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 13200, url: "https://shopee.co.th" }
+        ]
+      },
+      { 
+        id: 404, name: "DeepCool LE520 ARGB", type: "ชุดน้ำ", spec: "Liquid Cooler 240mm / Anti-Leak Tech", 
+        img: "https://www.deepcool.com/download/Image/LE520/Gallery/LE520_01.jpg", desc: "ชุดน้ำ 2 ตอน มีระบบป้องกันน้ำรั่วซึม Anti-Leak", 
+        stores: [
+          { name: "JIB", price: 1990, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 1890, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 1790, url: "https://shopee.co.th" }
+        ]
+      },
+
+      // --- เคสคอม / Cases (5) ---
+      { 
         id: 10, name: "Lian Li O11 Vision", type: "เคสคอม", spec: "Mid Tower / Chrome Glass 3 Sides / White", 
-        img: "https://www.jib.co.th/img_master/product/original/2023112814524864003_1.jpg", desc: "เคสทรงตู้กระจก 3 ด้านแบบไม่มีเสากั้น โชว์อุปกรณ์ภายในได้แบบ 360 องศา", 
+        img: "https://www.jib.co.th/img_master/product/original/2023112814524864003_1.jpg", desc: "เคสกระจก 3 ด้าน โชว์อุปกรณ์ภายในแบบไร้เสากั้น", 
         stores: [
           { name: "JIB", price: 4890, url: "https://www.jib.co.th" },
           { name: "Advice", price: 4790, url: "https://www.advice.co.th" },
@@ -227,12 +373,77 @@
         ]
       },
       { 
+        id: 501, name: "HYTE Y60 Panoramic Glass", type: "เคสคอม", spec: "Mid Tower / 3-Piece Panoramic Glass / Red-Black", 
+        img: "https://hyte.com/store/y60/images/y60-red-hero.png", desc: "เคสทรงตู้ปลาพาโนรามา มาพร้อมสาย Riser สำหรับแนวตั้ง", 
+        stores: [
+          { name: "JIB", price: 6990, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 6800, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 6690, url: "https://shopee.co.th" }
+        ]
+      },
+      { 
+        id: 502, name: "NZXT H6 Flow RGB", type: "เคสคอม", spec: "Compact Dual-Chamber / Dual Glass / Black", 
+        img: "https://nzxt.com/assets/cms/34299/1698288593-h6-flow-rgb-black-main.png", desc: "เคสองห้องทรงเฉียง ระบายอากาศได้ดี พร้อมพัดลม RGB", 
+        stores: [
+          { name: "JIB", price: 4290, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 4150, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 3990, url: "https://shopee.co.th" }
+        ]
+      },
+      { 
+        id: 503, name: "Montech KING 95 PRO", type: "เคสคอม", spec: "Curved Glass / 6 ARGB Fans Included / White", 
+        img: "https://www.montechpc.com/upload/product/202311171015381.jpg", desc: "เคสกระจกโค้งไร้เสา แถมพัดลม ARGB มาให้ถึง 6 ตัว", 
+        stores: [
+          { name: "JIB", price: 4590, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 4450, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 4390, url: "https://shopee.co.th" }
+        ]
+      },
+      { 
+        id: 504, name: "Cooler Master MasterBox Q300L", type: "เคสคอม", spec: "Micro-ATX / Magnetic Dust Filters", 
+        img: "https://coolermaster.egnyte.com/m-preview/8a42f53d-24ea-4c91-9c6a-637a7b8e5d32/400", desc: "เคสขนาดกะทัดรัด แผ่นกรองฝุ่นแม่เหล็ก ถอดล้างง่าย", 
+        stores: [
+          { name: "JIB", price: 1490, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 1390, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 1290, url: "https://shopee.co.th" }
+        ]
+      },
+
+      // --- ตกแต่ง / พัดลม (4) ---
+      { 
         id: 13, name: "Lian Li UNI FAN TL LCD 120", type: "ตกแต่ง/พัดลม", spec: "120mm PWM Fan with 1.6 inch LCD Screen", 
-        img: "https://www.jib.co.th/img_master/product/original/2024011210283064875_1.jpg", desc: "พัดลมไร้สายต่อแบบ Daisy-Chain พร้อมหน้าจอ LCD บนตัวพัดลม เล่นภาพ GIF ได้", 
+        img: "https://www.jib.co.th/img_master/product/original/2024011210283064875_1.jpg", desc: "พัดลมไร้สายต่อแบบ Daisy-Chain พร้อมหน้าจอ LCD เล่น GIF ได้", 
         stores: [
           { name: "JIB", price: 1690, url: "https://www.jib.co.th" },
           { name: "Advice", price: 1650, url: "https://www.advice.co.th" },
           { name: "Shopee", price: 1590, url: "https://shopee.co.th" }
+        ]
+      },
+      { 
+        id: 601, name: "LIAN LI STRIMER PLUS V2 24-PIN", type: "ตกแต่ง/พัดลม", spec: "ARGB Extension Cable for Motherboard 24-Pin", 
+        img: "https://lian-li.com/wp-content/uploads/2022/05/strimer_v2_24pin_01.jpg", desc: "สายถักต่อเพิ่มความยาวไฟ RGB วิจิตรอลังการ", 
+        stores: [
+          { name: "JIB", price: 1990, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 1950, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 1890, url: "https://shopee.co.th" }
+        ]
+      },
+      { 
+        id: 602, name: "CORSAIR iCUE AR120 Digital RGB", type: "ตกแต่ง/พัดลม", spec: "120mm Triple Fan Pack with Controller", 
+        img: "https://www.corsair.com/medias/sys_master/images/images/hce/hcb/10182603702302/CO-9050167-WW/Gallery/AR120_RGB_TRIPLE_PACK_01.png", desc: "พัดลมแพ็ค 3 ตัว ไฟ ARGB คุมผ่านบอร์ดหรือกล่องได้", 
+        stores: [
+          { name: "JIB", price: 1590, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 1490, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 1390, url: "https://shopee.co.th" }
+        ]
+      },
+      { 
+        id: 603, name: "Cooler Master Universal Vertical GPU Holder V3", type: "ตกแต่ง/พัดลม", spec: "Vertical Graphics Card Holder with Riser Cable PCIe 4.0", 
+        img: "https://coolermaster.egnyte.com/m-preview/c873a4b0-33e4-4115-b778-958a719d3bb3/400", desc: "ขาตั้งการ์ดจอแนวตั้ง ปรับความยาวและระดับได้อิสระ", 
+        stores: [
+          { name: "JIB", price: 2190, url: "https://www.jib.co.th" },
+          { name: "Advice", price: 2090, url: "https://www.advice.co.th" },
+          { name: "Shopee", price: 1990, url: "https://shopee.co.th" }
         ]
       }
     ];
@@ -363,7 +574,6 @@
       };
 
       const filteredProducts = filter === "ALL" ? products : products.filter(p => p.type === filter);
-      const totalPrice = cart.reduce((sum, item) => sum + item.selectedStore.price, 0);
 
       const getThemeClass = () => {
         if (theme === "dark") return "bg-gray-900 text-white min-h-screen p-4 sm:p-6 transition-colors duration-300";
@@ -460,6 +670,7 @@
               [
                 { key: "ALL", label: t.all },
                 { key: "CPU", label: t.cpu },
+                { key: "การ์ดจอ", label: t.gpu },
                 { key: "RAM", label: t.ram },
                 { key: "SSD", label: t.ssd },
                 { key: "ชุดน้ำ", label: t.cooler },
@@ -558,7 +769,7 @@
                   onChange: (e) => setEditingProduct({ ...editingProduct, type: e.target.value }),
                   className: "w-full p-2 border rounded-xl bg-transparent text-xs focus:outline-none focus:border-blue-500 dark:bg-gray-800"
                 },
-                  ["CPU", "RAM", "SSD", "ชุดน้ำ", "เคสคอม", "ตกแต่ง/พัดลม"].map(cat =>
+                  ["CPU", "การ์ดจอ", "RAM", "SSD", "ชุดน้ำ", "เคสคอม", "ตกแต่ง/พัดลม"].map(cat =>
                     React.createElement("option", { key: cat, value: cat }, cat)
                   )
                 )
@@ -575,21 +786,37 @@
               ),
 
               React.createElement("div", { className: "pt-2 border-t border-gray-500/30" },
-                React.createElement("label", { className: "block text-xs font-bold mb-2 text-blue-400" }, "💰 แก้ไขราคาตามร้านค้า"),
+                React.createElement("label", { className: "block text-xs font-bold mb-2 text-blue-400" }, "💰 แก้ไขราคา และ ลิงก์หน้าร้านค้า (URL)"),
                 editingProduct.stores.map((st, idx) =>
-                  React.createElement("div", { key: idx, className: "flex items-center gap-2 mb-2 p-2 border border-gray-500/20 rounded-xl" },
-                    React.createElement("span", { className: "text-xs font-bold w-16" }, st.name),
-                    React.createElement("input", {
-                      type: "number",
-                      value: st.price,
-                      onChange: (e) => {
-                        const newStores = [...editingProduct.stores];
-                        newStores[idx].price = Number(e.target.value);
-                        setEditingProduct({ ...editingProduct, stores: newStores });
-                      },
-                      className: "flex-grow p-1.5 border rounded-lg bg-transparent text-xs focus:outline-none focus:border-blue-500"
-                    }),
-                    React.createElement("span", { className: "text-xs opacity-70" }, "บาท")
+                  React.createElement("div", { key: idx, className: "p-2.5 border border-gray-500/20 rounded-xl mb-2 space-y-2 bg-gray-500/5" },
+                    React.createElement("div", { className: "flex items-center gap-2" },
+                      React.createElement("span", { className: "text-xs font-bold w-14" }, st.name),
+                      React.createElement("input", {
+                        type: "number",
+                        value: st.price,
+                        onChange: (e) => {
+                          const newStores = [...editingProduct.stores];
+                          newStores[idx].price = Number(e.target.value);
+                          setEditingProduct({ ...editingProduct, stores: newStores });
+                        },
+                        className: "flex-grow p-1.5 border rounded-lg bg-transparent text-xs focus:outline-none focus:border-blue-500"
+                      }),
+                      React.createElement("span", { className: "text-xs opacity-70" }, "บาท")
+                    ),
+                    React.createElement("div", { className: "flex items-center gap-2" },
+                      React.createElement("span", { className: "text-[10px] opacity-60 w-14" }, "ลิงก์เว็บ:"),
+                      React.createElement("input", {
+                        type: "text",
+                        value: st.url,
+                        placeholder: "https://...",
+                        onChange: (e) => {
+                          const newStores = [...editingProduct.stores];
+                          newStores[idx].url = e.target.value;
+                          setEditingProduct({ ...editingProduct, stores: newStores });
+                        },
+                        className: "flex-grow p-1.5 border rounded-lg bg-transparent text-[11px] focus:outline-none focus:border-blue-500 font-mono"
+                      })
+                    )
                   )
                 )
               )
@@ -708,7 +935,7 @@
             cart.length > 0 && React.createElement("div", { className: "pt-4 border-t border-gray-500/30" },
               React.createElement("div", { className: "flex justify-between items-center mb-3" },
                 React.createElement("span", { className: "text-sm font-medium opacity-80" }, t.total),
-                React.createElement("span", { className: "text-2xl font-black text-blue-400" }, `฿${totalPrice.toLocaleString()}`)
+                React.createElement("span", { className: "text-2xl font-black text-blue-400" }, `฿${cart.reduce((sum, item) => sum + item.selectedStore.price, 0).toLocaleString()}`)
               ),
               React.createElement("button", {
                 onClick: () => setCart([]),
@@ -720,8 +947,7 @@
 
         isLoginOpen && React.createElement("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50" },
           React.createElement("form", { onSubmit: handleLogin, className: `max-w-sm w-full rounded-2xl p-6 shadow-2xl border ${cardBgClass}` },
-            React.createElement("h2", { className: "text-lg font-bold mb-1" }, t.loginTitle),
-            React.createElement("p", { className: "text-xs text-amber-500 font-medium mb-4" }, t.loginHint),
+            React.createElement("h2", { className: "text-lg font-bold mb-4" }, t.loginTitle),
             React.createElement("input", {
               type: "text",
               required: true,
