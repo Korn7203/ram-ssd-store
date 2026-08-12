@@ -430,6 +430,7 @@
       };
 
       const isAllOutOfStock = (stores) => stores ? stores.every(s => s.outOfStock) : true;
+      const getInStockStores = (stores) => stores ? stores.filter(s => !s.outOfStock) : [];
 
       return React.createElement("div", { className: getThemeClass() },
         React.createElement("header", { className: "flex flex-col md:flex-row justify-between items-center pb-4 border-b border-gray-300 dark:border-gray-700 max-w-6xl mx-auto gap-4" },
@@ -542,6 +543,8 @@
             filteredProducts.map(p => {
               const minPrice = getMinPrice(p.stores);
               const allOut = isAllOutOfStock(p.stores);
+              const inStockStores = getInStockStores(p.stores);
+              const totalStores = p.stores ? p.stores.length : 0;
 
               return React.createElement("div", { key: p.id, className: `border rounded-xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative ${cardBgClass} ${allOut ? 'opacity-80' : ''}` },
                 
@@ -562,8 +565,19 @@
                 ),
                 React.createElement("div", { className: "p-3.5 flex-grow flex flex-col justify-between" },
                   React.createElement("div", null,
-                    React.createElement("div", { className: "flex justify-between items-center mb-1.5" },
-                      React.createElement("span", { className: "text-[10px] border px-2 py-0.5 rounded font-mono font-bold opacity-80" }, p.type)
+                    React.createElement("div", { className: "flex justify-between items-center mb-1.5 gap-1" },
+                      React.createElement("span", { className: "text-[10px] border px-2 py-0.5 rounded font-mono font-bold opacity-80 shrink-0" }, p.type),
+                      React.createElement("span", { 
+                        className: `text-[10px] px-2 py-0.5 rounded font-bold border truncate ${
+                          inStockStores.length > 0 
+                            ? "bg-green-500/10 border-green-500/30 text-green-500" 
+                            : "bg-red-500/10 border-red-500/30 text-red-500"
+                        }` 
+                      }, 
+                        inStockStores.length > 0 
+                          ? `มีของ ${inStockStores.length}/${totalStores} ร้าน (${inStockStores.map(s => s.name).join(", ")})`
+                          : `หมดทุกร้าน (${totalStores} ร้าน)`
+                      )
                     ),
                     React.createElement("h3", { className: "font-bold text-sm leading-snug line-clamp-2" }, p.name),
                     React.createElement("p", { className: "text-xs opacity-70 mt-1 line-clamp-2" }, p.spec)
@@ -722,8 +736,15 @@
               isAllOutOfStock(selectedProduct.stores) && React.createElement("span", { className: "absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-md shadow-lg z-10" }, t.outOfStock),
               React.createElement("img", { src: selectedProduct.img, alt: selectedProduct.name, className: `max-h-full max-w-full object-contain ${isAllOutOfStock(selectedProduct.stores) ? 'grayscale opacity-70' : ''}` })
             ),
-            React.createElement("div", { className: "flex justify-between items-center mb-2" },
-              React.createElement("span", { className: "text-xs border px-2 py-0.5 rounded font-mono font-bold" }, selectedProduct.type)
+            React.createElement("div", { className: "flex justify-between items-center mb-2 gap-2" },
+              React.createElement("span", { className: "text-xs border px-2 py-0.5 rounded font-mono font-bold" }, selectedProduct.type),
+              React.createElement("span", { 
+                className: `text-xs px-2.5 py-0.5 rounded-full font-bold border ${
+                  getInStockStores(selectedProduct.stores).length > 0 
+                    ? "bg-green-500/10 border-green-500/30 text-green-500" 
+                    : "bg-red-500/10 border-red-500/30 text-red-500"
+                }` 
+              }, `มีสินค้า ${getInStockStores(selectedProduct.stores).length}/${selectedProduct.stores ? selectedProduct.stores.length : 0} ร้าน (${getInStockStores(selectedProduct.stores).map(s => s.name).join(", ") || "ไม่มีของ"})`)
             ),
             React.createElement("h2", { className: "text-xl font-bold mt-1" }, selectedProduct.name),
             React.createElement("p", { className: "text-xs opacity-70 mt-1 mb-3" }, selectedProduct.spec),
