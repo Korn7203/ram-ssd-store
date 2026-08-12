@@ -35,7 +35,6 @@
     import React, { useState, useEffect } from "https://esm.sh/react@18.2.0";
     import ReactDOM from "https://esm.sh/react-dom@18.2.0/client";
     
-    // Import Firebase App & Realtime Database SDK
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
       getDatabase, 
@@ -45,7 +44,6 @@
       remove 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    // Firebase Config ของคุณที่ใช้ Realtime Database
     const firebaseConfig = {
       apiKey: "AIzaSyDE3V7_5QE97IYJNCnzxHOr40Z4ZEnORPg",
       authDomain: "ssdstore-d7005.firebaseapp.com",
@@ -64,12 +62,12 @@
 
     const TEXTS = {
       TH: {
-        storeTitle: "KORN PC HARDWARE STORE (CLOUD)",
+        storeTitle: "KORN PC HARDWARE STORE (50 ITEMS)",
         theme: "โหมด",
         cart: "ตะกร้า",
         login: "เข้าสู่ระบบ",
         logout: "ออกจากระบบ",
-        history: "ประวัติการคลิก",
+        history: "ประวัติการสั่งซื้อ",
         recent: "ดูล่าสุด",
         all: "ทั้งหมด",
         cpu: "CPU",
@@ -78,14 +76,20 @@
         ssd: "SSD",
         cooler: "ชุดน้ำ",
         cases: "เคสคอม",
-        acc: "ตกแต่ง/พัดลม",
+        acc: "พัดลม/ตกแต่ง",
+        psu: "พาวเวอร์ซัพพลาย",
+        monitors: "จอมอนิเตอร์",
         detail: "รายละเอียด / เปรียบเทียบ",
         cancel: "ยกเลิก",
         addToCart: "ใส่ตะกร้า",
         total: "ราคารวมทั้งหมด",
         clearCart: "ล้างตะกร้าทั้งหมด",
-        goTo: "ไปยังร้านค้า",
-        noHistory: "ยังไม่มีประวัติการคลิกสินค้า",
+        checkout: "สั่งซื้อ / ชำระเงิน",
+        searchPlaceholder: "🔍 ค้นหาสินค้า หรือ สเปก...",
+        sortDefault: "เรียงลำดับมาตรฐาน",
+        sortLowToHigh: "ราคา: น้อยไปมาก",
+        sortHighToLow: "ราคา: มากไปน้อย",
+        noHistory: "ยังไม่มีประวัติการสั่งซื้อ",
         noRecent: "ยังไม่มีประวัติการดูสินค้า",
         loginTitle: "เข้าสู่ระบบ",
         usernamePlaceholder: "กรอกชื่อผู้ใช้งาน...",
@@ -102,15 +106,16 @@
         spec: "สเปกสินค้า",
         category: "หมวดหมู่",
         outOfStock: "สินค้าหมดทุกร้าน",
-        storeOutOfStock: "สินค้าหมด"
+        storeOutOfStock: "สินค้าหมด",
+        checkoutSuccess: "สั่งซื้อสำเร็จ! ขอบคุณที่ใช้บริการ"
       },
       EN: {
-        storeTitle: "KORN PC HARDWARE STORE (CLOUD)",
+        storeTitle: "KORN PC HARDWARE STORE (50 ITEMS)",
         theme: "Theme",
         cart: "Cart",
         login: "Login",
         logout: "Logout",
-        history: "History",
+        history: "Order History",
         recent: "Recent",
         all: "ALL",
         cpu: "CPU",
@@ -119,14 +124,20 @@
         ssd: "SSD",
         cooler: "Coolers",
         cases: "Cases",
-        acc: "Decor & Fans",
+        acc: "Fans & Acc",
+        psu: "PSU",
+        monitors: "Monitors",
         detail: "Details / Compare",
         cancel: "Cancel",
         addToCart: "Add to Cart",
         total: "Total Price",
         clearCart: "Clear Cart",
-        goTo: "Go to Store",
-        noHistory: "No history yet",
+        checkout: "Checkout",
+        searchPlaceholder: "🔍 Search products or specs...",
+        sortDefault: "Default Sorting",
+        sortLowToHigh: "Price: Low to High",
+        sortHighToLow: "Price: High to Low",
+        noHistory: "No order history yet",
         noRecent: "No recent items",
         loginTitle: "Sign In",
         usernamePlaceholder: "Enter username...",
@@ -143,7 +154,8 @@
         spec: "Specifications",
         category: "Category",
         outOfStock: "Out of Stock All Stores",
-        storeOutOfStock: "Out of Stock"
+        storeOutOfStock: "Out of Stock",
+        checkoutSuccess: "Order placed successfully!"
       }
     };
 
@@ -174,6 +186,76 @@
       }
     ];
 
+    const INITIAL_PRODUCTS = {
+      // CPU (1-6)
+      "p1": { name: "Intel Core i5-14600K", type: "CPU", spec: "14 Cores / 20 Threads / Up to 5.3 GHz", img: "https://notebookspec.com/web/wp-content/uploads/2023/10/i5-14600k.jpg", stores: [{ name: "JIB", price: 11500, url: "https://www.jib.co.th" }, { name: "Advice", price: 11200, url: "https://www.advice.co.th" }] },
+      "p2": { name: "AMD Ryzen 7 7800X3D", type: "CPU", spec: "8 Cores / 16 Threads / 3D V-Cache / L3 96MB", img: "https://notebookspec.com/web/wp-content/uploads/2023/04/AMD-Ryzen-7-7800X3D-1.jpg", stores: [{ name: "JIB", price: 14900, url: "https://www.jib.co.th" }, { name: "Advice", price: 14750, url: "https://www.advice.co.th" }] },
+      "p3": { name: "Intel Core i7-14700K", type: "CPU", spec: "20 Cores / 28 Threads / Up to 5.6 GHz", img: "https://notebookspec.com/web/wp-content/uploads/2023/10/i7-14700k.jpg", stores: [{ name: "JIB", price: 16500, url: "https://www.jib.co.th" }, { name: "Advice", price: 16200, url: "https://www.advice.co.th" }] },
+      "p4": { name: "AMD Ryzen 5 7600X", type: "CPU", spec: "6 Cores / 12 Threads / Up to 5.3 GHz", img: "https://notebookspec.com/web/wp-content/uploads/2022/09/Ryzen-5-7600X.jpg", stores: [{ name: "JIB", price: 8200, url: "https://www.jib.co.th" }, { name: "Advice", price: 7990, url: "https://www.advice.co.th" }] },
+      "p5": { name: "Intel Core i9-14900K", type: "CPU", spec: "24 Cores / 32 Threads / Up to 6.0 GHz", img: "https://notebookspec.com/web/wp-content/uploads/2023/10/i9-14900k.jpg", stores: [{ name: "JIB", price: 22900, url: "https://www.jib.co.th" }, { name: "Advice", price: 22500, url: "https://www.advice.co.th" }] },
+      "p6": { name: "AMD Ryzen 9 7950X3D", type: "CPU", spec: "16 Cores / 32 Threads / 3D V-Cache / L3 128MB", img: "https://notebookspec.com/web/wp-content/uploads/2023/02/AMD-Ryzen-9-7950X3D.jpg", stores: [{ name: "JIB", price: 23900, url: "https://www.jib.co.th" }, { name: "Advice", price: 23500, url: "https://www.advice.co.th" }] },
+
+      // GPU (7-14)
+      "p7": { name: "NVIDIA RTX 4070 Super 12GB", type: "การ์ดจอ", spec: "12GB GDDR6X / 192-bit / DLSS 3.5", img: "https://notebookspec.com/web/wp-content/uploads/2024/01/rtx-4070-super.jpg", stores: [{ name: "JIB", price: 23900, url: "https://www.jib.co.th" }, { name: "Advice", price: 23500, url: "https://www.advice.co.th" }] },
+      "p8": { name: "ASUS ROG Strix RTX 4080 Super 16GB", type: "การ์ดจอ", spec: "16GB GDDR6X / 256-bit / ARGB Light Sync", img: "https://notebookspec.com/web/wp-content/uploads/2024/01/asus-rog-strix-rtx-4080-super.jpg", stores: [{ name: "JIB", price: 42900, url: "https://www.jib.co.th" }, { name: "Advice", price: 42500, url: "https://www.advice.co.th" }] },
+      "p9": { name: "Gigabyte RTX 4060 Ti Eagle OC 8GB", type: "การ์ดจอ", spec: "8GB GDDR6 / 128-bit / Windforce 3X Cooling", img: "https://notebookspec.com/web/wp-content/uploads/2023/05/Gigabyte-RTX-4060-Ti.jpg", stores: [{ name: "JIB", price: 14500, url: "https://www.jib.co.th" }, { name: "Advice", price: 14200, url: "https://www.advice.co.th" }] },
+      "p10": { name: "MSI RTX 4090 Gaming X Slim 24GB", type: "การ์ดจอ", spec: "24GB GDDR6X / 384-bit / Tri Frozr 3", img: "https://notebookspec.com/web/wp-content/uploads/2022/10/MSI-RTX-4090.jpg", stores: [{ name: "JIB", price: 72900, url: "https://www.jib.co.th" }, { name: "Advice", price: 71900, url: "https://www.advice.co.th" }] },
+      "p11": { name: "AMD Radeon RX 7800 XT 16GB", type: "การ์ดจอ", spec: "16GB GDDR6 / 256-bit / RDNA 3 Architecture", img: "https://notebookspec.com/web/wp-content/uploads/2023/08/RX-7800-XT.jpg", stores: [{ name: "JIB", price: 18900, url: "https://www.jib.co.th" }, { name: "Advice", price: 18500, url: "https://www.advice.co.th" }] },
+      "p12": { name: "AMD Radeon RX 7900 XTX 24GB", type: "การ์ดจอ", spec: "24GB GDDR6 / 384-bit / Flagship RDNA 3", img: "https://notebookspec.com/web/wp-content/uploads/2022/11/RX-7900-XTX.jpg", stores: [{ name: "JIB", price: 36900, url: "https://www.jib.co.th" }, { name: "Advice", price: 36200, url: "https://www.advice.co.th" }] },
+      "p13": { name: "ZOTAC Gaming RTX 4060 Twin Edge 8GB", type: "การ์ดจอ", spec: "8GB GDDR6 / Compact Dual Fan", img: "https://notebookspec.com/web/wp-content/uploads/2023/06/ZOTAC-RTX-4060.jpg", stores: [{ name: "JIB", price: 10800, url: "https://www.jib.co.th" }, { name: "Advice", price: 10500, url: "https://www.advice.co.th" }] },
+      "p14": { name: "GALAX RTX 4070 Ti Super EX Gamer 16GB", type: "การ์ดจอ", spec: "16GB GDDR6X / 256-bit / 1-Click OC", img: "https://notebookspec.com/web/wp-content/uploads/2024/01/GALAX-RTX-4070-Ti-Super.jpg", stores: [{ name: "JIB", price: 30900, url: "https://www.jib.co.th" }, { name: "Advice", price: 30400, url: "https://www.advice.co.th" }] },
+
+      // RAM (15-20)
+      "p15": { name: "CORSAIR Vengeance RGB DDR5 32GB (16GBx2) 6000MHz", type: "RAM", spec: "32GB (2x16GB) / DDR5 6000MHz / CL36", img: "https://notebookspec.com/web/wp-content/uploads/2022/10/corsair-vengeance-rgb-ddr5.jpg", stores: [{ name: "JIB", price: 4890, url: "https://www.jib.co.th" }, { name: "Advice", price: 4790, url: "https://www.advice.co.th" }] },
+      "p16": { name: "G.SKILL Trident Z5 RGB DDR5 32GB (16GBx2) 6400MHz", type: "RAM", spec: "32GB (2x16GB) / DDR5 6400MHz / Matte Black", img: "https://notebookspec.com/web/wp-content/uploads/2022/01/GSkill-Trident-Z5.jpg", stores: [{ name: "JIB", price: 5490, url: "https://www.jib.co.th" }, { name: "Advice", price: 5350, url: "https://www.advice.co.th" }] },
+      "p17": { name: "KINGSTON FURY Beast DDR5 16GB 5200MHz", type: "RAM", spec: "16GB (1x16GB) / DDR5 5200MHz / Low-profile", img: "https://notebookspec.com/web/wp-content/uploads/2021/11/Kingston-Fury-Beast.jpg", stores: [{ name: "JIB", price: 2190, url: "https://www.jib.co.th" }, { name: "Advice", price: 2090, url: "https://www.advice.co.th" }] },
+      "p18": { name: "TEAMGROUP T-Force Delta RGB DDR5 32GB (16GBx2) 6000MHz White", type: "RAM", spec: "32GB (2x16GB) / DDR5 6000MHz / White Edition", img: "https://notebookspec.com/web/wp-content/uploads/2022/03/T-Force-Delta-RGB.jpg", stores: [{ name: "JIB", price: 4690, url: "https://www.jib.co.th" }, { name: "Advice", price: 4590, url: "https://www.advice.co.th" }] },
+      "p19": { name: "CORSAIR Dominator Titanium DDR5 64GB (32GBx2) 6600MHz", type: "RAM", spec: "64GB (2x32GB) / High-End / Swappable Top Bars", img: "https://notebookspec.com/web/wp-content/uploads/2023/09/Corsair-Dominator-Titanium.jpg", stores: [{ name: "JIB", price: 12900, url: "https://www.jib.co.th" }, { name: "Advice", price: 12500, url: "https://www.advice.co.th" }] },
+      "p20": { name: "G.SKILL Flare X5 DDR5 32GB (16GBx2) 6000MHz (AMD EXPO)", type: "RAM", spec: "32GB (2x16GB) / Optimized for AMD Ryzen 7000", img: "https://notebookspec.com/web/wp-content/uploads/2022/09/GSkill-Flare-X5.jpg", stores: [{ name: "JIB", price: 4390, url: "https://www.jib.co.th" }, { name: "Advice", price: 4290, url: "https://www.advice.co.th" }] },
+
+      // SSD (21-26)
+      "p21": { name: "Samsung 990 PRO 2TB M.2 NVMe PCIe 4.0", type: "SSD", spec: "Read 7450 MB/s / Write 6900 MB/s", img: "https://notebookspec.com/web/wp-content/uploads/2022/08/Samsung-990-Pro.jpg", stores: [{ name: "JIB", price: 6990, url: "https://www.jib.co.th" }, { name: "Advice", price: 6850, url: "https://www.advice.co.th" }] },
+      "p22": { name: "Kingston NV2 1TB M.2 PCIe 4.0 NVMe", type: "SSD", spec: "Read 3500 MB/s / Write 2100 MB/s", img: "https://notebookspec.com/web/wp-content/uploads/2022/09/Kingston-NV2-1TB.jpg", stores: [{ name: "JIB", price: 2190, url: "https://www.jib.co.th" }, { name: "Advice", price: 2090, url: "https://www.advice.co.th" }] },
+      "p23": { name: "WD_BLACK SN850X 1TB M.2 NVMe PCIe 4.0", type: "SSD", spec: "Read 7300 MB/s / Write 6300 MB/s / Game Mode 2.0", img: "https://notebookspec.com/web/wp-content/uploads/2022/05/WD-Black-SN850X.jpg", stores: [{ name: "JIB", price: 3890, url: "https://www.jib.co.th" }, { name: "Advice", price: 3790, url: "https://www.advice.co.th" }] },
+      "p24": { name: "Crucial T700 1TB PCIe 5.0 NVMe M.2", type: "SSD", spec: "Read 11700 MB/s / Write 9500 MB/s Ultra Fast", img: "https://notebookspec.com/web/wp-content/uploads/2023/05/Crucial-T700.jpg", stores: [{ name: "JIB", price: 6500, url: "https://www.jib.co.th" }, { name: "Advice", price: 6390, url: "https://www.advice.co.th" }] },
+      "p25": { name: "SAMSUNG 870 EVO 1TB 2.5 SATA III", type: "SSD", spec: "Read 560 MB/s / Write 530 MB/s 2.5 Inch", img: "https://notebookspec.com/web/wp-content/uploads/2021/01/Samsung-870-EVO.jpg", stores: [{ name: "JIB", price: 3290, url: "https://www.jib.co.th" }, { name: "Advice", price: 3190, url: "https://www.advice.co.th" }] },
+      "p26": { name: "Lexar NM790 2TB M.2 PCIe 4.0", type: "SSD", spec: "Read 7400 MB/s / Write 6500 MB/s PS5 Compatible", img: "https://notebookspec.com/web/wp-content/uploads/2023/06/Lexar-NM790.jpg", stores: [{ name: "JIB", price: 4990, url: "https://www.jib.co.th" }, { name: "Advice", price: 4850, url: "https://www.advice.co.th" }] },
+
+      // ชุดน้ำ / Cooler (27-32)
+      "p27": { name: "LIAN LI Galahad II Trinity Performance 360", type: "ชุดน้ำ", spec: "360mm Radiator / ARGB Pump / High Dynamic Fans", img: "https://notebookspec.com/web/wp-content/uploads/2023/07/Lian-Li-Galahad-II-Trinity.jpg", stores: [{ name: "JIB", price: 5590, url: "https://www.jib.co.th" }, { name: "Advice", price: 5490, url: "https://www.advice.co.th" }] },
+      "p28": { name: "NZXT Kraken Elite 360 RGB White", type: "ชุดน้ำ", spec: "2.36” LCD Display / 3x F120 RGB Core Fans", img: "https://notebookspec.com/web/wp-content/uploads/2023/04/NZXT-Kraken-Elite.jpg", stores: [{ name: "JIB", price: 10900, url: "https://www.jib.co.th" }, { name: "Advice", price: 10500, url: "https://www.advice.co.th" }] },
+      "p29": { name: "Thermalright Peerless Assassin 120 SE", type: "ชุดน้ำ", spec: "Dual Tower Air Cooler / 6 Heatpipes / 120mm PWM Fans", img: "https://notebookspec.com/web/wp-content/uploads/2022/04/Thermalright-Peerless-Assassin.jpg", stores: [{ name: "JIB", price: 1390, url: "https://www.jib.co.th" }, { name: "Advice", price: 1290, url: "https://www.advice.co.th" }] },
+      "p30": { name: "DeepCool LT720 360mm Liquid Cooler", type: "ชุดน้ำ", spec: "360mm Radiator / Multidimensional Infinity Mirror Cap", img: "https://notebookspec.com/web/wp-content/uploads/2022/10/DeepCool-LT720.jpg", stores: [{ name: "JIB", price: 4290, url: "https://www.jib.co.th" }, { name: "Advice", price: 4190, url: "https://www.advice.co.th" }] },
+      "p31": { name: "CORSAIR iCUE H150i ELITE CAPELLIX XT", type: "ชุดน้ำ", spec: "360mm / AF120 RGB ELITE Fans / Commander CORE Included", img: "https://notebookspec.com/web/wp-content/uploads/2023/02/Corsair-H150i-Elite.jpg", stores: [{ name: "JIB", price: 7890, url: "https://www.jib.co.th" }, { name: "Advice", price: 7690, url: "https://www.advice.co.th" }] },
+      "p32": { name: "Noctua NH-D15 chromax.black", type: "ชุดน้ำ", spec: "Premium Dual-Tower Air Cooler / 2x NF-A15 PWM Fans", img: "https://notebookspec.com/web/wp-content/uploads/2019/10/Noctua-NH-D15-chromax.black_.jpg", stores: [{ name: "JIB", price: 4290, url: "https://www.jib.co.th" }, { name: "Advice", price: 4150, url: "https://www.advice.co.th" }] },
+
+      // เคสคอม (33-38)
+      "p33": { name: "HYTE Y60 Panoramic Tempered Glass Case", type: "เคสคอม", spec: "Dual Chamber / 3-Piece Panoramic Glass / PCIe 4.0 Riser", img: "https://notebookspec.com/web/wp-content/uploads/2022/03/HYTE-Y60.jpg", stores: [{ name: "JIB", price: 6890, url: "https://www.jib.co.th" }, { name: "Advice", price: 6790, url: "https://www.advice.co.th" }] },
+      "p34": { name: "NZXT H9 Flow All-White", type: "เคสคอม", spec: "Dual-Chamber Mid-Tower / Dual Tempered Glass / High Airflow", img: "https://notebookspec.com/web/wp-content/uploads/2023/01/NZXT-H9-Flow.jpg", stores: [{ name: "JIB", price: 5890, url: "https://www.jib.co.th" }, { name: "Advice", price: 5790, url: "https://www.advice.co.th" }] },
+      "p35": { name: "LIAN LI O11 Dynamic EVO RGB Black", type: "เคสคอม", spec: "Dual-orientation / L-shaped ARGB strip / Panoramic View", img: "https://notebookspec.com/web/wp-content/uploads/2023/12/Lian-Li-O11-EVO-RGB.jpg", stores: [{ name: "JIB", price: 5990, url: "https://www.jib.co.th" }, { name: "Advice", price: 5890, url: "https://www.advice.co.th" }] },
+      "p36": { name: "Montech KING 95 PRO Black", type: "เคสคอม", spec: "Curved Glass Panel / 6 Pre-installed ARGB Fans Included", img: "https://notebookspec.com/web/wp-content/uploads/2023/11/Montech-King-95-Pro.jpg", stores: [{ name: "JIB", price: 4390, url: "https://www.jib.co.th" }, { name: "Advice", price: 4250, url: "https://www.advice.co.th" }] },
+      "p37": { name: "Corsair 4000D AIRFLOW TG Black", type: "เคสคอม", spec: "Mid-Tower ATX / High-Airflow Front Panel / RapidRoute Cable Management", img: "https://notebookspec.com/web/wp-content/uploads/2020/09/Corsair-4000D-Airflow.jpg", stores: [{ name: "JIB", price: 3190, url: "https://www.jib.co.th" }, { name: "Advice", price: 3090, url: "https://www.advice.co.th" }] },
+      "p38": { name: "Fractal Design North Charcoal Black TG", type: "เคสคอม", spec: "Real Walnut Wood Front Panel / Type-C USB 3.1 Gen 2", img: "https://notebookspec.com/web/wp-content/uploads/2022/12/Fractal-North.jpg", stores: [{ name: "JIB", price: 5490, url: "https://www.jib.co.th" }, { name: "Advice", price: 5390, url: "https://www.advice.co.th" }] },
+
+      // พัดลม/ตกแต่ง (39-42)
+      "p39": { name: "LIAN LI UNI FAN TL LCD 120 (3-Pack)", type: "พัดลม/ตกแต่ง", spec: "1.6” LCD Screen on Fan Hub / Daisy-Chain Design", img: "https://notebookspec.com/web/wp-content/uploads/2023/12/Lian-Li-UNI-FAN-TL-LCD.jpg", stores: [{ name: "JIB", price: 4590, url: "https://www.jib.co.th" }, { name: "Advice", price: 4490, url: "https://www.advice.co.th" }] },
+      "p40": { name: "CORSAIR iCUE LINK QX120 RGB (3-Pack Starter Kit)", type: "พัดลม/ตกแต่ง", spec: "Magnetic Dome Bearing / System Hub Included / Smart Link", img: "https://notebookspec.com/web/wp-content/uploads/2023/06/Corsair-QX120.jpg", stores: [{ name: "JIB", price: 5190, url: "https://www.jib.co.th" }, { name: "Advice", price: 5090, url: "https://www.advice.co.th" }] },
+      "p41": { name: "Thermalright TL-C12C-S ARGB 120mm (3-Pack)", type: "พัดลม/ตกแต่ง", spec: "Budget 120mm PWM Fans / Addressable RGB Light", img: "https://notebookspec.com/web/wp-content/uploads/2022/08/Thermalright-TL-C12C.jpg", stores: [{ name: "JIB", price: 590, url: "https://www.jib.co.th" }, { name: "Advice", price: 520, url: "https://www.advice.co.th" }] },
+      "p42": { name: "Lian Li Strimer Plus V2 24-Pin RGB Cable", type: "พัดลม/ตกแต่ง", spec: "24-Pin Extension Cable with Light Guide / ARGB Control", img: "https://notebookspec.com/web/wp-content/uploads/2022/05/Lian-Li-Strimer-Plus-V2.jpg", stores: [{ name: "JIB", price: 2190, url: "https://www.jib.co.th" }, { name: "Advice", price: 2090, url: "https://www.advice.co.th" }] },
+
+      // พาวเวอร์ซัพพลาย PSU (43-46)
+      "p43": { name: "CORSAIR RM850e 850W 80 Plus Gold ATX 3.0", type: "พาวเวอร์ซัพพลาย", spec: "850W / Fully Modular / PCIe 5.0 12VHPWR Ready", img: "https://notebookspec.com/web/wp-content/uploads/2023/04/Corsair-RM850e.jpg", stores: [{ name: "JIB", price: 4590, url: "https://www.jib.co.th" }, { name: "Advice", price: 4450, url: "https://www.advice.co.th" }] },
+      "p44": { name: "MSI MAG A750GL PCIE5 750W 80 Plus Gold", type: "พาวเวอร์ซัพพลาย", spec: "750W / Full Modular / Native PCIe 5.0 Connector", img: "https://notebookspec.com/web/wp-content/uploads/2023/07/MSI-MAG-A750GL.jpg", stores: [{ name: "JIB", price: 3490, url: "https://www.jib.co.th" }, { name: "Advice", price: 3390, url: "https://www.advice.co.th" }] },
+      "p45": { name: "ASUS ROG Thor 1000W Platinum II", type: "พาวเวอร์ซัพพลาย", spec: "1000W / OLED Power Display / Cybernetics Platinum Certified", img: "https://notebookspec.com/web/wp-content/uploads/2021/11/ASUS-ROG-Thor-1000W.jpg", stores: [{ name: "JIB", price: 11900, url: "https://www.jib.co.th" }, { name: "Advice", price: 11500, url: "https://www.advice.co.th" }] },
+      "p46": { name: "Thermaltake Toughpower GF3 1000W 80+ Gold", type: "พาวเวอร์ซัพพลาย", spec: "1000W / PCIe 5.0 Ready / Smart Zero Fan", img: "https://notebookspec.com/web/wp-content/uploads/2022/09/Thermaltake-GF3-1000W.jpg", stores: [{ name: "JIB", price: 5890, url: "https://www.jib.co.th" }, { name: "Advice", price: 5750, url: "https://www.advice.co.th" }] },
+
+      // จอมอนิเตอร์ Monitor (47-50)
+      "p47": { name: "ASUS ROG Swift OLED PG27AQDM 27” 240Hz", type: "จอมอนิเตอร์", spec: "27” QHD (2560x1440) / OLED / 240Hz / 0.03ms", img: "https://notebookspec.com/web/wp-content/uploads/2023/02/ASUS-PG27AQDM.jpg", stores: [{ name: "JIB", price: 32900, url: "https://www.jib.co.th" }, { name: "Advice", price: 32200, url: "https://www.advice.co.th" }] },
+      "p48": { name: "LG UltraGear 27GP850-B 27” IPS 180Hz", type: "จอมอนิเตอร์", spec: "27” QHD (2560x1440) / Nano IPS / 1ms / G-Sync Compatible", img: "https://notebookspec.com/web/wp-content/uploads/2021/05/LG-27GP850.jpg", stores: [{ name: "JIB", price: 11900, url: "https://www.jib.co.th" }, { name: "Advice", price: 11500, url: "https://www.advice.co.th" }] },
+      "p49": { name: "AOC 24G2E/67 23.8” IPS 144Hz", type: "จอมอนิเตอร์", spec: "23.8” Full HD (1920x1080) / IPS / 1ms / FreeSync Premium", img: "https://notebookspec.com/web/wp-content/uploads/2020/03/AOC-24G2E.jpg", stores: [{ name: "JIB", price: 3990, url: "https://www.jib.co.th" }, { name: "Advice", price: 3890, url: "https://www.advice.co.th" }] },
+      "p50": { name: "Samsung Odyssey G9 49” Curved OLED 240Hz", type: "จอมอนิเตอร์", spec: "49” Dual QHD (5120x1440) / 1800R Curved / OLED / 0.03ms", img: "https://notebookspec.com/web/wp-content/uploads/2023/06/Samsung-Odyssey-OLED-G9.jpg", stores: [{ name: "JIB", price: 49900, url: "https://www.jib.co.th" }, { name: "Advice", price: 48900, url: "https://www.advice.co.th" }] }
+    };
+
     function App() {
       const [lang, setLang] = useState("TH");
       const [theme, setTheme] = useState("light");
@@ -182,6 +264,9 @@
 
       const [cart, setCart] = useState([]);
       const [filter, setFilter] = useState("ALL");
+      const [searchQuery, setSearchQuery] = useState("");
+      const [sortBy, setSortBy] = useState("default");
+
       const [selectedProduct, setSelectedProduct] = useState(null);
       const [editingProduct, setEditingProduct] = useState(null);
       const [isCartOpen, setIsCartOpen] = useState(false);
@@ -200,39 +285,15 @@
       const t = TEXTS[lang];
       const isAdmin = user === ADMIN_USERNAME;
 
-      // ☁️ ดึงข้อมูล Realtime จาก Realtime Database
       useEffect(() => {
         const productsRef = ref(db, 'products');
         const unsubscribe = onValue(productsRef, (snapshot) => {
           const data = snapshot.val();
-          if (data) {
+          if (data && Object.keys(data).length > 0) {
             const productList = Object.keys(data).map(key => ({ id: key, ...data[key] }));
             setProducts(productList);
           } else {
-            // สร้างชุดข้อมูลเริ่มต้นหากข้อมูลบน Realtime Database ยังว่างเปล่า
-            const initialData = {
-              "p1": {
-                name: "Intel Core i5-14600K",
-                type: "CPU",
-                spec: "14 Cores (6P+8E) / 20 Threads / Up to 5.3 GHz",
-                img: "https://notebookspec.com/web/wp-content/uploads/2023/10/i5-14600k.jpg",
-                stores: [
-                  { name: "JIB", price: 11500, url: "https://www.jib.co.th", outOfStock: false },
-                  { name: "Advice", price: 11200, url: "https://www.advice.co.th", outOfStock: false }
-                ]
-              },
-              "p2": {
-                name: "NVIDIA RTX 4070 Super 12GB",
-                type: "การ์ดจอ",
-                spec: "12GB GDDR6X / 192-bit / DLSS 3.5",
-                img: "https://notebookspec.com/web/wp-content/uploads/2024/01/rtx-4070-super.jpg",
-                stores: [
-                  { name: "JIB", price: 23900, url: "https://www.jib.co.th", outOfStock: false },
-                  { name: "Advice", price: 23500, url: "https://www.advice.co.th", outOfStock: false }
-                ]
-              }
-            };
-            set(productsRef, initialData);
+            set(productsRef, INITIAL_PRODUCTS);
           }
         }, (error) => {
           console.error("Database error:", error);
@@ -281,8 +342,9 @@
           id: Date.now(),
           date: new Date().toLocaleString(),
           store: store.name,
-          items: [{ name: product.name, price: store.price }],
-          total: store.price
+          items: [{ name: product.name, price: store.price, quantity: 1 }],
+          total: store.price,
+          type: "ร้านค้าภายนอก"
         };
         setOrderHistory(prev => [newRecord, ...prev]);
         window.open(store.url, "_blank", "noopener,noreferrer");
@@ -298,16 +360,57 @@
 
       const addToCart = (product, store) => {
         if (store.outOfStock) return;
-        setCart([...cart, { ...product, selectedStore: store, cartItemId: Date.now() + Math.random() }]);
+        
+        setCart(prevCart => {
+          const existingIndex = prevCart.findIndex(item => item.id === product.id && item.selectedStore.name === store.name);
+          if (existingIndex > -1) {
+            const updated = [...prevCart];
+            updated[existingIndex].quantity += 1;
+            return updated;
+          } else {
+            return [...prevCart, { ...product, selectedStore: store, quantity: 1, cartItemId: Date.now() + Math.random() }];
+          }
+        });
+
         setCartAnimate(true);
         setTimeout(() => setCartAnimate(false), 300);
+      };
+
+      const updateCartQuantity = (cartItemId, delta) => {
+        setCart(prevCart => {
+          return prevCart.map(item => {
+            if (item.cartItemId === cartItemId) {
+              const newQty = item.quantity + delta;
+              return newQty > 0 ? { ...item, quantity: newQty } : null;
+            }
+            return item;
+          }).filter(Boolean);
+        });
       };
 
       const removeFromCart = (cartItemId) => {
         setCart(cart.filter(item => item.cartItemId !== cartItemId));
       };
 
-      // ☁️ บันทึกข้อมูลลง Realtime Database
+      const handleCheckout = () => {
+        if (cart.length === 0) return;
+        
+        const total = cart.reduce((sum, item) => sum + (item.selectedStore.price * item.quantity), 0);
+        const newOrder = {
+          id: Date.now(),
+          date: new Date().toLocaleString(),
+          store: "KORN PC Store",
+          items: cart.map(i => ({ name: `${i.name} (${i.selectedStore.name})`, price: i.selectedStore.price, quantity: i.quantity })),
+          total: total,
+          type: "สั่งซื้อสำเร็จ"
+        };
+
+        setOrderHistory(prev => [newOrder, ...prev]);
+        setCart([]);
+        setIsCartOpen(false);
+        alert(t.checkoutSuccess);
+      };
+
       const handleSaveProduct = async (updatedProduct) => {
         try {
           const prodId = updatedProduct.id || `p_${Date.now()}`;
@@ -321,7 +424,6 @@
         }
       };
 
-      // ☁️ ลบข้อมูลออกจาก Realtime Database
       const handleDeleteProduct = async (id) => {
         if (confirm("ต้องการลบสินค้านี้จาก Cloud ใช่หรือไม่?")) {
           try {
@@ -330,6 +432,17 @@
           } catch (error) {
             console.error("Error deleting product:", error);
             alert("เกิดข้อผิดพลาดในการลบข้อมูลจาก Cloud");
+          }
+        }
+      };
+
+      const handleResetProducts = async () => {
+        if (confirm("ต้องการโหลดสินค้าทั้งหมด 50 ชิ้นขึ้น Cloud หรือไม่?")) {
+          try {
+            await set(ref(db, 'products'), INITIAL_PRODUCTS);
+            alert("โหลดสินค้า 50 รายการสำเร็จ!");
+          } catch (error) {
+            console.error("Reset error:", error);
           }
         }
       };
@@ -343,24 +456,11 @@
           img: "https://via.placeholder.com/300",
           stores: [
             { name: "JIB", price: 1000, url: "https://www.jib.co.th", outOfStock: false },
-            { name: "Advice", price: 1000, url: "https://www.advice.co.th", outOfStock: false },
-            { name: "Shopee", price: 1000, url: "https://shopee.co.th", outOfStock: false }
+            { name: "Advice", price: 1000, url: "https://www.advice.co.th", outOfStock: false }
           ]
         };
         setEditingProduct(newProd);
       };
-
-      const filteredProducts = filter === "ALL" ? products : products.filter(p => p.type === filter);
-
-      const getThemeClass = () => {
-        if (theme === "dark") return "bg-gray-900 text-white min-h-screen p-4 sm:p-6 transition-colors duration-300";
-        if (theme === "mono") return "bg-black text-gray-200 grayscale min-h-screen p-4 sm:p-6 transition-colors duration-300";
-        return "bg-gray-50 text-gray-900 min-h-screen p-4 sm:p-6 transition-colors duration-300";
-      };
-
-      const cardBgClass = theme === "light" 
-        ? "bg-white text-gray-900 border-gray-200" 
-        : "bg-gray-800 text-white border-gray-700";
 
       const getMinPrice = (stores) => {
         if (!stores) return null;
@@ -374,8 +474,38 @@
 
       const isAllOutOfStock = (stores) => stores ? stores.every(s => s.outOfStock) : true;
 
+      // ระบบกรอง ค้นหา และเรียงลำดับสินค้า
+      const filteredProducts = products
+        .filter(p => filter === "ALL" || p.type === filter)
+        .filter(p => {
+          if (!searchQuery.trim()) return true;
+          const q = searchQuery.toLowerCase();
+          return p.name.toLowerCase().includes(q) || p.spec.toLowerCase().includes(q);
+        })
+        .sort((a, b) => {
+          if (sortBy === "lowToHigh") {
+            return (getMinPrice(a.stores) || Infinity) - (getMinPrice(b.stores) || Infinity);
+          }
+          if (sortBy === "highToLow") {
+            return (getMinPrice(b.stores) || -1) - (getMinPrice(a.stores) || -1);
+          }
+          return 0;
+        });
+
+      const getThemeClass = () => {
+        if (theme === "dark") return "bg-gray-900 text-white min-h-screen p-4 sm:p-6 transition-colors duration-300";
+        if (theme === "mono") return "bg-black text-gray-200 grayscale min-h-screen p-4 sm:p-6 transition-colors duration-300";
+        return "bg-gray-50 text-gray-900 min-h-screen p-4 sm:p-6 transition-colors duration-300";
+      };
+
+      const cardBgClass = theme === "light" 
+        ? "bg-white text-gray-900 border-gray-200" 
+        : "bg-gray-800 text-white border-gray-700";
+
+      const totalCartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+
       return React.createElement("div", { className: getThemeClass() },
-        React.createElement("header", { className: "flex flex-col md:flex-row justify-between items-center pb-4 border-b border-gray-300 dark:border-gray-700 max-w-5xl mx-auto gap-4" },
+        React.createElement("header", { className: "flex flex-col md:flex-row justify-between items-center pb-4 border-b border-gray-300 dark:border-gray-700 max-w-6xl mx-auto gap-4" },
           React.createElement("h1", { className: "text-xl font-extrabold tracking-wider bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent" }, t.storeTitle),
           
           React.createElement("div", { className: "flex flex-wrap gap-2 items-center justify-center" },
@@ -415,12 +545,12 @@
               className: `font-semibold text-xs sm:text-sm flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg active:scale-95 transition-all shadow-md shadow-blue-600/30 ${cartAnimate ? "animate-cart-pop" : ""}`
             },
               React.createElement("span", null, "🛒"),
-              React.createElement("span", null, `${t.cart} (${cart.length})`)
+              React.createElement("span", null, `${t.cart} (${totalCartCount})`)
             )
           )
         ),
         
-        React.createElement("main", { className: "max-w-5xl mx-auto mt-6" },
+        React.createElement("main", { className: "max-w-6xl mx-auto mt-6" },
           React.createElement("div", { className: "relative mb-8 rounded-2xl overflow-hidden shadow-2xl border border-gray-700/50 bg-slate-950" },
             React.createElement("div", { 
               key: animKey,
@@ -448,17 +578,45 @@
             )
           ),
 
-          React.createElement("div", { className: "flex justify-between items-center mb-6 gap-2" },
-            React.createElement("div", { className: "flex gap-2 overflow-x-auto pb-1 flex-1" },
+          {/* Search & Sort Bar */}
+          React.createElement("div", { className: "flex flex-col md:flex-row gap-3 mb-6" },
+            React.createElement("div", { className: "flex-1 relative" },
+              React.createElement("input", {
+                type: "text",
+                placeholder: t.searchPlaceholder,
+                value: searchQuery,
+                onChange: (e) => setSearchQuery(e.target.value),
+                className: `w-full px-4 py-2 rounded-xl border text-sm focus:outline-none focus:border-blue-500 transition-all ${cardBgClass}`
+              }),
+              searchQuery && React.createElement("button", {
+                onClick: () => setSearchQuery(""),
+                className: "absolute right-3 top-2.5 text-xs text-gray-400 hover:text-white"
+              }, "✕")
+            ),
+            React.createElement("select", {
+              value: sortBy,
+              onChange: (e) => setSortBy(e.target.value),
+              className: `px-3 py-2 rounded-xl border text-sm focus:outline-none focus:border-blue-500 cursor-pointer ${cardBgClass}`
+            },
+              React.createElement("option", { value: "default" }, t.sortDefault),
+              React.createElement("option", { value: "lowToHigh" }, t.sortLowToHigh),
+              React.createElement("option", { value: "highToLow" }, t.sortHighToLow)
+            )
+          ),
+
+          React.createElement("div", { className: "flex flex-col sm:flex-row justify-between items-center mb-6 gap-3" },
+            React.createElement("div", { className: "flex gap-2 overflow-x-auto pb-2 w-full flex-1" },
               [
-                { key: "ALL", label: t.all },
+                { key: "ALL", label: `${t.all} (${products.length})` },
                 { key: "CPU", label: t.cpu },
                 { key: "การ์ดจอ", label: t.gpu },
                 { key: "RAM", label: t.ram },
                 { key: "SSD", label: t.ssd },
                 { key: "ชุดน้ำ", label: t.cooler },
                 { key: "เคสคอม", label: t.cases },
-                { key: "ตกแต่ง/พัดลม", label: t.acc }
+                { key: "พัดลม/ตกแต่ง", label: t.acc },
+                { key: "พาวเวอร์ซัพพลาย", label: t.psu },
+                { key: "จอมอนิเตอร์", label: t.monitors }
               ].map(f =>
                 React.createElement("button", {
                   key: f.key,
@@ -467,17 +625,22 @@
                 }, f.label)
               )
             ),
-            isAdmin && React.createElement("button", {
-              onClick: handleCreateNewProduct,
-              className: "px-3.5 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-xs font-bold flex items-center gap-1 shrink-0 shadow-md active:scale-95 transition-all"
-            }, `➕ ${t.addProduct}`)
+            isAdmin && React.createElement("div", { className: "flex gap-2 shrink-0 self-end sm:self-auto" },
+              React.createElement("button", {
+                onClick: handleResetProducts,
+                className: "px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold shrink-0 shadow-md active:scale-95 transition-all"
+              }, "🔄 โหลด 50 สินค้าตัวอย่าง"),
+              React.createElement("button", {
+                onClick: handleCreateNewProduct,
+                className: "px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-xs font-bold flex items-center gap-1 shrink-0 shadow-md active:scale-95 transition-all"
+              }, `➕ ${t.addProduct}`)
+            )
           ),
           
-          React.createElement("div", { key: filter, className: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 animate-fade-in" },
+          React.createElement("div", { key: filter + sortBy + searchQuery, className: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 animate-fade-in" },
             filteredProducts.map(p => {
               const minPrice = getMinPrice(p.stores);
               const allOut = isAllOutOfStock(p.stores);
-              const availableStoresCount = p.stores ? p.stores.filter(s => !s.outOfStock).length : 0;
 
               return React.createElement("div", { key: p.id, className: `border rounded-xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative ${cardBgClass} ${allOut ? 'opacity-80' : ''}` },
                 
@@ -492,29 +655,28 @@
 
                 React.createElement("div", { 
                   onClick: () => openProductDetails(p),
-                  className: "w-full h-48 bg-white flex items-center justify-center p-4 overflow-hidden group cursor-pointer relative" 
+                  className: "w-full h-44 bg-white flex items-center justify-center p-3 overflow-hidden group cursor-pointer relative" 
                 },
-                  !allOut && React.createElement("span", { className: "absolute top-2 right-2 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow z-10" }, `มีของ ${availableStoresCount}/${p.stores ? p.stores.length : 0} ร้าน`),
                   React.createElement("img", { src: p.img, alt: p.name, className: `max-h-full max-w-full object-contain transition-transform duration-300 ${allOut ? 'grayscale opacity-70' : 'group-hover:scale-105'}` })
                 ),
-                React.createElement("div", { className: "p-4 flex-grow flex flex-col justify-between" },
+                React.createElement("div", { className: "p-3.5 flex-grow flex flex-col justify-between" },
                   React.createElement("div", null,
-                    React.createElement("div", { className: "flex justify-between items-center mb-2" },
-                      React.createElement("span", { className: "text-xs border px-2 py-0.5 rounded-md font-mono font-bold opacity-80" }, p.type)
+                    React.createElement("div", { className: "flex justify-between items-center mb-1.5" },
+                      React.createElement("span", { className: "text-[10px] border px-2 py-0.5 rounded font-mono font-bold opacity-80" }, p.type)
                     ),
-                    React.createElement("h3", { className: "font-bold text-base mt-1" }, p.name),
-                    React.createElement("p", { className: "text-xs opacity-75 mt-0.5" }, p.spec)
+                    React.createElement("h3", { className: "font-bold text-sm leading-snug line-clamp-2" }, p.name),
+                    React.createElement("p", { className: "text-xs opacity-70 mt-1 line-clamp-2" }, p.spec)
                   ),
-                  React.createElement("div", { className: "flex justify-between items-center mt-4 pt-3 border-t border-gray-500/20" },
+                  React.createElement("div", { className: "flex justify-between items-center mt-3 pt-2.5 border-t border-gray-500/20" },
                     React.createElement("div", null,
-                      !allOut && React.createElement("span", { className: "text-[10px] opacity-60 block" }, "เริ่มต้นที่"),
+                      !allOut && React.createElement("span", { className: "text-[9px] opacity-60 block" }, "เริ่มต้นที่"),
                       allOut 
-                        ? React.createElement("span", { className: "font-bold text-sm text-red-500" }, t.outOfStock)
-                        : React.createElement("span", { className: "font-bold text-lg text-blue-400" }, `฿${minPrice ? minPrice.toLocaleString() : '-'}`)
+                        ? React.createElement("span", { className: "font-bold text-xs text-red-500" }, t.outOfStock)
+                        : React.createElement("span", { className: "font-bold text-base text-blue-400" }, `฿${minPrice ? minPrice.toLocaleString() : '-'}`)
                     ),
                     React.createElement("button", {
                       onClick: () => openProductDetails(p),
-                      className: `${allOut ? 'bg-gray-500 hover:bg-gray-600' : 'bg-blue-600 hover:bg-blue-700'} active:scale-95 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all shadow-md`
+                      className: `${allOut ? 'bg-gray-500' : 'bg-blue-600 hover:bg-blue-700'} active:scale-95 text-white px-2.5 py-1 rounded-lg text-xs font-medium transition-all shadow-md`
                     }, t.detail)
                   )
                 )
@@ -531,7 +693,6 @@
             ),
             
             React.createElement("div", { className: "space-y-4 max-h-[70vh] overflow-y-auto pr-1" },
-              
               React.createElement("div", null,
                 React.createElement("label", { className: "block text-xs font-bold mb-1 opacity-80" }, t.imageUrl),
                 React.createElement("input", {
@@ -562,7 +723,7 @@
                   onChange: (e) => setEditingProduct({ ...editingProduct, type: e.target.value }),
                   className: "w-full p-2 border rounded-xl bg-transparent text-xs focus:outline-none focus:border-blue-500 dark:bg-gray-800"
                 },
-                  ["CPU", "การ์ดจอ", "RAM", "SSD", "ชุดน้ำ", "เคสคอม", "ตกแต่ง/พัดลม"].map(cat =>
+                  ["CPU", "การ์ดจอ", "RAM", "SSD", "ชุดน้ำ", "เคสคอม", "พัดลม/ตกแต่ง", "พาวเวอร์ซัพพลาย", "จอมอนิเตอร์"].map(cat =>
                     React.createElement("option", { key: cat, value: cat }, cat)
                   )
                 )
@@ -579,10 +740,9 @@
               ),
 
               React.createElement("div", { className: "pt-2 border-t border-gray-500/30" },
-                React.createElement("label", { className: "block text-xs font-bold mb-2 text-blue-400" }, "💰 จัดการราคา, ลิงก์หน้าร้านค้า และสถานะสินค้าแยกรายร้าน"),
+                React.createElement("label", { className: "block text-xs font-bold mb-2 text-blue-400" }, "💰 จัดการราคา, ลิงก์หน้าร้านค้า และสถานะสินค้า"),
                 editingProduct.stores && editingProduct.stores.map((st, idx) =>
                   React.createElement("div", { key: idx, className: "p-3 border border-gray-500/20 rounded-xl mb-2 space-y-2 bg-gray-500/5" },
-                    
                     React.createElement("div", { className: "flex items-center justify-between border-b border-gray-500/10 pb-1.5" },
                       React.createElement("span", { className: "text-xs font-bold text-indigo-400" }, `🏬 ${st.name}`),
                       React.createElement("label", { className: "flex items-center gap-1.5 text-xs cursor-pointer select-none" },
@@ -599,7 +759,6 @@
                         React.createElement("span", { className: st.outOfStock ? "text-red-400 font-bold" : "opacity-70" }, "สินค้าหมด")
                       )
                     ),
-
                     React.createElement("div", { className: "flex items-center gap-2" },
                       React.createElement("span", { className: "text-[11px] opacity-70 w-12" }, "ราคา:"),
                       React.createElement("input", {
@@ -717,7 +876,7 @@
               React.createElement("div", { className: "flex items-center gap-2" },
                 React.createElement("span", { className: "text-xl" }, "🛒"),
                 React.createElement("h2", { className: "text-lg font-bold" }, t.cart),
-                React.createElement("span", { className: "text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full font-bold" }, `${cart.length}`)
+                React.createElement("span", { className: "text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full font-bold" }, `${totalCartCount}`)
               ),
               React.createElement("button", {
                 onClick: () => setIsCartOpen(false),
@@ -734,33 +893,45 @@
               :
                 cart.map(item =>
                   React.createElement("div", { key: item.cartItemId, className: "flex items-center justify-between p-3 border border-gray-500/20 rounded-xl bg-gray-500/5 hover:bg-gray-500/10 transition-all gap-3" },
-                    React.createElement("div", { className: "w-14 h-14 bg-white rounded-lg p-1 flex-shrink-0 flex items-center justify-center border" },
+                    React.createElement("div", { className: "w-12 h-12 bg-white rounded-lg p-1 flex-shrink-0 flex items-center justify-center border" },
                       React.createElement("img", { src: item.img, alt: item.name, className: "max-h-full max-w-full object-contain" })
                     ),
                     React.createElement("div", { className: "flex-grow min-w-0" },
-                      React.createElement("h4", { className: "font-bold text-sm truncate" }, item.name),
-                      React.createElement("p", { className: "text-xs opacity-70" }, `ร้าน: ${item.selectedStore.name}`),
-                      React.createElement("span", { className: "text-xs font-bold text-blue-400 block mt-0.5" }, `฿${item.selectedStore.price.toLocaleString()}`)
+                      React.createElement("h4", { className: "font-bold text-xs truncate" }, item.name),
+                      React.createElement("p", { className: "text-[10px] opacity-70" }, `ร้าน: ${item.selectedStore.name}`),
+                      React.createElement("span", { className: "text-xs font-bold text-blue-400 block mt-0.5" }, `฿${(item.selectedStore.price * item.quantity).toLocaleString()}`)
                     ),
-                    React.createElement("div", { className: "flex items-center gap-1.5 flex-shrink-0" },
+
+                    {/* ปรับจำนวนสินค้า + / - */}
+                    React.createElement("div", { className: "flex items-center border border-gray-500/30 rounded-lg overflow-hidden bg-black/20" },
                       React.createElement("button", {
-                        onClick: () => openDirectLink(item, item.selectedStore),
-                        className: "text-xs bg-orange-500 hover:bg-orange-600 text-white px-2.5 py-1.5 rounded-lg font-bold transition-all"
-                      }, "ซื้อ ↗"),
+                        onClick: () => updateCartQuantity(item.cartItemId, -1),
+                        className: "px-2 py-0.5 text-xs font-bold hover:bg-gray-500/30"
+                      }, "-"),
+                      React.createElement("span", { className: "px-2 py-0.5 text-xs font-bold font-mono" }, item.quantity),
                       React.createElement("button", {
-                        onClick: () => removeFromCart(item.cartItemId),
-                        className: "text-xs bg-red-500/20 hover:bg-red-500 text-red-400 hover:text-white px-2 py-1.5 rounded-lg font-bold transition-all"
-                      }, "❌")
-                    )
+                        onClick: () => updateCartQuantity(item.cartItemId, 1),
+                        className: "px-2 py-0.5 text-xs font-bold hover:bg-gray-500/30"
+                      }, "+")
+                    ),
+
+                    React.createElement("button", {
+                      onClick: () => removeFromCart(item.cartItemId),
+                      className: "text-xs bg-red-500/20 hover:bg-red-500 text-red-400 hover:text-white px-2 py-1.5 rounded-lg font-bold transition-all"
+                    }, "❌")
                   )
                 )
             ),
 
-            cart.length > 0 && React.createElement("div", { className: "pt-4 border-t border-gray-500/30" },
-              React.createElement("div", { className: "flex justify-between items-center mb-3" },
+            cart.length > 0 && React.createElement("div", { className: "pt-4 border-t border-gray-500/30 space-y-2" },
+              React.createElement("div", { className: "flex justify-between items-center mb-1" },
                 React.createElement("span", { className: "text-sm font-medium opacity-80" }, t.total),
-                React.createElement("span", { className: "text-2xl font-black text-blue-400" }, `฿${cart.reduce((sum, item) => sum + item.selectedStore.price, 0).toLocaleString()}`)
+                React.createElement("span", { className: "text-2xl font-black text-blue-400" }, `฿${cart.reduce((sum, item) => sum + (item.selectedStore.price * item.quantity), 0).toLocaleString()}`)
               ),
+              React.createElement("button", {
+                onClick: handleCheckout,
+                className: "w-full py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-xl text-xs font-extrabold transition-all shadow-lg shadow-green-600/30 active:scale-95"
+              }, `💳 ${t.checkout}`),
               React.createElement("button", {
                 onClick: () => setCart([]),
                 className: "w-full py-1.5 border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-xl text-xs font-semibold transition-all"
@@ -805,20 +976,28 @@
                 React.createElement("p", { className: "text-center text-xs opacity-50 py-8" }, t.noHistory)
               :
                 orderHistory.map(order =>
-                  React.createElement("div", { key: order.id, className: "p-3 border border-gray-500/20 rounded-xl bg-gray-500/5 text-xs" },
-                    React.createElement("div", { className: "flex justify-between text-gray-400 mb-1" },
+                  React.createElement("div", { key: order.id, className: "p-3 border border-gray-500/20 rounded-xl bg-gray-500/5 text-xs space-y-1" },
+                    React.createElement("div", { className: "flex justify-between text-gray-400 font-mono text-[10px]" },
                       React.createElement("span", null, order.date),
-                      React.createElement("span", { className: "font-bold text-orange-400" }, order.store)
+                      React.createElement("span", { className: "font-bold text-indigo-400" }, order.type || "สั่งซื้อ")
                     ),
                     order.items.map((item, idx) =>
-                      React.createElement("div", { key: idx, className: "flex justify-between py-1" },
-                        React.createElement("span", null, item.name),
-                        React.createElement("span", { className: "font-semibold text-blue-400" }, `฿${item.price.toLocaleString()}`)
+                      React.createElement("div", { key: idx, className: "flex justify-between py-1 border-t border-gray-500/10" },
+                        React.createElement("span", { className: "font-medium" }, `${item.name} x${item.quantity || 1}`),
+                        React.createElement("span", { className: "font-semibold text-blue-400" }, `฿${(item.price * (item.quantity || 1)).toLocaleString()}`)
                       )
+                    ),
+                    React.createElement("div", { className: "flex justify-between pt-1 border-t border-gray-500/20 font-bold text-xs" },
+                      React.createElement("span", null, "รวมสุทธิ:"),
+                      React.createElement("span", { className: "text-green-400" }, `฿${order.total.toLocaleString()}`)
                     )
                   )
                 )
-            )
+            ),
+            isAdmin && orderHistory.length > 0 && React.createElement("button", {
+              onClick: () => setOrderHistory([]),
+              className: "w-full py-1.5 bg-red-600/20 border border-red-500/40 text-red-400 rounded-xl text-xs font-bold hover:bg-red-600 hover:text-white transition-all mt-2"
+            }, "🗑️ ล้างประวัติทั้งหมด ( Admin Only )")
           )
         ),
 
