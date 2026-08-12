@@ -1,176 +1,3 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KORN PC Store - Cloud Enabled System</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    @keyframes cartPop {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.2); }
-      100% { transform: scale(1); }
-    }
-    .animate-cart-pop { animation: cartPop 0.3s ease-in-out; }
-    
-    @keyframes fadeInSlide {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .animate-fade-in { animation: fadeInSlide 0.35s ease-out forwards; }
-
-    @keyframes slideTransition {
-      from { opacity: 0; transform: scale(0.97) translateY(10px); }
-      to { opacity: 1; transform: scale(1) translateY(0); }
-    }
-    .banner-slide-animate {
-      animation: slideTransition 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-  </style>
-</head>
-<body class="bg-gray-50 text-gray-900 selection:bg-blue-500 selection:text-white">
-  <div id="root"></div>
-
-  <script type="module">
-    import React, { useState, useEffect } from "https://esm.sh/react@18.2.0";
-    import ReactDOM from "https://esm.sh/react-dom@18.2.0/client";
-        // Import Firebase App และ Realtime Database SDK
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-    // 🔴 นำการตั้งค่าจาก Firebase Console ของคุณมาวางแทนที่ตรงนี้
-    const firebaseConfig = {
-      apiKey: "AIzaSyDE3V7_5QE97IYJNCnzxHOr40Z4ZEnORPg",
-      authDomain: "ssdstore-d7005.firebaseapp.com",
-      databaseURL: "https://ssd-store-94f06-default-rtdb.firebaseio.com",
-      projectId: "ssdstore-d7005",
-      storageBucket: "ssdstore-d7005.firebasestorage.app",
-      messagingSenderId: "45674933638",
-      appId: "1:45674933638:web:5b729900b06d6e8d529007",
-      measurementId: "G-06PB381DY3"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-
-    const ADMIN_USERNAME = "musicnoa7";
-
-    const TEXTS = {
-      TH: {
-        storeTitle: "KORN PC HARDWARE STORE (CLOUD)",
-        theme: "โหมด",
-        cart: "ตะกร้า",
-        login: "เข้าสู่ระบบ",
-        logout: "ออกจากระบบ",
-        history: "ประวัติการคลิก",
-        recent: "ดูล่าสุด",
-        all: "ทั้งหมด",
-        cpu: "CPU",
-        gpu: "การ์ดจอ",
-        ram: "RAM",
-        ssd: "SSD",
-        cooler: "ชุดน้ำ",
-        cases: "เคสคอม",
-        acc: "ตกแต่ง/พัดลม",
-        detail: "รายละเอียด / เปรียบเทียบ",
-        cancel: "ยกเลิก",
-        addToCart: "ใส่ตะกร้า",
-        total: "ราคารวมทั้งหมด",
-        clearCart: "ล้างตะกร้าทั้งหมด",
-        goTo: "ไปยังร้านค้า",
-        noHistory: "ยังไม่มีประวัติการคลิกสินค้า",
-        noRecent: "ยังไม่มีประวัติการดูสินค้า",
-        loginTitle: "เข้าสู่ระบบ",
-        usernamePlaceholder: "กรอกชื่อผู้ใช้งาน...",
-        close: "ปิด",
-        compareTitle: "เปรียบเทียบราคาจากร้านค้า",
-        adminMode: "แอดมิน",
-        userMode: "ลูกค้าทั่วไป",
-        editProduct: "แก้ไขสินค้า",
-        addProduct: "เพิ่มสินค้าใหม่",
-        save: "บันทึกบน Cloud",
-        delete: "ลบสินค้า",
-        imageUrl: "ลิงก์รูปภาพ (Image URL)",
-        productName: "ชื่อสินค้า",
-        spec: "สเปกสินค้า",
-        category: "หมวดหมู่",
-        resetData: "คืนค่าเริ่มต้น",
-        outOfStock: "สินค้าหมดทุกร้าน",
-        storeOutOfStock: "สินค้าหมด"
-      },
-      EN: {
-        storeTitle: "KORN PC HARDWARE STORE (CLOUD)",
-        theme: "Theme",
-        cart: "Cart",
-        login: "Login",
-        logout: "Logout",
-        history: "History",
-        recent: "Recent",
-        all: "ALL",
-        cpu: "CPU",
-        gpu: "GPU",
-        ram: "RAM",
-        ssd: "SSD",
-        cooler: "Coolers",
-        cases: "Cases",
-        acc: "Decor & Fans",
-        detail: "Details / Compare",
-        cancel: "Cancel",
-        addToCart: "Add to Cart",
-        total: "Total Price",
-        clearCart: "Clear Cart",
-        goTo: "Go to Store",
-        noHistory: "No history yet",
-        noRecent: "No recent items",
-        loginTitle: "Sign In",
-        usernamePlaceholder: "Enter username...",
-        close: "Close",
-        compareTitle: "Price Comparison",
-        adminMode: "Admin",
-        userMode: "Customer",
-        editProduct: "Edit Product",
-        addProduct: "Add New Product",
-        save: "Save to Cloud",
-        delete: "Delete",
-        imageUrl: "Image URL",
-        productName: "Product Name",
-        spec: "Specifications",
-        category: "Category",
-        resetData: "Reset Data",
-        outOfStock: "Out of Stock All Stores",
-        storeOutOfStock: "Out of Stock"
-      }
-    };
-
-    const TECH_NEWS_POOL = [
-      {
-        id: "news-1",
-        title: "🤖 Generative AI On-Device - ชิปเซ็ตประมวลผล AI ในเครื่องไม่ต้องง้อรวดเร็วทันใจ",
-        desc: "เทรนด์ CPU ยุคนี้เน้น NPU (Neural Processing Unit) ประมวลผลโมเดลภาษาขนาดใหญ่ (LLM) บนเครื่องโดยตรง ไม่ต้องส่งข้อมูลขึ้น Cloud ปลอดภัยและรวดเร็วกว่าเดิม",
-        bg: "from-blue-900 via-indigo-900 to-slate-900",
-        badge: "WORLD TECH 2026",
-        img: "https://assets.brandinside.asia/uploads/2024/07/Chips-AI-Web.png"
-      },
-      {
-        id: "news-2",
-        title: "⚡ RAM DDR5 - ยุคใหม่แห่งความเร็วและความจุระดับ 192GB",
-        desc: "เทรนด์ RAM มาตรฐานใหม่เน้น Non-Binary RAM ที่เพิ่มความจุได้สูงสุดถึง 192GB ในเครื่องพีซีทั่วไป พร้อมความเร็วบัส 8000+ MHz สำหรับงานประมวลผล AI และเรนเดอร์ 8K",
-        bg: "from-violet-900 via-purple-900 to-slate-900",
-        badge: "HARDWARE UPDATE",
-        img: "https://notebookspec.com/web/wp-content/uploads/2025/08/2.Pic_Predator-Hera-192GB.png"
-      },
-      {
-        id: "news-3",
-        title: "🚀 SSD PCIe 5.0 - ความเร็วทะลุ 14,000 MB/s",
-        desc: "SSD ยุคใหม่ตอบโจทย์การโหลดเกมแบบ Instant Load ผ่าน DirectStorage และงานตัดต่อวิดีโอความละเอียดสูง ปัจจุบันเริ่มมาพร้อมพัดลมระบายความร้อนจิ๋วในตัว",
-        bg: "from-emerald-900 via-teal-900 to-slate-900",
-        badge: "STORAGE TECH",
-        img: "https://notebookspec.com/web/wp-content/uploads/2025/08/1000.jpg"
-      }
-    ];
-
     function App() {
       const [lang, setLang] = useState("TH");
       const [theme, setTheme] = useState("light");
@@ -183,650 +10,317 @@
       const [editingProduct, setEditingProduct] = useState(null);
       const [isCartOpen, setIsCartOpen] = useState(false);
       const [isLoginOpen, setIsLoginOpen] = useState(false);
-      const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-      const [isRecentOpen, setIsRecentOpen] = useState(false);
       const [cartAnimate, setCartAnimate] = useState(false);
       const [usernameInput, setUsernameInput] = useState("");
-      
-      const [orderHistory, setOrderHistory] = useState([]);
-      const [recentlyViewed, setRecentlyViewed] = useState([]);
-
-      const [currentNews, setCurrentNews] = useState(TECH_NEWS_POOL[0]);
-      const [animKey, setAnimKey] = useState(Date.now());
 
       const t = TEXTS[lang];
       const isAdmin = user === ADMIN_USERNAME;
 
-      // ☁️ ดึงข้อมูลจาก Cloud (Firestore) แบบ Realtime
+      // ☁️ ดึงและบันทึกข้อมูลด้วย Realtime Database
       useEffect(() => {
-        const unsubscribe = onSnapshot(collection(db, "products"), (snapshot) => {
-          const cloudData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-          setProducts(cloudData);
-        }, (error) => {
-          console.error("Firestore error:", error);
+        const productsRef = ref(db, 'products');
+        const unsubscribe = onValue(productsRef, (snapshot) => {
+          const data = snapshot.val();
+          if (data) {
+            const productList = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+            setProducts(productList);
+          } else {
+            // หากบน Cloud ว่างเปล่า ให้สร้างชุดสินค้าเริ่มต้นให้อัตโนมัติ
+            const initialData = {
+              "p1": {
+                name: "Intel Core i5-14600K",
+                type: "CPU",
+                spec: "14 Cores (6P+8E) / 20 Threads / Up to 5.3 GHz",
+                img: "https://notebookspec.com/web/wp-content/uploads/2023/10/i5-14600k.jpg",
+                stores: [
+                  { name: "JIB", price: 11500, url: "https://www.jib.co.th", outOfStock: false },
+                  { name: "Advice", price: 11200, url: "https://www.advice.co.th", outOfStock: false }
+                ]
+              },
+              "p2": {
+                name: "NVIDIA RTX 4070 Super 12GB",
+                type: "การ์ดจอ",
+                spec: "12GB GDDR6X / 192-bit / DLSS 3.5",
+                img: "https://notebookspec.com/web/wp-content/uploads/2024/01/rtx-4070-super.jpg",
+                stores: [
+                  { name: "JIB", price: 23900, url: "https://www.jib.co.th", outOfStock: false },
+                  { name: "Advice", price: 23500, url: "https://www.advice.co.th", outOfStock: false }
+                ]
+              }
+            };
+            set(productsRef, initialData);
+          }
         });
 
         return () => unsubscribe();
       }, []);
 
-      const getRandomNews = () => {
-        let randomIndex;
-        do {
-          randomIndex = Math.floor(Math.random() * TECH_NEWS_POOL.length);
-        } while (TECH_NEWS_POOL[randomIndex].id === currentNews.id && TECH_NEWS_POOL.length > 1);
-        
-        setCurrentNews(TECH_NEWS_POOL[randomIndex]);
-        setAnimKey(Date.now());
-      };
-
-      useEffect(() => {
-        const timer = setInterval(() => {
-          getRandomNews();
-        }, 5000);
-        return () => clearInterval(timer);
-      }, [currentNews]);
-
-      const toggleTheme = () => {
-        if (theme === "light") setTheme("dark");
-        else if (theme === "dark") setTheme("mono");
-        else setTheme("light");
-      };
-
-      const handleLogin = (e) => {
-        e.preventDefault();
-        if (usernameInput.trim()) {
-          setUser(usernameInput.trim());
-          setIsLoginOpen(false);
-          setUsernameInput("");
-        }
-      };
-
-      const handleLogout = () => setUser(null);
-
-      const openDirectLink = (product, store) => {
-        if (store.outOfStock) return;
-        const newRecord = {
-          id: Date.now(),
-          date: new Date().toLocaleString(),
-          store: store.name,
-          items: [{ name: product.name, price: store.price }],
-          total: store.price
-        };
-        setOrderHistory(prev => [newRecord, ...prev]);
-        window.open(store.url, "_blank", "noopener,noreferrer");
-      };
-
-      const openProductDetails = (product) => {
-        setSelectedProduct(product);
-        setRecentlyViewed(prev => {
-          const filtered = prev.filter(p => p.id !== product.id);
-          return [product, ...filtered];
-        });
-      };
-
-      const addToCart = (product, store) => {
-        if (store.outOfStock) return;
-        setCart([...cart, { ...product, selectedStore: store, cartItemId: Date.now() + Math.random() }]);
-        setCartAnimate(true);
-        setTimeout(() => setCartAnimate(false), 300);
-      };
-
-      const removeFromCart = (cartItemId) => {
-        setCart(cart.filter(item => item.cartItemId !== cartItemId));
-      };
-
-      // ☁️ บันทึกข้อมูลไปยัง Firestore Cloud
       const handleSaveProduct = async (updatedProduct) => {
         try {
-          const docId = String(updatedProduct.id);
-          await setDoc(doc(db, "products", docId), updatedProduct);
+          const prodId = updatedProduct.id || `p_${Date.now()}`;
+          const prodData = { ...updatedProduct };
+          delete prodData.id;
+          await set(ref(db, `products/${prodId}`), prodData);
           setEditingProduct(null);
         } catch (error) {
-          console.error("Error saving product to cloud: ", error);
-          alert("ไม่สามารถบันทึกข้อมูลลง Cloud ได้");
+          alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
         }
       };
 
-      // ☁️ ลบข้อมูลออกจาก Firestore Cloud
       const handleDeleteProduct = async (id) => {
-        if (confirm("ต้องการลบสินค้านี้จาก Cloud ใช่หรือไม่?")) {
-          try {
-            await deleteDoc(doc(db, "products", String(id)));
-            setEditingProduct(null);
-          } catch (error) {
-            console.error("Error deleting product: ", error);
-            alert("ไม่สามารถลบข้อมูลจาก Cloud ได้");
-          }
+        if (confirm("ต้องการลบสินค้านี้ใช่หรือไม่?")) {
+          await remove(ref(db, `products/${id}`));
+          setEditingProduct(null);
         }
       };
 
       const handleCreateNewProduct = () => {
-        const newProd = {
-          id: Date.now(),
-          name: "สินค้าใหม่ Cloud",
+        setEditingProduct({
+          id: `p_${Date.now()}`,
+          name: "สินค้าใหม่",
           type: "CPU",
-          spec: "ระบุสเปกสินค้า...",
+          spec: "ระบุสเปก...",
           img: "https://via.placeholder.com/300",
-          desc: "คำอธิบายสินค้า...",
           stores: [
-            { name: "JIB", price: 1000, url: "https://www.jib.co.th", outOfStock: false },
-            { name: "Advice", price: 1000, url: "https://www.advice.co.th", outOfStock: false },
-            { name: "Shopee", price: 1000, url: "https://shopee.co.th", outOfStock: false }
+            { name: "JIB", price: 1000, url: "https://www.jib.co.th", outOfStock: false }
           ]
-        };
-        setEditingProduct(newProd);
+        });
       };
 
       const filteredProducts = filter === "ALL" ? products : products.filter(p => p.type === filter);
-
-      const getThemeClass = () => {
-        if (theme === "dark") return "bg-gray-900 text-white min-h-screen p-4 sm:p-6 transition-colors duration-300";
-        if (theme === "mono") return "bg-black text-gray-200 grayscale min-h-screen p-4 sm:p-6 transition-colors duration-300";
-        return "bg-gray-50 text-gray-900 min-h-screen p-4 sm:p-6 transition-colors duration-300";
-      };
-
-      const cardBgClass = theme === "light" 
-        ? "bg-white text-gray-900 border-gray-200" 
-        : "bg-gray-800 text-white border-gray-700";
+      const cardBgClass = theme === "light" ? "bg-white text-gray-900 border-gray-200" : "bg-gray-800 text-white border-gray-700";
 
       const getMinPrice = (stores) => {
         if (!stores) return null;
         const availableStores = stores.filter(s => !s.outOfStock);
         if (availableStores.length === 0) return null;
-        
-        const validPrices = availableStores.map(s => typeof s.price === 'number' ? s.price : Infinity);
-        const min = Math.min(...validPrices);
-        return min === Infinity ? availableStores[0].price : min;
+        return Math.min(...availableStores.map(s => s.price));
       };
 
-      const isAllOutOfStock = (stores) => stores ? stores.every(s => s.outOfStock) : true;
-
-      return React.createElement("div", { className: getThemeClass() },
-        React.createElement("header", { className: "flex flex-col md:flex-row justify-between items-center pb-4 border-b border-gray-300 dark:border-gray-700 max-w-5xl mx-auto gap-4" },
-          React.createElement("h1", { className: "text-xl font-extrabold tracking-wider bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent" }, t.storeTitle),
-          
-          React.createElement("div", { className: "flex flex-wrap gap-2 items-center justify-center" },
-            React.createElement("button", {
-              onClick: () => setLang(lang === "TH" ? "EN" : "TH"),
-              className: "px-2.5 py-1 border rounded-lg text-xs font-bold bg-blue-500/10 hover:bg-blue-500/20 active:scale-95 transition-all text-blue-500"
-            }, `🌐 ${lang}`),
-
-            React.createElement("button", {
-              onClick: toggleTheme,
-              className: "px-2.5 py-1 border rounded-lg text-xs bg-white/10 hover:bg-white/20 active:scale-95 transition-all"
-            }, `${t.theme}: ${theme.toUpperCase()}`),
-
-            React.createElement("button", {
-              onClick: () => setIsRecentOpen(true),
-              className: "px-2.5 py-1 border rounded-lg text-xs hover:bg-gray-500/10 active:scale-95 transition-all"
-            }, `👁️ ${t.recent} (${recentlyViewed.length})`),
-
-            React.createElement("button", {
-              onClick: () => setIsHistoryOpen(true),
-              className: "px-2.5 py-1 border rounded-lg text-xs hover:bg-gray-500/10 active:scale-95 transition-all"
-            }, `📜 ${t.history}`),
-
+      return React.createElement("div", { className: "bg-gray-50 text-gray-900 min-h-screen p-4 sm:p-6" },
+        React.createElement("header", { className: "flex justify-between items-center pb-4 border-b max-w-5xl mx-auto" },
+          React.createElement("h1", { className: "text-xl font-extrabold text-blue-600" }, t.storeTitle),
+          React.createElement("div", { className: "flex gap-2 items-center" },
             user ? 
-              React.createElement("div", { className: `flex items-center gap-2 border px-2.5 py-1 rounded-lg text-xs font-bold ${isAdmin ? "bg-amber-500/10 border-amber-500/40 text-amber-500" : "bg-green-500/10 border-green-500/30 text-green-500"}` },
+              React.createElement("div", { className: "flex items-center gap-2 border px-2.5 py-1 rounded-lg text-xs font-bold" },
                 React.createElement("span", null, isAdmin ? `👑 ${user} (${t.adminMode})` : `👤 ${user}`),
-                React.createElement("button", { onClick: handleLogout, className: "text-red-400 hover:underline font-semibold ml-1" }, t.logout)
+                React.createElement("button", { onClick: () => setUser(null), className: "text-red-400 font-semibold" }, t.logout)
               )
             :
-              React.createElement("button", {
-                onClick: () => setIsLoginOpen(true),
-                className: "px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold active:scale-95 transition-all"
-              }, `👤 ${t.login}`),
-
-            React.createElement("button", {
-              onClick: () => setIsCartOpen(true),
-              className: `font-semibold text-xs sm:text-sm flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg active:scale-95 transition-all shadow-md shadow-blue-600/30 ${cartAnimate ? "animate-cart-pop" : ""}`
-            },
-              React.createElement("span", null, "🛒"),
-              React.createElement("span", null, `${t.cart} (${cart.length})`)
-            )
+              React.createElement("button", { onClick: () => setIsLoginOpen(true), className: "px-3 py-1 bg-indigo-600 text-white rounded-lg text-xs font-bold" }, `👤 ${t.login}`)
           )
         ),
-        
+
         React.createElement("main", { className: "max-w-5xl mx-auto mt-6" },
-          React.createElement("div", { className: "relative mb-8 rounded-2xl overflow-hidden shadow-2xl border border-gray-700/50 bg-slate-950" },
-            React.createElement("div", { 
-              key: animKey,
-              className: `banner-slide-animate bg-gradient-to-r ${currentNews.bg} text-white p-6 md:p-8 min-h-[190px] flex flex-col md:flex-row items-center justify-between gap-6` 
-            },
-              React.createElement("div", { className: "flex-1 space-y-2" },
-                React.createElement("div", { className: "flex items-center gap-2" },
-                  React.createElement("span", { className: "inline-block px-3 py-0.5 text-[10px] font-extrabold tracking-widest bg-blue-500/30 border border-blue-400/40 rounded-full uppercase" }, currentNews.badge),
-                  React.createElement("span", { className: "text-[10px] opacity-75 font-mono" }, "● World Tech Update")
-                ),
-                React.createElement("h2", { className: "text-lg md:text-2xl font-black leading-tight" }, currentNews.title),
-                React.createElement("p", { className: "text-xs md:text-sm text-gray-200 leading-relaxed max-w-2xl opacity-90" }, currentNews.desc)
-              ),
-              React.createElement("div", { className: "w-24 h-24 md:w-32 md:h-32 bg-white/10 rounded-xl p-2 flex items-center justify-center flex-shrink-0 backdrop-blur-md border border-white/20 shadow-lg" },
-                React.createElement("img", { src: currentNews.img, alt: "Hardware Trend", className: "max-h-full max-w-full object-contain" })
-              )
-            ),
-
-            React.createElement("button", {
-              onClick: getRandomNews,
-              className: "absolute right-3 bottom-3 bg-black/50 hover:bg-black/80 active:scale-95 text-white px-3 py-1.5 rounded-xl text-xs font-bold backdrop-blur-md border border-white/20 transition-all flex items-center gap-1.5 shadow-lg z-10"
-            },
-              React.createElement("span", null, "🎲"),
-              React.createElement("span", null, "สุ่มข่าวเทคโนโลยี")
-            )
+          React.createElement("div", { className: "flex justify-between items-center mb-6" },
+            React.createElement("h2", { className: "text-lg font-bold" }, "รายการสินค้าบน Cloud"),
+            isAdmin && React.createElement("button", { onClick: handleCreateNewProduct, className: "px-3 py-1.5 bg-green-600 text-white rounded-xl text-xs font-bold" }, `➕ ${t.addProduct}`)
           ),
 
-          React.createElement("div", { className: "flex justify-between items-center mb-6 gap-2" },
-            React.createElement("div", { className: "flex gap-2 overflow-x-auto pb-1 flex-1" },
-              [
-                { key: "ALL", label: t.all },
-                { key: "CPU", label: t.cpu },
-                { key: "การ์ดจอ", label: t.gpu },
-                { key: "RAM", label: t.ram },
-                { key: "SSD", label: t.ssd },
-                { key: "ชุดน้ำ", label: t.cooler },
-                { key: "เคสคอม", label: t.cases },
-                { key: "ตกแต่ง/พัดลม", label: t.acc }
-              ].map(f =>
-                React.createElement("button", {
-                  key: f.key,
-                  onClick: () => setFilter(f.key),
-                  className: `px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 whitespace-nowrap active:scale-95 ${filter === f.key ? "bg-blue-600 text-white shadow-md shadow-blue-500/30" : "border border-gray-400 hover:bg-gray-500/20"}`
-                }, f.label)
-              )
-            ),
-            isAdmin && React.createElement("button", {
-              onClick: handleCreateNewProduct,
-              className: "px-3.5 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-xs font-bold flex items-center gap-1 shrink-0 shadow-md active:scale-95 transition-all"
-            }, `➕ ${t.addProduct}`)
-          ),
-          
-          React.createElement("div", { key: filter, className: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 animate-fade-in" },
+          React.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6" },
             filteredProducts.map(p => {
               const minPrice = getMinPrice(p.stores);
-              const allOut = isAllOutOfStock(p.stores);
-              const availableStoresCount = p.stores ? p.stores.filter(s => !s.outOfStock).length : 0;
-
-              return React.createElement("div", { key: p.id, className: `border rounded-xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative ${cardBgClass} ${allOut ? 'opacity-80' : ''}` },
-                
-                isAdmin && React.createElement("button", {
-                  onClick: () => setEditingProduct(p),
-                  className: "absolute top-2 left-2 z-20 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-2.5 py-1 rounded-md shadow-lg flex items-center gap-1 active:scale-95 transition-all"
-                }, "✏️ แก้ไข"),
-
-                allOut && React.createElement("div", { className: "absolute top-3 right-3 z-20" },
-                  React.createElement("span", { className: "bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-md shadow-lg border border-red-400" }, t.outOfStock)
-                ),
-
-                React.createElement("div", { 
-                  onClick: () => openProductDetails(p),
-                  className: "w-full h-48 bg-white flex items-center justify-center p-4 overflow-hidden group cursor-pointer relative" 
-                },
-                  !allOut && React.createElement("span", { className: "absolute top-2 right-2 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow z-10" }, `มีของ ${availableStoresCount}/${p.stores ? p.stores.length : 0} ร้าน`),
-                  React.createElement("img", { src: p.img, alt: p.name, className: `max-h-full max-w-full object-contain transition-transform duration-300 ${allOut ? 'grayscale opacity-70' : 'group-hover:scale-105'}` })
-                ),
-                React.createElement("div", { className: "p-4 flex-grow flex flex-col justify-between" },
-                  React.createElement("div", null,
-                    React.createElement("div", { className: "flex justify-between items-center mb-2" },
-                      React.createElement("span", { className: "text-xs border px-2 py-0.5 rounded-md font-mono font-bold opacity-80" }, p.type)
-                    ),
-                    React.createElement("h3", { className: "font-bold text-base mt-1" }, p.name),
-                    React.createElement("p", { className: "text-xs opacity-75 mt-0.5" }, p.spec)
-                  ),
-                  React.createElement("div", { className: "flex justify-between items-center mt-4 pt-3 border-t border-gray-500/20" },
-                    React.createElement("div", null,
-                      !allOut && React.createElement("span", { className: "text-[10px] opacity-60 block" }, "เริ่มต้นที่"),
-                      allOut 
-                        ? React.createElement("span", { className: "font-bold text-sm text-red-500" }, t.outOfStock)
-                        : React.createElement("span", { className: "font-bold text-lg text-blue-400" }, `฿${minPrice ? minPrice.toLocaleString() : '-'}`)
-                    ),
-                    React.createElement("button", {
-                      onClick: () => openProductDetails(p),
-                      className: `${allOut ? 'bg-gray-500 hover:bg-gray-600' : 'bg-blue-600 hover:bg-blue-700'} active:scale-95 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all shadow-md`
-                    }, t.detail)
-                  )
+              return React.createElement("div", { key: p.id, className: `border rounded-xl p-4 shadow-sm relative ${cardBgClass}` },
+                isAdmin && React.createElement("button", { onClick: () => setEditingProduct(p), className: "absolute top-2 left-2 bg-amber-500 text-white text-xs px-2 py-1 rounded" }, "✏️ แก้ไข"),
+                React.createElement("img", { src: p.img, alt: p.name, className: "w-full h-40 object-contain mb-2 bg-white rounded" }),
+                React.createElement("h3", { className: "font-bold text-base" }, p.name),
+                React.createElement("p", { className: "text-xs opacity-75" }, p.spec),
+                React.createElement("div", { className: "mt-4 flex justify-between items-center" },
+                  React.createElement("span", { className: "font-bold text-blue-500" }, minPrice ? `฿${minPrice.toLocaleString()}` : "หมด"),
+                  React.createElement("button", { onClick: () => setSelectedProduct(p), className: "bg-blue-600 text-white px-3 py-1 rounded text-xs" }, t.detail)
                 )
               );
             })
           )
         ),
 
-        editingProduct && React.createElement("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto" },
-          React.createElement("div", { className: `max-w-lg w-full rounded-2xl p-6 shadow-2xl border my-8 ${cardBgClass}` },
-            React.createElement("div", { className: "flex justify-between items-center mb-4 pb-2 border-b border-gray-500/30" },
-              React.createElement("h2", { className: "text-lg font-bold flex items-center gap-2" }, "👑 " + t.editProduct),
-              React.createElement("button", { onClick: () => setEditingProduct(null), className: "text-gray-400 hover:text-white" }, "✕")
-            ),
-            
-            React.createElement("div", { className: "space-y-4 max-h-[70vh] overflow-y-auto pr-1" },
-              
-              React.createElement("div", null,
-                React.createElement("label", { className: "block text-xs font-bold mb-1 opacity-80" }, t.imageUrl),
-                React.createElement("input", {
-                  type: "text",
-                  value: editingProduct.img,
-                  onChange: (e) => setEditingProduct({ ...editingProduct, img: e.target.value }),
-                  className: "w-full p-2 border rounded-xl bg-transparent text-xs focus:outline-none focus:border-blue-500"
-                }),
-                editingProduct.img && React.createElement("div", { className: "mt-2 w-20 h-20 bg-white border rounded-lg p-1 flex items-center justify-center" },
-                  React.createElement("img", { src: editingProduct.img, alt: "preview", className: "max-h-full max-w-full object-contain" })
-                )
-              ),
-
-              React.createElement("div", null,
-                React.createElement("label", { className: "block text-xs font-bold mb-1 opacity-80" }, t.productName),
-                React.createElement("input", {
-                  type: "text",
-                  value: editingProduct.name,
-                  onChange: (e) => setEditingProduct({ ...editingProduct, name: e.target.value }),
-                  className: "w-full p-2 border rounded-xl bg-transparent text-xs focus:outline-none focus:border-blue-500"
-                })
-              ),
-
-              React.createElement("div", null,
-                React.createElement("label", { className: "block text-xs font-bold mb-1 opacity-80" }, t.category),
-                React.createElement("select", {
-                  value: editingProduct.type,
-                  onChange: (e) => setEditingProduct({ ...editingProduct, type: e.target.value }),
-                  className: "w-full p-2 border rounded-xl bg-transparent text-xs focus:outline-none focus:border-blue-500 dark:bg-gray-800"
-                },
-                  ["CPU", "การ์ดจอ", "RAM", "SSD", "ชุดน้ำ", "เคสคอม", "ตกแต่ง/พัดลม"].map(cat =>
-                    React.createElement("option", { key: cat, value: cat }, cat)
-                  )
-                )
-              ),
-
-              React.createElement("div", null,
-                React.createElement("label", { className: "block text-xs font-bold mb-1 opacity-80" }, t.spec),
-                React.createElement("input", {
-                  type: "text",
-                  value: editingProduct.spec,
-                  onChange: (e) => setEditingProduct({ ...editingProduct, spec: e.target.value }),
-                  className: "w-full p-2 border rounded-xl bg-transparent text-xs focus:outline-none focus:border-blue-500"
-                })
-              ),
-
-              React.createElement("div", { className: "pt-2 border-t border-gray-500/30" },
-                React.createElement("label", { className: "block text-xs font-bold mb-2 text-blue-400" }, "💰 จัดการราคา, ลิงก์หน้าร้านค้า และสถานะสินค้าแยกรายร้าน"),
-                editingProduct.stores && editingProduct.stores.map((st, idx) =>
-                  React.createElement("div", { key: idx, className: "p-3 border border-gray-500/20 rounded-xl mb-2 space-y-2 bg-gray-500/5" },
-                    
-                    React.createElement("div", { className: "flex items-center justify-between border-b border-gray-500/10 pb-1.5" },
-                      React.createElement("span", { className: "text-xs font-bold text-indigo-400" }, `🏬 ${st.name}`),
-                      React.createElement("label", { className: "flex items-center gap-1.5 text-xs cursor-pointer select-none" },
-                        React.createElement("input", {
-                          type: "checkbox",
-                          checked: !!st.outOfStock,
-                          onChange: (e) => {
-                            const newStores = [...editingProduct.stores];
-                            newStores[idx].outOfStock = e.target.checked;
-                            setEditingProduct({ ...editingProduct, stores: newStores });
-                          },
-                          className: "rounded border-gray-400 text-red-600 focus:ring-red-500"
-                        }),
-                        React.createElement("span", { className: st.outOfStock ? "text-red-400 font-bold" : "opacity-70" }, "สินค้าหมด")
-                      )
-                    ),
-
-                    React.createElement("div", { className: "flex items-center gap-2" },
-                      React.createElement("span", { className: "text-[11px] opacity-70 w-12" }, "ราคา:"),
-                      React.createElement("input", {
-                        type: "number",
-                        value: st.price,
-                        onChange: (e) => {
-                          const newStores = [...editingProduct.stores];
-                          newStores[idx].price = Number(e.target.value);
-                          setEditingProduct({ ...editingProduct, stores: newStores });
-                        },
-                        className: "flex-grow p-1.5 border rounded-lg bg-transparent text-xs focus:outline-none focus:border-blue-500"
-                      }),
-                      React.createElement("span", { className: "text-xs opacity-70" }, "บาท")
-                    ),
-                    React.createElement("div", { className: "flex items-center gap-2" },
-                      React.createElement("span", { className: "text-[11px] opacity-70 w-12" }, "ลิงก์เว็บ:"),
-                      React.createElement("input", {
-                        type: "text",
-                        value: st.url,
-                        placeholder: "https://...",
-                        onChange: (e) => {
-                          const newStores = [...editingProduct.stores];
-                          newStores[idx].url = e.target.value;
-                          setEditingProduct({ ...editingProduct, stores: newStores });
-                        },
-                        className: "flex-grow p-1.5 border rounded-lg bg-transparent text-[11px] focus:outline-none focus:border-blue-500 font-mono"
-                      })
-                    )
-                  )
-                )
-              )
-            ),
-
-            React.createElement("div", { className: "flex justify-between items-center mt-6 pt-4 border-t border-gray-500/30" },
-              React.createElement("button", {
-                type: "button",
-                onClick: () => handleDeleteProduct(editingProduct.id),
-                className: "px-3 py-1.5 bg-red-600/20 border border-red-500/40 text-red-400 hover:bg-red-600 hover:text-white rounded-xl text-xs font-bold transition-all"
-              }, "🗑️ " + t.delete),
-
+        editingProduct && React.createElement("div", { className: "fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50" },
+          React.createElement("div", { className: `max-w-lg w-full rounded-2xl p-6 border ${cardBgClass}` },
+            React.createElement("h2", { className: "text-lg font-bold mb-4" }, t.editProduct),
+            React.createElement("input", { type: "text", value: editingProduct.name, onChange: (e) => setEditingProduct({...editingProduct, name: e.target.value}), className: "w-full p-2 border rounded mb-2 bg-transparent text-xs" }),
+            React.createElement("input", { type: "text", value: editingProduct.spec, onChange: (e) => setEditingProduct({...editingProduct, spec: e.target.value}), className: "w-full p-2 border rounded mb-4 bg-transparent text-xs" }),
+            React.createElement("div", { className: "flex justify-between" },
+              React.createElement("button", { onClick: () => handleDeleteProduct(editingProduct.id), className: "bg-red-600 text-white px-3 py-1 rounded text-xs" }, t.delete),
               React.createElement("div", { className: "flex gap-2" },
-                React.createElement("button", {
-                  type: "button",
-                  onClick: () => setEditingProduct(null),
-                  className: "px-3 py-1.5 border border-gray-500/40 rounded-xl text-xs font-semibold"
-                }, t.cancel),
-                React.createElement("button", {
-                  type: "button",
-                  onClick: () => handleSaveProduct(editingProduct),
-                  className: "px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-md"
-                }, "☁️ " + t.save)
+                React.createElement("button", { onClick: () => setEditingProduct(null), className: "border px-3 py-1 rounded text-xs" }, t.cancel),
+                React.createElement("button", { onClick: () => handleSaveProduct(editingProduct), className: "bg-blue-600 text-white px-3 py-1 rounded text-xs" }, t.save)
               )
             )
           )
         ),
 
-        selectedProduct && React.createElement("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50" },
-          React.createElement("div", { className: `max-w-md w-full rounded-2xl p-6 shadow-2xl border ${cardBgClass}` },
-            React.createElement("div", { className: "bg-white p-4 rounded-xl mb-4 flex items-center justify-center h-40 shadow-inner relative" },
-              isAllOutOfStock(selectedProduct.stores) && React.createElement("span", { className: "absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-md shadow-lg z-10" }, t.outOfStock),
-              React.createElement("img", { src: selectedProduct.img, alt: selectedProduct.name, className: `max-h-full max-w-full object-contain ${isAllOutOfStock(selectedProduct.stores) ? 'grayscale opacity-70' : ''}` })
-            ),
-            React.createElement("div", { className: "flex justify-between items-center mb-2" },
-              React.createElement("span", { className: "text-xs border px-2 py-0.5 rounded font-mono font-bold" }, selectedProduct.type)
-            ),
-            React.createElement("h2", { className: "text-xl font-bold mt-1" }, selectedProduct.name),
-            React.createElement("p", { className: "text-xs opacity-70 mt-1 mb-3" }, selectedProduct.spec),
-
-            React.createElement("div", { className: "my-3 pt-3 border-t border-gray-500/30" },
-              React.createElement("h4", { className: "text-xs font-bold text-blue-400 mb-2" }, t.compareTitle),
-              
-              React.createElement("div", { className: "space-y-2 max-h-52 overflow-y-auto pr-1" },
-                selectedProduct.stores && selectedProduct.stores.map((st, i) =>
-                  React.createElement("div", { 
-                    key: i, 
-                    className: `flex items-center justify-between p-2.5 rounded-xl border transition-all ${st.outOfStock ? 'border-red-500/20 bg-red-500/5 opacity-70' : 'border-gray-500/20 bg-gray-500/5 hover:bg-gray-500/10'}` 
-                  },
-                    React.createElement("div", null,
-                      React.createElement("span", { className: "font-bold text-xs block" }, st.name),
-                      st.outOfStock 
-                        ? React.createElement("span", { className: "text-xs font-bold text-red-500 block mt-0.5" }, "❌ " + t.storeOutOfStock)
-                        : React.createElement("span", { className: "text-sm font-extrabold text-blue-400" }, `฿${st.price.toLocaleString()}`)
-                    ),
-                    React.createElement("div", { className: "flex gap-1.5" },
-                      st.outOfStock ? 
-                        React.createElement("span", { className: "px-3 py-1 bg-gray-500/20 text-gray-400 rounded-lg text-xs font-semibold" }, "ไม่มีของ")
-                      : [
-                        React.createElement("button", {
-                          key: "add",
-                          onClick: () => addToCart(selectedProduct, st),
-                          className: "px-2.5 py-1 bg-blue-600/20 border border-blue-500/40 text-blue-400 hover:bg-blue-600 hover:text-white rounded-lg text-xs font-bold transition-all"
-                        }, "+ ตะกร้า"),
-                        React.createElement("button", {
-                          key: "buy",
-                          onClick: () => openDirectLink(selectedProduct, st),
-                          className: "px-2.5 py-1 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-xs font-bold transition-all"
-                        }, "ไปหน้าร้าน ↗")
-                      ]
-                    )
-                  )
-                )
-              )
-            ),
-            
-            React.createElement("button", {
-              onClick: () => setSelectedProduct(null),
-              className: "w-full mt-3 py-2 border border-gray-500/40 text-gray-400 hover:bg-gray-500/10 rounded-xl text-xs font-semibold"
-            }, t.close)
-          )
-        ),
-
-        isCartOpen && React.createElement("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50" },
-          React.createElement("div", { className: `max-w-lg w-full rounded-2xl p-6 shadow-2xl border flex flex-col max-h-[85vh] ${cardBgClass}` },
-            React.createElement("div", { className: "flex justify-between items-center pb-4 border-b border-gray-500/30" },
-              React.createElement("div", { className: "flex items-center gap-2" },
-                React.createElement("span", { className: "text-xl" }, "🛒"),
-                React.createElement("h2", { className: "text-lg font-bold" }, t.cart),
-                React.createElement("span", { className: "text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full font-bold" }, `${cart.length}`)
-              ),
-              React.createElement("button", {
-                onClick: () => setIsCartOpen(false),
-                className: "text-gray-400 hover:text-white text-lg font-bold p-1 rounded-lg hover:bg-gray-500/20 transition-all"
-              }, "✕")
-            ),
-
-            React.createElement("div", { className: "flex-grow overflow-y-auto py-4 space-y-3 my-2 pr-1" },
-              cart.length === 0 ? 
-                React.createElement("div", { className: "text-center py-12 opacity-50" },
-                  React.createElement("span", { className: "text-4xl block mb-2" }, "🛒"),
-                  React.createElement("p", { className: "text-sm" }, "ยังไม่มีสินค้าในตะกร้า")
-                )
-              :
-                cart.map(item =>
-                  React.createElement("div", { key: item.cartItemId, className: "flex items-center justify-between p-3 border border-gray-500/20 rounded-xl bg-gray-500/5 hover:bg-gray-500/10 transition-all gap-3" },
-                    React.createElement("div", { className: "w-14 h-14 bg-white rounded-lg p-1 flex-shrink-0 flex items-center justify-center border" },
-                      React.createElement("img", { src: item.img, alt: item.name, className: "max-h-full max-w-full object-contain" })
-                    ),
-                    React.createElement("div", { className: "flex-grow min-w-0" },
-                      React.createElement("h4", { className: "font-bold text-sm truncate" }, item.name),
-                      React.createElement("p", { className: "text-xs opacity-70" }, `ร้าน: ${item.selectedStore.name}`),
-                      React.createElement("span", { className: "text-xs font-bold text-blue-400 block mt-0.5" }, `฿${item.selectedStore.price.toLocaleString()}`)
-                    ),
-                    React.createElement("div", { className: "flex items-center gap-1.5 flex-shrink-0" },
-                      React.createElement("button", {
-                        onClick: () => openDirectLink(item, item.selectedStore),
-                        className: "text-xs bg-orange-500 hover:bg-orange-600 text-white px-2.5 py-1.5 rounded-lg font-bold transition-all"
-                      }, "ซื้อ ↗"),
-                      React.createElement("button", {
-                        onClick: () => removeFromCart(item.cartItemId),
-                        className: "text-xs bg-red-500/20 hover:bg-red-500 text-red-400 hover:text-white px-2 py-1.5 rounded-lg font-bold transition-all"
-                      }, "❌")
-                    )
-                  )
-                )
-            ),
-
-            cart.length > 0 && React.createElement("div", { className: "pt-4 border-t border-gray-500/30" },
-              React.createElement("div", { className: "flex justify-between items-center mb-3" },
-                React.createElement("span", { className: "text-sm font-medium opacity-80" }, t.total),
-                React.createElement("span", { className: "text-2xl font-black text-blue-400" }, `฿${cart.reduce((sum, item) => sum + item.selectedStore.price, 0).toLocaleString()}`)
-              ),
-              React.createElement("button", {
-                onClick: () => setCart([]),
-                className: "w-full py-1.5 border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-xl text-xs font-semibold transition-all"
-              }, t.clearCart)
-            )
-          )
-        ),
-
-        isLoginOpen && React.createElement("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50" },
-          React.createElement("form", { onSubmit: handleLogin, className: `max-w-sm w-full rounded-2xl p-6 shadow-2xl border ${cardBgClass}` },
+        isLoginOpen && React.createElement("div", { className: "fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50" },
+          React.createElement("div", { className: `max-w-sm w-full rounded-2xl p-6 border ${cardBgClass}` },
             React.createElement("h2", { className: "text-lg font-bold mb-4" }, t.loginTitle),
-            React.createElement("input", {
-              type: "text",
-              required: true,
-              placeholder: t.usernamePlaceholder,
-              value: usernameInput,
-              onChange: (e) => setUsernameInput(e.target.value),
-              className: "w-full p-2.5 border rounded-xl mb-4 bg-transparent text-sm focus:outline-none focus:border-blue-500"
-            }),
+            React.createElement("input", { type: "text", placeholder: t.usernamePlaceholder, value: usernameInput, onChange: (e) => setUsernameInput(e.target.value), className: "w-full p-2 border rounded mb-4 bg-transparent text-xs" }),
             React.createElement("div", { className: "flex justify-end gap-2" },
-              React.createElement("button", {
-                type: "button",
-                onClick: () => setIsLoginOpen(false),
-                className: "px-3 py-1.5 border rounded-xl text-xs font-semibold"
-              }, t.cancel),
-              React.createElement("button", {
-                type: "submit",
-                className: "px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all"
-              }, t.login)
-            )
-          )
-        ),
-
-        isHistoryOpen && React.createElement("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50" },
-          React.createElement("div", { className: `max-w-md w-full rounded-2xl p-6 shadow-2xl border flex flex-col max-h-[80vh] ${cardBgClass}` },
-            React.createElement("div", { className: "flex justify-between items-center pb-3 border-b border-gray-500/30" },
-              React.createElement("h2", { className: "text-lg font-bold" }, `📜 ${t.history}`),
-              React.createElement("button", { onClick: () => setIsHistoryOpen(false), className: "text-gray-400 hover:text-white" }, "✕")
-            ),
-            React.createElement("div", { className: "flex-grow overflow-y-auto py-4 space-y-3" },
-              orderHistory.length === 0 ?
-                React.createElement("p", { className: "text-center text-xs opacity-50 py-8" }, t.noHistory)
-              :
-                orderHistory.map(order =>
-                  React.createElement("div", { key: order.id, className: "p-3 border border-gray-500/20 rounded-xl bg-gray-500/5 text-xs" },
-                    React.createElement("div", { className: "flex justify-between text-gray-400 mb-1" },
-                      React.createElement("span", null, order.date),
-                      React.createElement("span", { className: "font-bold text-orange-400" }, order.store)
-                    ),
-                    order.items.map((item, idx) =>
-                      React.createElement("div", { key: idx, className: "flex justify-between py-1" },
-                        React.createElement("span", null, item.name),
-                        React.createElement("span", { className: "font-semibold text-blue-400" }, `฿${item.price.toLocaleString()}`)
-                      )
-                    )
-                  )
-                )
-            )
-          )
-        ),
-
-        isRecentOpen && React.createElement("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50" },
-          React.createElement("div", { className: `max-w-md w-full rounded-2xl p-6 shadow-2xl border flex flex-col max-h-[80vh] ${cardBgClass}` },
-            React.createElement("div", { className: "flex justify-between items-center pb-3 border-b border-gray-500/30" },
-              React.createElement("h2", { className: "text-lg font-bold" }, `👁️ ${t.recent}`),
-              React.createElement("button", { onClick: () => setIsRecentOpen(false), className: "text-gray-400 hover:text-white" }, "✕")
-            ),
-            React.createElement("div", { className: "flex-grow overflow-y-auto py-4 space-y-2" },
-              recentlyViewed.length === 0 ?
-                React.createElement("p", { className: "text-center text-xs opacity-50 py-8" }, t.noRecent)
-              :
-                recentlyViewed.map(item => {
-                  const minPrice = getMinPrice(item.stores);
-                  const allOut = isAllOutOfStock(item.stores);
-                  return React.createElement("div", {
-                    key: item.id,
-                    onClick: () => {
-                      setIsRecentOpen(false);
-                      openProductDetails(item);
-                    },
-                    className: "flex items-center gap-3 p-2 border border-gray-500/20 rounded-xl bg-gray-500/5 hover:bg-gray-500/10 cursor-pointer transition-all"
-                  },
-                    React.createElement("img", { src: item.img, alt: item.name, className: `w-10 h-10 object-contain bg-white rounded p-1 ${allOut ? 'grayscale opacity-70' : ''}` }),
-                    React.createElement("div", { className: "flex-grow min-w-0" },
-                      React.createElement("p", { className: "font-bold text-xs truncate" }, item.name),
-                      allOut
-                        ? React.createElement("p", { className: "text-xs text-red-500 font-bold" }, t.outOfStock)
-                        : React.createElement("p", { className: "text-xs text-blue-400" }, `เริ่มต้น ฿${minPrice ? minPrice.toLocaleString() : '-'}`)
-                    )
-                  );
-                })
+              React.createElement("button", { onClick: () => setIsLoginOpen(false), className: "border px-3 py-1 rounded text-xs" }, t.cancel),
+              React.createElement("button", { onClick: () => { setUser(usernameInput); setIsLoginOpen(false); }, className: "bg-blue-600 text-white px-3 py-1 rounded text-xs" }, t.login)
             )
           )
         )
       );
     }
+    function App() {
+      const [lang, setLang] = useState("TH");
+      const [theme, setTheme] = useState("light");
+      const [user, setUser] = useState(null);
+      const [products, setProducts] = useState([]);
 
-    const root = ReactDOM.createRoot(document.getElementById("root"));
-    root.render(React.createElement(App));
-  </script>
-</body>
-</html>
+      const [cart, setCart] = useState([]);
+      const [filter, setFilter] = useState("ALL");
+      const [selectedProduct, setSelectedProduct] = useState(null);
+      const [editingProduct, setEditingProduct] = useState(null);
+      const [isCartOpen, setIsCartOpen] = useState(false);
+      const [isLoginOpen, setIsLoginOpen] = useState(false);
+      const [cartAnimate, setCartAnimate] = useState(false);
+      const [usernameInput, setUsernameInput] = useState("");
+
+      const t = TEXTS[lang];
+      const isAdmin = user === ADMIN_USERNAME;
+
+      // ☁️ ดึงและบันทึกข้อมูลด้วย Realtime Database
+      useEffect(() => {
+        const productsRef = ref(db, 'products');
+        const unsubscribe = onValue(productsRef, (snapshot) => {
+          const data = snapshot.val();
+          if (data) {
+            const productList = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+            setProducts(productList);
+          } else {
+            // หากบน Cloud ว่างเปล่า ให้สร้างชุดสินค้าเริ่มต้นให้อัตโนมัติ
+            const initialData = {
+              "p1": {
+                name: "Intel Core i5-14600K",
+                type: "CPU",
+                spec: "14 Cores (6P+8E) / 20 Threads / Up to 5.3 GHz",
+                img: "https://notebookspec.com/web/wp-content/uploads/2023/10/i5-14600k.jpg",
+                stores: [
+                  { name: "JIB", price: 11500, url: "https://www.jib.co.th", outOfStock: false },
+                  { name: "Advice", price: 11200, url: "https://www.advice.co.th", outOfStock: false }
+                ]
+              },
+              "p2": {
+                name: "NVIDIA RTX 4070 Super 12GB",
+                type: "การ์ดจอ",
+                spec: "12GB GDDR6X / 192-bit / DLSS 3.5",
+                img: "https://notebookspec.com/web/wp-content/uploads/2024/01/rtx-4070-super.jpg",
+                stores: [
+                  { name: "JIB", price: 23900, url: "https://www.jib.co.th", outOfStock: false },
+                  { name: "Advice", price: 23500, url: "https://www.advice.co.th", outOfStock: false }
+                ]
+              }
+            };
+            set(productsRef, initialData);
+          }
+        });
+
+        return () => unsubscribe();
+      }, []);
+
+      const handleSaveProduct = async (updatedProduct) => {
+        try {
+          const prodId = updatedProduct.id || `p_${Date.now()}`;
+          const prodData = { ...updatedProduct };
+          delete prodData.id;
+          await set(ref(db, `products/${prodId}`), prodData);
+          setEditingProduct(null);
+        } catch (error) {
+          alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+        }
+      };
+
+      const handleDeleteProduct = async (id) => {
+        if (confirm("ต้องการลบสินค้านี้ใช่หรือไม่?")) {
+          await remove(ref(db, `products/${id}`));
+          setEditingProduct(null);
+        }
+      };
+
+      const handleCreateNewProduct = () => {
+        setEditingProduct({
+          id: `p_${Date.now()}`,
+          name: "สินค้าใหม่",
+          type: "CPU",
+          spec: "ระบุสเปก...",
+          img: "https://via.placeholder.com/300",
+          stores: [
+            { name: "JIB", price: 1000, url: "https://www.jib.co.th", outOfStock: false }
+          ]
+        });
+      };
+
+      const filteredProducts = filter === "ALL" ? products : products.filter(p => p.type === filter);
+      const cardBgClass = theme === "light" ? "bg-white text-gray-900 border-gray-200" : "bg-gray-800 text-white border-gray-700";
+
+      const getMinPrice = (stores) => {
+        if (!stores) return null;
+        const availableStores = stores.filter(s => !s.outOfStock);
+        if (availableStores.length === 0) return null;
+        return Math.min(...availableStores.map(s => s.price));
+      };
+
+      return React.createElement("div", { className: "bg-gray-50 text-gray-900 min-h-screen p-4 sm:p-6" },
+        React.createElement("header", { className: "flex justify-between items-center pb-4 border-b max-w-5xl mx-auto" },
+          React.createElement("h1", { className: "text-xl font-extrabold text-blue-600" }, t.storeTitle),
+          React.createElement("div", { className: "flex gap-2 items-center" },
+            user ? 
+              React.createElement("div", { className: "flex items-center gap-2 border px-2.5 py-1 rounded-lg text-xs font-bold" },
+                React.createElement("span", null, isAdmin ? `👑 ${user} (${t.adminMode})` : `👤 ${user}`),
+                React.createElement("button", { onClick: () => setUser(null), className: "text-red-400 font-semibold" }, t.logout)
+              )
+            :
+              React.createElement("button", { onClick: () => setIsLoginOpen(true), className: "px-3 py-1 bg-indigo-600 text-white rounded-lg text-xs font-bold" }, `👤 ${t.login}`)
+          )
+        ),
+
+        React.createElement("main", { className: "max-w-5xl mx-auto mt-6" },
+          React.createElement("div", { className: "flex justify-between items-center mb-6" },
+            React.createElement("h2", { className: "text-lg font-bold" }, "รายการสินค้าบน Cloud"),
+            isAdmin && React.createElement("button", { onClick: handleCreateNewProduct, className: "px-3 py-1.5 bg-green-600 text-white rounded-xl text-xs font-bold" }, `➕ ${t.addProduct}`)
+          ),
+
+          React.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6" },
+            filteredProducts.map(p => {
+              const minPrice = getMinPrice(p.stores);
+              return React.createElement("div", { key: p.id, className: `border rounded-xl p-4 shadow-sm relative ${cardBgClass}` },
+                isAdmin && React.createElement("button", { onClick: () => setEditingProduct(p), className: "absolute top-2 left-2 bg-amber-500 text-white text-xs px-2 py-1 rounded" }, "✏️ แก้ไข"),
+                React.createElement("img", { src: p.img, alt: p.name, className: "w-full h-40 object-contain mb-2 bg-white rounded" }),
+                React.createElement("h3", { className: "font-bold text-base" }, p.name),
+                React.createElement("p", { className: "text-xs opacity-75" }, p.spec),
+                React.createElement("div", { className: "mt-4 flex justify-between items-center" },
+                  React.createElement("span", { className: "font-bold text-blue-500" }, minPrice ? `฿${minPrice.toLocaleString()}` : "หมด"),
+                  React.createElement("button", { onClick: () => setSelectedProduct(p), className: "bg-blue-600 text-white px-3 py-1 rounded text-xs" }, t.detail)
+                )
+              );
+            })
+          )
+        ),
+
+        editingProduct && React.createElement("div", { className: "fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50" },
+          React.createElement("div", { className: `max-w-lg w-full rounded-2xl p-6 border ${cardBgClass}` },
+            React.createElement("h2", { className: "text-lg font-bold mb-4" }, t.editProduct),
+            React.createElement("input", { type: "text", value: editingProduct.name, onChange: (e) => setEditingProduct({...editingProduct, name: e.target.value}), className: "w-full p-2 border rounded mb-2 bg-transparent text-xs" }),
+            React.createElement("input", { type: "text", value: editingProduct.spec, onChange: (e) => setEditingProduct({...editingProduct, spec: e.target.value}), className: "w-full p-2 border rounded mb-4 bg-transparent text-xs" }),
+            React.createElement("div", { className: "flex justify-between" },
+              React.createElement("button", { onClick: () => handleDeleteProduct(editingProduct.id), className: "bg-red-600 text-white px-3 py-1 rounded text-xs" }, t.delete),
+              React.createElement("div", { className: "flex gap-2" },
+                React.createElement("button", { onClick: () => setEditingProduct(null), className: "border px-3 py-1 rounded text-xs" }, t.cancel),
+                React.createElement("button", { onClick: () => handleSaveProduct(editingProduct), className: "bg-blue-600 text-white px-3 py-1 rounded text-xs" }, t.save)
+              )
+            )
+          )
+        ),
+
+        isLoginOpen && React.createElement("div", { className: "fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50" },
+          React.createElement("div", { className: `max-w-sm w-full rounded-2xl p-6 border ${cardBgClass}` },
+            React.createElement("h2", { className: "text-lg font-bold mb-4" }, t.loginTitle),
+            React.createElement("input", { type: "text", placeholder: t.usernamePlaceholder, value: usernameInput, onChange: (e) => setUsernameInput(e.target.value), className: "w-full p-2 border rounded mb-4 bg-transparent text-xs" }),
+            React.createElement("div", { className: "flex justify-end gap-2" },
+              React.createElement("button", { onClick: () => setIsLoginOpen(false), className: "border px-3 py-1 rounded text-xs" }, t.cancel),
+              React.createElement("button", { onClick: () => { setUser(usernameInput); setIsLoginOpen(false); }, className: "bg-blue-600 text-white px-3 py-1 rounded text-xs" }, t.login)
+            )
+          )
+        )
+      );
+    }
