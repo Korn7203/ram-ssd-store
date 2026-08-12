@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KORN PC Store - Full System with Storage</title>
+  <title>KORN PC Store - Full System</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @keyframes cartPop {
@@ -74,8 +74,7 @@
         imageUrl: "ลิงก์รูปภาพ (Image URL)",
         productName: "ชื่อสินค้า",
         spec: "สเปกสินค้า",
-        category: "หมวดหมู่",
-        resetData: "คืนค่าเริ่มต้น"
+        category: "หมวดหมู่"
       },
       EN: {
         storeTitle: "KORN PC HARDWARE STORE",
@@ -114,8 +113,7 @@
         imageUrl: "Image URL",
         productName: "Product Name",
         spec: "Specifications",
-        category: "Category",
-        resetData: "Reset Data"
+        category: "Category"
       }
     };
 
@@ -454,20 +452,7 @@
       const [lang, setLang] = useState("TH");
       const [theme, setTheme] = useState("light");
       const [user, setUser] = useState(null);
-      
-      // ดึงข้อมูลสินค้าจาก localStorage ถ้าไม่มีให้ใช้ INITIAL_PRODUCTS
-      const [products, setProducts] = useState(() => {
-        const saved = localStorage.getItem("korn_pc_products");
-        if (saved) {
-          try {
-            return JSON.parse(saved);
-          } catch (e) {
-            console.error("Failed to parse local storage products", e);
-          }
-        }
-        return INITIAL_PRODUCTS;
-      });
-
+      const [products, setProducts] = useState(INITIAL_PRODUCTS);
       const [cart, setCart] = useState([]);
       const [filter, setFilter] = useState("ALL");
       const [selectedProduct, setSelectedProduct] = useState(null);
@@ -487,11 +472,6 @@
 
       const t = TEXTS[lang];
       const isAdmin = user === ADMIN_USERNAME;
-
-      // บันทึกข้อมูลสินค้าลง localStorage ทุกครั้งที่มีการเปลี่ยนแปลง
-      useEffect(() => {
-        localStorage.setItem("korn_pc_products", JSON.stringify(products));
-      }, [products]);
 
       const getRandomNews = () => {
         let randomIndex;
@@ -576,13 +556,6 @@
         }
       };
 
-      const handleResetData = () => {
-        if (confirm("คุณต้องการล้างข้อมูลที่แก้ไขทั้งหมด แล้วคืนค่าเริ่มต้นใช่หรือไม่?")) {
-          localStorage.removeItem("korn_pc_products");
-          setProducts(INITIAL_PRODUCTS);
-        }
-      };
-
       const handleCreateNewProduct = () => {
         const newProd = {
           id: Date.now(),
@@ -642,11 +615,6 @@
               onClick: () => setIsHistoryOpen(true),
               className: "px-2.5 py-1 border rounded-lg text-xs hover:bg-gray-500/10 active:scale-95 transition-all"
             }, `📜 ${t.history}`),
-
-            isAdmin && React.createElement("button", {
-              onClick: handleResetData,
-              className: "px-2.5 py-1 border border-red-500/40 text-red-400 hover:bg-red-500/20 rounded-lg text-xs font-bold active:scale-95 transition-all"
-            }, `🔄 ${t.resetData}`),
 
             user ? 
               React.createElement("div", { className: `flex items-center gap-2 border px-2.5 py-1 rounded-lg text-xs font-bold ${isAdmin ? "bg-amber-500/10 border-amber-500/40 text-amber-500" : "bg-green-500/10 border-green-500/30 text-green-500"}` },
