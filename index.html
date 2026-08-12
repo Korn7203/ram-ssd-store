@@ -47,14 +47,17 @@
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     // 🔴 นำการตั้งค่าจาก Firebase Console ของคุณมาวางแทนที่ตรงนี้
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
+      const firebaseConfig = {
+    apiKey: "AIzaSyDE3V7_5QE97IYJNCnzxHOr40Z4ZEnORPg",
+    authDomain: "ssdstore-d7005.firebaseapp.com",
+    databaseURL: "https://ssd-store-94f06-default-rtdb.firebaseio.com", // 👈 เพิ่มบรรทัดนี้เข้าไป
+    projectId: "ssdstore-d7005",
+    storageBucket: "ssdstore-d7005.firebasestorage.app",
+    messagingSenderId: "45674933638",
+    appId: "1:45674933638:web:5b729900b06d6e8d529007",
+    measurementId: "G-06PB381DY3",
+  };
+
 
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
